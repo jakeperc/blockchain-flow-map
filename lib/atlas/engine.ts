@@ -36,7 +36,9 @@ export function* demoEvents(start:number,end:number,seed=DEMO_SEED):Generator<Tr
   }
  }
 }
-export function aggregate(events:Iterable<Transfer>,window:WindowKey,at:number,mode:'demo'|'production',seed=0):Snapshot {
+/** The subset of Transfer that totals and country summaries need. Only doubly-admissible included transfers must be full Transfers (they surface in topTransactions). */
+export type TotalsInput=Pick<Transfer,'id'|'blockTime'|'usdValue'|'economicClass'|'adjustment'|'senderEntity'|'receiverEntity'|'synthetic'>;
+export function aggregate(events:Iterable<Transfer|TotalsInput>,window:WindowKey,at:number,mode:'demo'|'production',seed=0):Snapshot {
  const totals={observed:0,adjusted:0,attributed:0,domestic:0,unattributed:0,excluded:0,unresolved:0,unpricedCount:0,transactionCount:0,coverage:null as number|null};
  const corridors=new Map<string,Corridor>(), countries=new Map<string,CountrySummary>(),seen=new Set<string>(),classes:Record<string,number>={},duration=WINDOWS[window];
  const history=Array.from({length:40},(_,i)=>({at:at-duration+(i+.5)*duration/40,value:0}));
@@ -52,16 +54,17 @@ export function aggregate(events:Iterable<Transfer>,window:WindowKey,at:number,m
   if(a)country(a).knownEndpointAdjusted+=value;if(b&&b!==a)country(b).knownEndpointAdjusted+=value;
   if(a&&b&&a===b){totals.domestic+=value;continue;}
   if(!a||!b||t.adjustment!=='included'){totals.unattributed+=value;continue;}
+  const f=t as Transfer; // only doubly-admissible included transfers reach here; producers must store those in full
   totals.attributed+=value;country(a).outbound+=value;country(b).inbound+=value;
   history[Math.min(39,Math.floor((t.blockTime-(at-duration))/duration*40))].value+=value;
   const id=`${a}-${b}`;
   let c=corridors.get(id);
   if(!c){c={id,origin:a,destination:b,window,windowStart:at-duration,windowEnd:at,usdValue:0,transactionCount:0,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:0,rankScore:0};corridors.set(id,c);}
   c.usdValue+=value;c.transactionCount++;c.lastActivity=Math.max(c.lastActivity,t.blockTime);
-  c.assets[t.asset]=(c.assets[t.asset]??0)+value;c.chains[t.chain]=(c.chains[t.chain]??0)+value;
-  const conf=t.senderEntity.confidence==='VERIFIED'&&t.receiverEntity.confidence==='VERIFIED'?'VERIFIED':'HIGH';c.confidence[conf]=(c.confidence[conf]??0)+value;
-  for(const attr of [t.senderEntity,t.receiverEntity]){const e=c.topEntities.find(e=>e.entity===attr.entity);if(e)e.usdValue+=value;else c.topEntities.push({entity:attr.entity,usdValue:value,attribution:attr});}
-  c.topTransactions.push(t);c.topTransactions.sort((x,y)=>(y.usdValue??0)-(x.usdValue??0));if(c.topTransactions.length>6)c.topTransactions.length=6;
+  c.assets[f.asset]=(c.assets[f.asset]??0)+value;c.chains[f.chain]=(c.chains[f.chain]??0)+value;
+  const conf=f.senderEntity.confidence==='VERIFIED'&&f.receiverEntity.confidence==='VERIFIED'?'VERIFIED':'HIGH';c.confidence[conf]=(c.confidence[conf]??0)+value;
+  for(const attr of [f.senderEntity,f.receiverEntity]){const e=c.topEntities.find(e=>e.entity===attr.entity);if(e)e.usdValue+=value;else c.topEntities.push({entity:attr.entity,usdValue:value,attribution:attr});}
+  c.topTransactions.push(f);c.topTransactions.sort((x,y)=>(y.usdValue??0)-(x.usdValue??0));if(c.topTransactions.length>6)c.topTransactions.length=6;
  }
  totals.coverage=totals.adjusted?totals.attributed/totals.adjusted:null;
  for(const c of countries.values())c.coverage=c.knownEndpointAdjusted?(c.inbound+c.outbound)/c.knownEndpointAdjusted:null;

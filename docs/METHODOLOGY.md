@@ -12,6 +12,8 @@ Global coverage = mapped cross-border USD / adjusted USD. Domestic, unresolved a
 
 Ranking uses log USD value, recency, confidence and anomaly, with 15% incumbent hysteresis. The renderer retains objects and interpolates width/opacity. Width uses bounded log10 USD. Color shows the dominant value-weighted chain, asset or confidence category; inspection shows all components. Particle speed and arc height carry no quantity. Anchors are jurisdiction references, not cities.
 
+Jurisdiction activity glow (client build): a jurisdiction anchor is lit in proportion to adjusted value touching at least one admissible endpoint there (the same known-endpoint denominator used for country coverage). A glow is one-sided evidenced activity and never draws or implies a route; routes still require two admissible endpoints in different jurisdictions.
+
 Baselines use preceding same-duration windows; at least four complete windows are required. Ratio = current / mean; z-score uses sample standard deviation. Production does not claim baseline availability from incomplete capture. Unusual activity is not evidence of illegality.
 
 Demo uses a fixed seed and clock, the same Transfer and Corridor contracts, fictional entities, nominal synthetic USD prices and synthetic evidence. It is reproducible and is never labeled LIVE. No demo transaction links to a real block explorer.

@@ -56,6 +56,8 @@ node node_modules/typescript/bin/tsc lib/atlas/model.ts lib/atlas/geography.ts l
 node scripts/verify-model.cjs /tmp/ledger-atlas-check
 ```
 
+The evidence registry check compiles the same way with `lib/atlas/known-addresses.ts lib/atlas/known-entities.ts` added, then runs `node scripts/verify-registry.cjs <outDir>`: every address must resolve to an entity, every jurisdiction must exist in `lib/atlas/geography.ts`, and every attribution must be admissible today. Note: the compile output directory needs a `package.json` containing `{"type":"commonjs"}` if a parent directory declares ES modules.
+
 The check verifies all four windows, seed reproducibility, monetary conservation, reconnect deduplication, geographic rejection, production isolation, economic exclusions, missing prices and chain filters. Browser QA covers desktop/mobile layouts, evidence inspection, source switching and controls.
 
 ## Attribution

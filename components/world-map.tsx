@@ -8,17 +8,17 @@ import {LineGeometry} from 'three/addons/lines/LineGeometry.js';
 import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
 import {geoEqualEarth,geoPath,geoGraticule10} from 'd3-geo';
 import {feature} from 'topojson-client';
-import {COUNTRIES,CHAIN_COLORS,ASSET_COLORS,CONFIDENCE_COLORS,type ColorMode} from '@/lib/atlas/geography';
-import {money,type Corridor} from '@/lib/atlas/model';
+import {COUNTRIES,MAP_LABELS,CHAIN_COLORS,ASSET_COLORS,CONFIDENCE_COLORS,type ColorMode} from '@/lib/atlas/geography';
+import {money,type Corridor,type CountrySummary} from '@/lib/atlas/model';
 export type MapHandle={zoom:(factor:number)=>void;reset:()=>void};
-type Props={corridors:Corridor[];country:string|null;selected:string|null;colorMode:ColorMode;raw:boolean;rawEvent?:{corridor:string;transaction:import('@/lib/atlas/model').Transfer;started:number}|null;paused:boolean;onCountry:(code:string,name?:string)=>void;onCorridor:(id:string)=>void;onQuality:(q:string)=>void;};
+type Props={corridors:Corridor[];countries?:CountrySummary[];country:string|null;selected:string|null;colorMode:ColorMode;raw:boolean;rawEvent?:{corridor:string;transaction:import('@/lib/atlas/model').Transfer;started:number}|null;paused:boolean;onCountry:(code:string,name?:string)=>void;onCorridor:(id:string)=>void;onQuality:(q:string)=>void;};
 type Route={data:Corridor;curve:THREE.CubicBezierCurve3;line:Line2;mat:LineMaterial;opacity:number;target:number;width:number;targetWidth:number;color:THREE.Color;};
 function colorOf(c:Corridor,mode:ColorMode){const obj=mode==='CHAIN'?c.chains:mode==='ASSET'?c.assets:c.confidence;const dominant=Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]?.[0];return (mode==='CHAIN'?CHAIN_COLORS:mode==='ASSET'?ASSET_COLORS:CONFIDENCE_COLORS)[dominant]??'#a9cabc';}
 export const WorldMap=forwardRef<MapHandle,Props>(function WorldMap(props,ref){
  const el=useRef<HTMLDivElement>(null),latest=useRef(props),engine=useRef<{zoom:(f:number)=>void;reset:()=>void;update:()=>void}|null>(null),[error,setError]=useState(''),[hover,setHover]=useState<{x:number;y:number;text:string;sub:string}|null>(null);
  latest.current=props;
  useImperativeHandle(ref,()=>({zoom:f=>engine.current?.zoom(f),reset:()=>engine.current?.reset()}),[]);
- useEffect(()=>{engine.current?.update();},[props.corridors,props.country,props.selected,props.colorMode,props.raw]);
+ useEffect(()=>{engine.current?.update();},[props.corridors,props.countries,props.country,props.selected,props.colorMode,props.raw]);
  useEffect(()=>{
   const host=el.current!;let disposed=false,raf=0,width=1,height=1,zoom=1,targetZoom=1,pan=new THREE.Vector2(),targetPan=new THREE.Vector2(),last=0,elapsed=0,frames=0,frameSum=0,quality=1;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -53,8 +53,15 @@ export const WorldMap=forwardRef<MapHandle,Props>(function WorldMap(props,ref){
   const ripple=new THREE.Mesh(new THREE.RingGeometry(2.8,3.3,32),new THREE.MeshBasicMaterial({color:0xc4d9c7,transparent:true,opacity:0,depthTest:false}));world.add(ripple);
   const ringGeometry=new THREE.RingGeometry(2.3,2.8,24),dotGeometry=new THREE.CircleGeometry(1.5,12);
   for(const [code,c]of Object.entries(COUNTRIES)){const p=project(c.anchor);const dot=new THREE.Mesh(dotGeometry,new THREE.MeshBasicMaterial({color:0xb6d4c5,transparent:true,opacity:.6,depthTest:false}));dot.position.copy(p);dot.position.z=3;dot.userData={code,name:c.name};world.add(dot);anchors.push(dot);const ring=new THREE.Mesh(ringGeometry,new THREE.MeshBasicMaterial({color:0xa3c7b5,transparent:true,opacity:.24,depthTest:false}));ring.position.copy(p);ring.position.z=2;ring.userData={code,ring:true};world.add(ring);anchors.push(ring);}
+  // Country activity glow: an additive radial sprite per jurisdiction, scaled by evidenced value touching it. Kept out of `anchors` (the raycast list).
+  const glowCanvas=document.createElement('canvas');glowCanvas.width=glowCanvas.height=64;const gctx=glowCanvas.getContext('2d');
+  if(gctx){const grad=gctx.createRadialGradient(32,32,0,32,32,32);grad.addColorStop(0,'rgba(255,255,255,1)');grad.addColorStop(.35,'rgba(255,255,255,.45)');grad.addColorStop(1,'rgba(255,255,255,0)');gctx.fillStyle=grad;gctx.fillRect(0,0,64,64);}
+  const glowTexture=new THREE.CanvasTexture(glowCanvas),glowGeometry=new THREE.PlaneGeometry(2,2);
+  type Glow={mesh:THREE.Mesh;mat:THREE.MeshBasicMaterial;opacity:number;target:number;scale:number;targetScale:number;phase:number;active:boolean};
+  const glows=new Map<string,Glow>();
+  for(const [code,c]of Object.entries(COUNTRIES)){const mat=new THREE.MeshBasicMaterial({map:glowTexture,color:0x8fc7a8,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,depthTest:false});const mesh=new THREE.Mesh(glowGeometry,mat);mesh.position.copy(project(c.anchor));mesh.position.z=1;mesh.visible=false;world.add(mesh);glows.set(code,{mesh,mat,opacity:0,target:0,scale:0,targetScale:0,phase:(code.charCodeAt(0)*7+code.charCodeAt(1))%10,active:false});}
   const labels=new Map<string,HTMLDivElement>();
-  for(const code of ['US','GB','BR','SG','HK','AE','JP','AU','NG','IN']){const label=document.createElement('div');label.className='map-country-label';label.textContent=code==='US'?'UNITED STATES':code==='GB'?'UNITED KINGDOM':COUNTRIES[code].name.toUpperCase();host.appendChild(label);labels.set(code,label);}
+  for(const code of Object.keys(COUNTRIES)){const label=document.createElement('div');label.className='map-country-label';label.textContent=(MAP_LABELS[code]?.text??COUNTRIES[code].name).toUpperCase();label.style.display='none';host.appendChild(label);labels.set(code,label);}
   const resize=()=>{width=host.clientWidth;height=host.clientHeight;renderer.setSize(width,height);const ratio=width/height,viewW=width<650?1120:1100,viewH=Math.max(530,viewW/ratio);camera.left=-viewH*ratio/2;camera.right=viewH*ratio/2;camera.top=viewH/2;camera.bottom=-viewH/2;camera.updateProjectionMatrix();for(const r of routes.values())r.mat.resolution.set(width,height);};
   const update=()=>{
    const p=latest.current,limit=width<650?20:32;
@@ -73,7 +80,9 @@ export const WorldMap=forwardRef<MapHandle,Props>(function WorldMap(props,ref){
     route.data=c;route.color=color;route.mat.color.copy(color);route.target=p.selected&&p.selected!==c.id?.18:1;route.targetWidth=Math.max(.65,Math.min(4.7,.65+Math.max(0,Math.log10(c.usdValue/1e5))*.78));
    }
    for(const[code,mats]of countryMats){const active=code===p.country||!!(p.selected&&chosen.some(c=>c.id===p.selected&&(c.origin===code||c.destination===code)));for(const mat of mats)mat.color.set(active?0x486157:0x253136);}
-   for(const dot of anchors){const active=chosen.some(c=>c.origin===dot.userData.code||c.destination===dot.userData.code);(dot.material as THREE.MeshBasicMaterial).opacity=active?(dot.userData.ring?.35:.85):.12;}
+   const byCode=new Map((p.countries??[]).map(c=>[c.code,c.knownEndpointAdjusted] as const));
+   for(const[code,g]of glows){const v=byCode.get(code)??0;g.targetScale=v>0?THREE.MathUtils.clamp(8+6*Math.log10(v/1e5),8,34):0;g.target=v>0?(p.country&&p.country!==code?.22:.5):0;g.active=v>0||chosen.some(c=>c.origin===code||c.destination===code);}
+   for(const dot of anchors){const code=dot.userData.code as string,active=chosen.some(c=>c.origin===code||c.destination===code),lit=active||!!glows.get(code)?.active;(dot.material as THREE.MeshBasicMaterial).opacity=active?(dot.userData.ring?.35:.85):lit?(dot.userData.ring?.22:.5):.12;}
   };
   engine.current={update,zoom:f=>{targetZoom=THREE.MathUtils.clamp(targetZoom*f,.85,4);},reset:()=>{targetZoom=1;targetPan.set(0,0);}};
   const observer=new ResizeObserver(()=>{resize();update();});observer.observe(host);resize();
@@ -97,13 +106,14 @@ export const WorldMap=forwardRef<MapHandle,Props>(function WorldMap(props,ref){
     if(r.target===0&&r.opacity<.015){world.remove(r.line);r.line.geometry.dispose();r.mat.dispose();routes.delete(id);continue;}
     for(let k=0;k<count&&index<400;k++){const phase=((elapsed*.085+k/count+(id.charCodeAt(0)%7)/7)%1),v=r.curve.getPoint(phase);spritePositions.set([v.x,v.y,v.z+1],index*3);spriteColors.set([r.color.r*r.opacity,r.color.g*r.opacity,r.color.b*r.opacity],index*3);spriteSizes[index]=3.7*renderer.getPixelRatio();index++;}
    }
+   for(const g of glows.values()){g.opacity=THREE.MathUtils.lerp(g.opacity,g.target,.06);g.scale=THREE.MathUtils.lerp(g.scale,g.targetScale,.06);const pulse=quality?1+.06*Math.sin(elapsed*1.6+g.phase):1;g.mesh.scale.setScalar(Math.max(.001,g.scale*pulse));g.mat.opacity=g.opacity;g.mesh.visible=g.opacity>.01;}
    const event=latest.current.rawEvent,route=event?routes.get(event.corridor):null;const progress=event?(Date.now()-event.started)/3000:2;(ripple.material as THREE.MeshBasicMaterial).opacity=0;if(event&&route&&progress<=1){const v=route.curve.getPoint(Math.max(0,progress));spritePositions.set([v.x,v.y,v.z+2],index*3);spriteColors.set([.85,.95,.83],index*3);spriteSizes[index]=9*renderer.getPixelRatio();index++;}else if(event&&route&&progress<1.67){ripple.position.copy(route.curve.v3);ripple.position.z=6;ripple.scale.setScalar(1+(progress-1)*8);(ripple.material as THREE.MeshBasicMaterial).opacity=.5*(1-(progress-1)/.67);}
    particleGeometry.setDrawRange(0,index);for(const attr of Object.values(particleGeometry.attributes))attr.needsUpdate=true;
-   for(const[code,label]of labels){const v=project(COUNTRIES[code].anchor).applyMatrix4(world.matrixWorld).project(camera);label.style.transform=`translate(${(v.x+1)*width/2+7}px,${(-v.y+1)*height/2+9}px)`;label.style.opacity=latest.current.country&&latest.current.country!==code?'.22':'.72';label.style.display=width<650&&!['US','SG','BR','GB','AU'].includes(code)?'none':'block';}
+   for(const[code,label]of labels){const spec=MAP_LABELS[code],show=((!!spec&&!spec.auto)||!!glows.get(code)?.active)&&(width>=650||!!spec?.mobile);if(!show){label.style.display='none';continue;}const v=project(COUNTRIES[code].anchor).applyMatrix4(world.matrixWorld).project(camera);label.style.display='block';label.style.transform=`translate(${(v.x+1)*width/2+7+(spec?.dx??0)}px,${(-v.y+1)*height/2+9+(spec?.dy??0)}px)`;label.style.opacity=latest.current.country&&latest.current.country!==code?'.22':'.72';}
    renderer.render(scene,camera);frames++;frameSum+=delta;if(frames>=180){const fps=frames/frameSum;if(fps<37&&quality){quality=0;renderer.setPixelRatio(1);for(const r of routes.values())r.line.geometry.setPositions(r.curve.getPoints(28).flatMap(v=>[v.x,v.y,v.z]));latest.current.onQuality('Adaptive');}else latest.current.onQuality(quality?'High':'Adaptive');frames=0;frameSum=0;}
   }
   raf=requestAnimationFrame(draw);
-  return()=>{disposed=true;cancelAnimationFrame(raf);observer.disconnect();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',cancel);canvas.removeEventListener('pointerleave',leave);canvas.removeEventListener('wheel',wheel);scene.traverse(o=>{const m=o as THREE.Mesh;m.geometry?.dispose();if(m.material)(Array.isArray(m.material)?m.material:[m.material]).forEach(m=>m.dispose());});renderer.dispose();host.replaceChildren();engine.current=null;};
+  return()=>{disposed=true;cancelAnimationFrame(raf);observer.disconnect();canvas.removeEventListener('pointerdown',down);canvas.removeEventListener('pointermove',move);canvas.removeEventListener('pointerup',up);canvas.removeEventListener('pointercancel',cancel);canvas.removeEventListener('pointerleave',leave);canvas.removeEventListener('wheel',wheel);scene.traverse(o=>{const m=o as THREE.Mesh;m.geometry?.dispose();if(m.material)(Array.isArray(m.material)?m.material:[m.material]).forEach(m=>m.dispose());});glowTexture.dispose();renderer.dispose();host.replaceChildren();engine.current=null;};
  },[]);
  return <div className="world-map" ref={el}>{error==='compatibility'&&<MapFallback {...props} controls={engine}/>}{error&&error!=='compatibility'&&<div className="map-error">{error}</div>}{hover&&<div className="map-tooltip" style={{left:Math.min(hover.x+14,(el.current?.clientWidth??1000)-280),top:Math.max(0,hover.y-62)}}><strong>{hover.text}</strong><span>{hover.sub}</span></div>}</div>;
 });

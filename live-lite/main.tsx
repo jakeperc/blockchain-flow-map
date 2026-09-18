@@ -5,4 +5,4 @@ import {aggregate} from '@/lib/atlas/engine';
 import {createLiveSource} from '@/lib/atlas/live-client';
 import '@/app/globals.css';
 const source=createLiveSource();
-createRoot(document.getElementById('root')!).render(<Atlas initial={aggregate([],'5M',Date.now(),'production')} source={source} initialMode="production"/>);
+createRoot(document.getElementById('root')!).render(<Atlas initial={aggregate([],'1H',Date.now(),'production')} source={source} initialMode="production"/>);
