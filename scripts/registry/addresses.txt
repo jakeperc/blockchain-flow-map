@@ -1,0 +1,152 @@
+# entity|address|label|note
+binance|0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be|Binance|
+binance|0xd551234ae421e3bcba99a0da6d736074f22192ff|Binance 2|
+binance|0xf977814e90da44bfa03b6295a0616a897441acec|Binance: Hot Wallet 20|One of the largest and most active exchange wallets on Ethereum.
+binance|0x28c6c06298d514db089934071355e5743bf21d60|Binance 14|
+coinbase|0x71660c4005ba85c37ccec55d0c4493e66fe775d3|Coinbase 1|
+coinbase|0x503828976d22510aad0201ac7ec88293211d23da|Coinbase 12|
+kraken|0xf30ba13e4b04ce5dc4d254ae5fa95477800f0eb0|Kraken: Hot Wallet 2|
+kraken|0x05ff6964d21e5dae3b1010d5ae0465b3c450f381|Kraken: Hot Wallet 4|
+okx|0x4b4e14a3773ee558b6597070797fd51eb48606e5|OKX: Hot Wallet|
+okx|0x4e7b110335511f662fdbb01bf958a7844118c0d4|OKX: Hot Wallet 2|
+bitfinex|0x1151314c646ce4e0efd76d1af4760ae66a9fe30f|Bitfinex 1|
+bitfinex|0x1b29dd8ff0eb3240238bf97cafd6edea05d5ba82|Bitfinex 6|
+upbit|0xba826fec90cefdf6706858e5fbafcb27a290fbe0|Upbit 2|
+upbit|0x5e032243d507c743b061ef021e2ec7fcc6d3ab89|Upbit 3|
+bithumb|0x17e5545b11b468072283cee1f066a059fb0dbf24|Bithumb: Hot Wallet|
+gemini|0xd24400ae8bfebb18ca49be86258a3c749cf46853|Gemini|
+coindcx|0x2407b9b9662d970ece2224a0403d3b15c7e4d1fe|CoinDCX 2|
+bitflyer|0xa9264494a92ced04747ac84fc9ca5a0b9549b491|bitFlyer 3|
+bitflyer|0xb01cb49fe0d6d6e47edf3a072d15dfe73155331c|bitFlyer 2|
+coincheck|0xd52814615dc129e1eea3520e7e7f8d44dbfc6c5b|Coincheck 2|Etherscan discloses this tag came from a public researcher compilation rather than a first-party submission.
+wintermute|0x0000006daea1723962647b7e189d311d757Fb793|Wintermute 1|The firm's verified trading contract rather than an EOA.
+wintermute|0x000002Cba8DfB0a86A47a415592835E17fac080a|Wintermute 2|
+wintermute|0x5cddEbd8a7b3BC60156550187BF5465b1c3290f5|Wintermute 3|
+wintermute|0xf8191D98ae98d2f7aBDFB63A9b0b812b93C873AA|Wintermute 4|
+wintermute|0xCe84449A8Ebec019AC110a4b6662E55d0fD9f228|Wintermute 5|
+bitvavo|0x04A6b67FAC93e507d2642f129f5cB8aD474f9823|Bitvavo 1|Etherscan-applied tag sourced from a public compilation.
+bitvavo|0x75f594083de65FF173Eb7CE505aa26332fe389f5|Bitvavo 2|Etherscan-applied tag sourced from a public compilation.
+bitvavo|0x2f1752e8B49C6E7391Dc6e55934ceedC7AbF18F7|Bitvavo 3|Etherscan-applied tag sourced from a public compilation.
+bitvavo|0x2586Db422EC15d5999b50C43bE219756C46Bb0Bd|Bitvavo 5|Etherscan-applied tag sourced from a public compilation.
+bitvavo|0x87eAB4F119113e0E5920288936aD94C307b4849a|Bitvavo 9|Etherscan-applied tag sourced from a public compilation.
+bitvavo|0x079A892628EBf28d0Ed8f00151cff225A093dc63|Bitvavo: Hot 1|Etherscan-applied tag sourced from a public compilation.
+bitcoinsuisse|0x7B4576d06D0Ce1F83F9a9B76BF8077bFFD34FcB1|Bitcoin Suisse 1|Etherscan-applied tag sourced from a public compilation.
+bitcoinsuisse|0x3f262579E4332e1Be2722684EAa1C1b111F7a8d8|Bitcoin Suisse 2|Etherscan-applied tag sourced from a public compilation.
+bitcoinsuisse|0x31dFf0cf605F9719b9171f6049150595CC1240F1|Bitcoin Suisse 3|Inactive for about three years.
+paribu|0xBd8ef191Caa1571e8aD4619ae894e07A75De0C35|Paribu 1|
+paribu|0x2bB97B6CF6FfE53576032c11711D59Bd056830eE|Paribu 2|Dormant for several years.
+paribu|0xFB90501083a3b6AF766c8dA35d3Dde01eB0d2a68|Paribu 3|
+paribu|0xabc74170f3Cb8Ab352820C39cC1d1e05cE9e41D3|Paribu 4|
+paribu|0x9acbB72Cf67103A30333A32CD203459c6a9c3311|Paribu 5|
+btcturk|0x832F166799A407275500430b61b622F0058f15d6|BTC Turk: Main Wallet|
+btcturk|0x2eE555C9006A9DC4674f01E0d4Dfc58e013708f0|BtcTurk 2|Last active December 2023.
+btcturk|0x1C17622cfa9B6fD2043A76DfC39A5B5a109aa708|BtcTurk 3|
+btcturk|0x628a6fe299589B4b5A67d4B43CcDCB4821b3D80C|BtcTurk 5|
+btcturk|0x8C54EbDD960056d2CfF5998df5695dACA1FC0190|BtcTurk 7|
+btcturk|0x16769E533352798deB664bA570230A758346Ca1A|BtcTurk 9|
+btcturk|0x46f80018211D5cBBc988e853A8683501FCA4ee9b|BtcTurk: Cold 1|
+coinmetro|0xa270F3ad1a7a82E6a3157F12a900f1E25BC4FbFD|CoinMetro 1|
+coinmetro|0x4CF2220105995F006813923019f02BE1CCcA8132|Coinmetro 2|Verified multisig hot-wallet contract operated by the exchange.
+coinmetro|0x706Ee6cF36a4bF95ec7Fe5d468571B9E9e63FBB6|Coinmetro 3|
+coinmetro|0x46a189C7F37953b91E5bd75D0E608efdAfefAF1C|Coinmetro 4|Verified multisig hot-wallet contract operated by the exchange.
+coinmetro|0x1E7b450322E42b53D55ABC795913537fD680fe0c|Coinmetro 5|Verified multisig hot-wallet contract operated by the exchange.
+coinmetro|0x0BC7b31BF8ffAc8213E496102167FE73Fc30937a|Coinmetro 6|Verified multisig hot-wallet contract operated by the exchange.
+coinmetro|0x7C1C73Bf60fEb40cBCF0F12324200238ee23BB54|CoinMetro: MultiSig Cold Wallet|Multisig cold-wallet contract.
+copper|0x7C6782476e29fB26E1556FbA058eb7ECED93D327|Copper 1|
+copper|0xcFbba243c567738C2d3D958026b1Bf6Ad894A19e|Copper 2|
+copper|0xAf64555DDD61FcF7D094824dd9B4eBea165aFc5b|Copper 3|
+copper|0x0349923aE2B35FF4f0099869aeea99d1f3FD12a9|Copper 4|
+copper|0xa205fD7344656c72FDC645b72fAF5a3DE0B3E825|Copper 5|
+copper|0xA5995359b9941E060e366B4Ee3ebB6A9f47649be|Copper 6|
+coinspot|0xf35a6bd6e0459a4b53a27862c51a2a7292b383d1|CoinSpot 1|
+coinspot|0xe4b3dd9839ed1780351dc5412925cf05f07a1939|CoinSpot 2|
+coinspot|0x32143A02Fb6484D18C79Fa0401c9bF760DD3DE68|CoinSpot 3|
+coinspot|0x56de1961fDA5454E6F8e6D0e3124fF648FD69400|CoinSpot 4|
+coinspot|0x867bfa133d64fad734c89f886d2a169b6504ab2b|CoinSpot 5|
+coinspot|0x09363887A4096b142f3F6b58A7eeD2F1A0FF7343|CoinSpot 6|
+coinspot|0x916ed5586bb328e0ec1a428af060dc3d10919d84|CoinSpot 7|
+coinspot|0xa89a1278ac85367f38bdf6746658ce2b9875526e|CoinSpot 9|
+coinspot|0xdb6fdc30ab61c7cca742d4c13d1b035f3f82019a|CoinSpot 10|
+coinspot|0xeed86b90448c371eab47b7f16e294297c27e4f51|CoinSpot 11|
+coinspot|0x19184aB45C40c2920B0E0e31413b9434ABD243eD|CoinSpot 13|
+coinspot|0x32E567E8B527d3194C60ea3C6a5c009d58A0B36d|CoinSpot 14|
+coinspot|0x9239dF3E9996c776D539EB9f01A8aE8E7957b3c3|CoinSpot 15|
+coinspot|0x33A64dcDfa041bEfebC9161a3e0c6180cd94Fa89|CoinSpot 16|
+coinspot|0x4207837D4Cd914467EB76bf88c4d6e7Ba11ccDf9|CoinSpot 17|
+coinspot|0x91a0a3043f68986043d7083c4d85b558b21f0a7b|CoinSpot 18|
+coinspot|0xdf1553a2130cbafa70a35e68efc6ccf67f0a278c|CoinSpot 20|
+coinspot|0xa9bd318a4ca1747e6068d100e18711b529386e29|CoinSpot 21|
+coinjar|0x0363bFC09B48616190d15ddEe5987Ae2D05Da6F4|Coinjar 1|
+coinjar|0xC1C88785E9B5c9c85B3f6c99255C3bef9e3B14A7|Coinjar 2|
+coinjar|0xd6a062CAE6123C158768A5C444CA0896CC60D6B1|Coinjar 3|Exchange wallet contract (proxy) deployed by the exchange.
+digitalsurge|0xFb75B231C307738ce506c242bABaD2FD2e77B0bf|Digital Surge 1|Inactive for over a year.
+btcmarkets|0xc55eddadeeb47fcde0b3b6f25bd47d745ba7e7fa|BTC Markets 2|
+coinsquare|0x02fdc44Bf226E49DCecA4775Afaef3360e9C4EE9|Coinsquare 1|
+coinsquare|0x0fcFF154753e337983613889b69dd85Fe8a1a145|Coinsquare 2|
+coinsquare|0x14AA1AD09664c33679aE5689d93085B8F7c84bd3|Coinsquare 3|
+coinsquare|0x3858A27eeCB5f1144473E35A293cb1B2bda6DfF4|Coinsquare 4|
+coinsquare|0x476B067CbFF8ACB805038E9dAEF5D51c7612d593|Coinsquare 5|
+coinsquare|0x48a0B5f7DE8789a3962918C6DF4A766c0c8857B0|Coinsquare 6|
+coinsquare|0x4b36C488fcb66962159133B703870Ad6cF44d3bF|Coinsquare 7|
+coinsquare|0xE9bDb4219706914441178bC8357e8551B53d8CbF|Bitbuy MultiSig 1|Bitbuy is a trade name of Coinsquare Capital Markets Ltd.; multisig exchange wallet contract, largely dormant.
+shakepay|0x912fd21d7a69678227fe6d08c64222db41477ba0|Shakepay 1|
+shakepay|0x4d846da8257bb0ebd164eff513dff0f0c2c3c0ba|Shakepay 3|
+shakepay|0x3b794929566e3ba0f25e4263e1987828b5c87161|Shakepay 4|
+shakepay|0xBBd0D4d067d5aF2065B1B6fD936d93237Ae1c56C|Shakepay 6|
+shakepay|0x389044F3ac7472060A0618116e3624A5f0f20F28|Shakepay 7|
+shakepay|0x7DBB4bdCfE614398D1a68ecc219F15280d0959E0|Shakepay 8|
+shakepay|0x88DCdd4A0A58b7e2208805D547043c37dca2b6Dc|Shakepay 9|
+shakepay|0x94b18793b93b524b110fead408b955422b982fa4|Shakepay 10|Multisig custody contract that funds Shakepay 6.
+newton|0x2db1d8cdf1abe8c70b531a790cdf2ff38aecf652|Newton|
+wealthsimple|0xa21a16ec22a940990922220e4ab5bf4c2310f556|Wealthsimple 1|Possibly retired; last activity April 2025.
+bitso|0x58b704065b7aff3ed351052f8560019e05925023|Bitso 1|
+mercadobitcoin|0xb8ba36e591facee901ffd3d5d82df491551ad7ef|Mercado Bitcoin 1|
+valr|0x05cdb1526f6e224e02919a4c018d9784ea25eb3d|VALR: Hot Wallet|
+binance|0x564286362092d8e7936f0549571a803b203aaced|Binance 3|
+binance|0x0681d8db095565fe8a346fa0277bffde9c0edbbf|Binance 4|
+binance|0xbe0eb53f46cd790cd13851d5eff43d12404d33e8|Binance 7|Cold wallet holding roughly two million ETH.
+binance|0x85b931a32a0725be14285b66f1a22178c672d69b|Binance 10|
+binance|0x708396f17127c42383e3b9014072679b2f60b82f|Binance 11|Dormant since June 2023.
+binance|0xe0f0cfde7ee664943906f17f7f14342e76a5cec7|Binance 12|Dormant since July 2022.
+binance|0x8f22f2063d253846b53609231ed80fa571bc0c8f|Binance 13|
+binance|0x21a31ee1afc51d94c2efccaa2092ad1028285549|Binance 15|Very active hot wallet.
+binance|0xdfd5293d8e347dfe59e90efd55b2956a1343963d|Binance 16|Very active hot wallet.
+binance|0x56eddb7aa87536c09ccc2793473599fd21a8b17f|Binance 17|Very active hot wallet.
+binance|0x9696f59e4d72e237be84ffd425dcad154bf96976|Binance 18|Very active hot wallet.
+binance|0x4d9ff50ef4da947364bb9650892b2554e7be5e2b|Binance 19|Pass-through wallet with near-zero balance.
+binance|0x4976a4a02f38326660d17bf34b431dc6e2eb2327|Binance 20|Very active hot wallet.
+binance|0x5a52e96bacdabb82fd05763e25335261b270efcb|Binance 28|Cold or reserve wallet with a multi-billion-dollar portfolio.
+okx|0x6cc5f688a315f3dc28a7781717a9a798a59fda7b|OKX|
+okx|0x236f9f97e0e62388479bf9e5ba4889e46b0273c3|OKX 2|
+okx|0xa7efae728d2936e78bda97dc267687568dd593f3|OKX 3|Very active hot wallet.
+okx|0x2c8fbb630289363ac80705a1a61273f76fd5a161|OKX 4|
+okx|0x98ec059dc3adfbdd63429454aeb0c990fba4a128|OKX 6|Former cold wallet, now near-empty.
+okx|0x5041ed759dd4afc3a72b8192c143f72f4724081a|OKX 7|
+okx|0x7eb6c83ab7d8d9b8618c0ed973cbef71d1921ef2|OKX 20|
+coinbase|0x3cd751e6b0078be393132286c442345e5dc49699|Coinbase 33|Etherscan has renumbered Coinbase tags over time.
+coinbase|0xddfabcdc4d8ffc6d5beaf154f18b778f892a0740|Coinbase 23|
+coinbase|0xb5d85cbf7cb3ee0d56b3bb207d5fc4b82f43f511|Coinbase 44|Very active hot wallet.
+coinbase|0xeb2629a2734e272bcc07bda959863f316f4bd4cf|Coinbase 54|
+coinbase|0xb739d0895772dbb71a89a3754a160269068f0d45|Coinbase 6|
+coinbase|0x77696bb39917c91a0c3908d577d5e322095425ca|Coinbase 3|
+coinbase|0xa9d1e08c7793af67e9d92fe308d5697fb81d3e43|Coinbase 10|Very active exchange hot-wallet contract (unverified source), not a router or bridge.
+kraken|0x267be1c1d684f78cb4f6a176c4911b741e4ffdc0|Kraken 4|Main active hot wallet.
+kraken|0x89e51fa8ca5d66cd220baed62ed01e8951aa7c40|Kraken 7|
+kraken|0xc6bed363b30df7f35b601a5547fe56cd31ec63da|Kraken 8|
+kraken|0xae2d4617c862309a3d75a0ffb358c7a5009c673f|Kraken 10|
+kraken|0xda9dfa130df4de4673b89022ee50ff26f6ea73cf|Kraken 13|Former cold wallet funded by Kraken 4, now near-empty.
+kraken|0xe9f7ecae3a53d2a67105292894676b00d1fab785|Kraken: Hot Wallet|
+gemini|0x5f65f7b609678448494de4c87521cdf6cef1e932|Gemini 4|Very active exchange wallet contract (unverified source), not a router or bridge.
+gemini|0x61edcdf5bb737adffe5043706e7c5bb1f1a56eea|Gemini 3|Cold-wallet contract described by Etherscan as Gemini's cold wallet; near-empty now.
+gemini|0xd69b0089d9ca950640f5dc9931a41a5965f00303|Gemini 7|Cold reserve contract holding tens of thousands of ETH.
+bitfinex|0x876eabf441b2ee5b5b0554fd502a8e0600950cfa|Bitfinex 3|
+bitfinex|0x742d35cc6634c0532925a3b844bc454e4438f44e|Bitfinex 2|Large multi-chain treasury wallet.
+bitfinex|0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec|Bitfinex: Hot Wallet|Very active hot wallet.
+bitfinex|0xe92d1a43df510f82c66382592a047d288f85226f|Bitfinex 19|Cold wallet per Etherscan chips.
+bitfinex|0x4fdd5eb2fb260149a3903859043e962ab89d8ed4|Bitfinex 5|Cold wallet.
+upbit|0x390de26d772d2e2005c6d1d24afc902bae37a4bb|Upbit 1|
+upbit|0xc9cf0ec93d764f5c9571fd12f764bae7fc87c84e|Upbit: Cold Wallet|Dormant since May 2023.
+bithumb|0x3052cd6bf951449a984fe4b5a38b46aef9455c8e|Bithumb 2|
+bithumb|0x558553d54183a8542f7832742e7b4ba9c33aa1e6|Bithumb 12|Former cold wallet, now near-empty.
+bithumb|0x88d34944cf554e9cccf4a24292d891f620e9c94f|Bithumb 1|Dormant since June 2020.
+bithumb|0x2140efd7ba31169c69dfff6cdc66c542f0211825|Bithumb 3|Dormant since September 2019.

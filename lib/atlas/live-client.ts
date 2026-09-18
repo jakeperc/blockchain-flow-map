@@ -29,11 +29,12 @@ export interface LiveSource {
  progress():{done:number;total:number}|null;
 }
 
-const RPC_ENDPOINTS=['https://eth.drpc.org','https://1rpc.io/eth'];
+// Free, key-less, browser-callable (CORS) endpoints that serve 25-block eth_getLogs, probed 2026-09-18. Order = preference.
+const RPC_ENDPOINTS=['https://eth.drpc.org','https://eth-pokt.nodies.app','https://rpc.mevblocker.io','https://1rpc.io/eth'];
 const COINGECKO='https://api.coingecko.com/api/v3';
 const COINGECKO_IDS:Record<Asset,string>={USDT:'tether',USDC:'usd-coin'};
 const POLL_MS=20000,PRICE_MS=120000,TICK_MS=8000;
-const LIVE_BLOCK_RANGE=6,CATCHUP_BLOCK_RANGE=50,BACKFILL_BLOCKS=300,BACKFILL_CHUNK=50,BACKFILL_CONCURRENCY=2,TIP_LAG=1,BATCH_LIMIT=3;
+const LIVE_BLOCK_RANGE=6,CATCHUP_BLOCK_RANGE=25,BACKFILL_BLOCKS=300,BACKFILL_CHUNK=25,BACKFILL_CONCURRENCY=1,TIP_LAG=1,BATCH_LIMIT=3,RPC_ATTEMPTS=4,RPC_STRIKES=3;
 const RETENTION_MS=90*60000,PRICE_TOLERANCE_MS=600000,SLOT_MS=12000;
 const ZERO=/^0x0{40}$/;
 type State='CONNECTING'|'BACKFILLING'|'LIVE'|'CATCHING UP'|'RECONNECTING';
@@ -51,13 +52,28 @@ export function createLiveSource():LiveSource{
  const listeners=new Set<{window:WindowKey;chain:string;cb:(s:Snapshot)=>void}>();
 
  /* ---------- JSON-RPC ---------- */
+ const sleep=(ms:number)=>new Promise(r=>setTimeout(r,ms));
+ let endpointStrikes=0;
+ /** One request with retries. Free public endpoints intermittently answer "can't route" or 429; those are retried on the same endpoint with backoff, and the endpoint is rotated only after repeated failures. */
  async function post(body:unknown):Promise<unknown>{
-  const url=RPC_ENDPOINTS[rpcIndex];
-  try{
-   const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(20000)});
-   if(!res.ok)throw Error(`HTTP ${res.status}`);
-   const json=await res.json();failures=0;return json;
-  }catch(err){failures++;rpcIndex=(rpcIndex+1)%RPC_ENDPOINTS.length;throw err;}
+  let lastErr:unknown=null;
+  for(let attempt=0;attempt<RPC_ATTEMPTS;attempt++){
+   const url=RPC_ENDPOINTS[rpcIndex];
+   try{
+    const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(20000)});
+    const text=await res.text();
+    let json:unknown=null;try{json=JSON.parse(text);}catch{json=null;}
+    const transient=res.status===429||res.status>=500||(json!==null&&!Array.isArray(json)&&typeof (json as {error?:unknown}).error==='object'&&(json as {error:{code?:number}}).error?.code===12);
+    if(!res.ok&&!(json&&transient)){console.warn(`[ledger-atlas live] ${url} HTTP ${res.status} → ${text.slice(0,160)}`);throw Error(`HTTP ${res.status}`);}
+    if(transient){lastErr=Error(`transient ${res.status}`);endpointStrikes++;if(endpointStrikes>=RPC_STRIKES){rpcIndex=(rpcIndex+1)%RPC_ENDPOINTS.length;endpointStrikes=0;}await sleep(400*(attempt+1));continue;}
+    failures=0;endpointStrikes=0;return json;
+   }catch(err){
+    lastErr=err;endpointStrikes++;
+    if(endpointStrikes>=RPC_STRIKES){rpcIndex=(rpcIndex+1)%RPC_ENDPOINTS.length;endpointStrikes=0;}
+    await sleep(400*(attempt+1));
+   }
+  }
+  failures++;throw lastErr??Error('RPC failed');
  }
  async function rpc<T>(method:string,params:unknown[]):Promise<T>{
   const body=await post({jsonrpc:'2.0',id:1,method,params}) as {result?:T;error?:{message?:string}};
