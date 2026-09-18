@@ -2,15 +2,8 @@ import {z} from 'zod';
 import {CHAINS,UNKNOWN,type Chain,type Asset,type Transfer} from './model';
 import {classify} from './engine';
 import {bindings,database,persist,resolveAttribution,addressKey} from './store';
-export const CONTRACTS:Record<string,Record<string,Asset>>={
- Ethereum:{'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48':'USDC','0xdac17f958d2ee523a2206206994597c13d831ec7':'USDT'},
- Base:{'0x833589fcd6edb6e08f4c7c32d4f71b54bda02913':'USDC'},
- Arbitrum:{'0xaf88d065e77c8cc2239327c5edb3a432268e5831':'USDC'},
- Tron:{'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t':'USDT'},
- Solana:{'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v':'USDC','Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB':'USDT'}
-};
-// ERC20 Transfer(address,address,uint256) event signature.
-export const ERC20_TRANSFER_TOPIC='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+import {CONTRACTS,ERC20_TRANSFER_TOPIC,type EvmLog} from './evm';
+export {CONTRACTS,ERC20_TRANSFER_TOPIC,type EvmLog};
 export const intakeSchema=z.object({chain:z.enum(CHAINS),transactionId:z.string().min(10).max(150),eventIndex:z.string().min(1).max(50),blockNumber:z.number().int().nonnegative(),blockHash:z.string().min(1).max(150),blockTime:z.number().int().positive(),tokenContract:z.string().min(20).max(100),amountAtomic:z.string().regex(/^\d{1,40}$/),sender:z.string().min(10).max(100),receiver:z.string().min(10).max(100),finality:z.enum(['finalized','confirmed']),economicClass:z.enum(['payment','exchange flow','institutional settlement','treasury movement','DeFi','bridge','mint/burn','infrastructure','unknown']).default('unknown'),classificationEvidence:z.string().max(2000).default(''),price:z.object({usd:z.number().positive().finite().max(100),at:z.number().int().positive(),source:z.string().min(3).max(300)}).nullable().default(null)}).strict();
 export type Intake=z.infer<typeof intakeSchema>;
 export async function normalize(input:Intake):Promise<Transfer>{
@@ -25,7 +18,6 @@ export async function normalize(input:Intake):Promise<Transfer>{
  const tx:Transfer={id:`${t.chain}:${t.transactionId}:${t.eventIndex}`,chain:t.chain,transactionId:t.transactionId,eventIndex:t.eventIndex,blockNumber:t.blockNumber,blockHash:t.blockHash,blockTime:t.blockTime,finality:t.finality,asset,tokenContract:contract,amount,amountAtomic:t.amountAtomic,usdValue:price?Number(amount)*price.usd:null,usdPrice:price?.usd??null,priceTime:price?.at??null,usdPriceSource:price?.source??'Price unavailable for this block time',sender,receiver,senderEntity,receiverEntity,economicClass:knownPurpose?t.economicClass:'unknown',adjustment:'unresolved',classificationRationale:knownPurpose?t.classificationEvidence:'Economic purpose is unverified.',classificationVersion:'1.0',flags:{mintBurn:zero(sender)||zero(receiver),bridge:knownPurpose&&t.economicClass==='bridge',internalTransfer:false,crossBorderCandidate:false,bot:false},synthetic:false};
  return classify(tx);
 }
-export interface EvmLog {address:string;transactionHash:string;logIndex:string;blockNumber:string;blockHash:string;data:string;topics:string[];removed?:boolean;}
 export function decodeEvmLog(chain:Chain,l:EvmLog,blockTime:number):Intake|null{
  if(l.removed||l.topics.length!==3||l.topics[0].toLowerCase()!==ERC20_TRANSFER_TOPIC||!CONTRACTS[chain]?.[l.address.toLowerCase()])return null;
  if(!/^0x[0-9a-fA-F]{64}$/.test(l.data)||!/^0x[0-9a-fA-F]{64}$/.test(l.topics[1])||!/^0x[0-9a-fA-F]{64}$/.test(l.topics[2]))throw Error('Malformed ERC20 transfer log');
