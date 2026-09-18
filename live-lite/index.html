@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LEDGER ATLAS · LIVE</title>
+<meta name="description" content="A live, evidence-only view of Ethereum stablecoin transfers touching publicly documented exchange wallets. No backend, no history &mdash; a direct-from-browser feed.">
+<script src="https://cdn.jsdelivr.net/npm/d3-array@3/dist/d3-array.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo@3/dist/d3-geo.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<style>
+  :root{
+    --bg:#0a0e14; --bg2:#0e1420; --panel:#111826cc; --panel-border:#26314480;
+    --ink:#e7edf5; --ink-dim:#8b98ad; --ink-faint:#57647a;
+    --line:#1c2635;
+    --verified:#b2d4c6; --high:#d3bd80; --unknown:#3d4757;
+    --usdc:#81b9d1; --usdt:#9bc9a7;
+    --accent:#e7d9a8; --bad:#c98a7a; --good:#8fc79b;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#0a0e14; --bg2:#0e1420; } /* map is dark-only, like a night operations view */
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:'Segoe UI',ui-sans-serif,system-ui,-apple-system,Roboto,Arial,sans-serif;overflow:hidden;}
+  #app{position:relative;width:100vw;height:100vh;background:radial-gradient(ellipse at 50% 20%, var(--bg2), var(--bg) 70%);}
+  svg#map{position:absolute;inset:0;width:100%;height:100%;}
+  .graticule{fill:none;stroke:#1a2434;stroke-width:.5;}
+  .land{fill:#141c2b;stroke:#212d42;stroke-width:.6;}
+  .anchor-dot{fill:var(--ink-dim);opacity:.55;}
+  .anchor-dot.active{fill:var(--accent);opacity:1;}
+  .anchor-label{fill:var(--ink-faint);font-size:9px;letter-spacing:.04em;pointer-events:none;font-weight:600;}
+  .anchor-label.active{fill:var(--ink);}
+  .flow-arc{fill:none;stroke-linecap:round;opacity:.85;filter:drop-shadow(0 0 3px currentColor);}
+  .flow-particle{filter:drop-shadow(0 0 4px currentColor);}
+
+  header{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:14px;
+    padding:14px 18px;background:linear-gradient(180deg,rgba(8,11,17,.92),rgba(8,11,17,0));pointer-events:none;}
+  header *{pointer-events:auto;}
+  .brand{display:flex;align-items:baseline;gap:8px;font-weight:800;letter-spacing:.06em;font-size:15px;}
+  .brand b{color:var(--accent);}
+  .brand small{font-weight:600;color:var(--ink-dim);letter-spacing:.12em;font-size:9px;margin-left:4px;}
+  .badge{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--panel-border);
+    background:var(--panel);backdrop-filter:blur(8px);font-size:11px;font-weight:700;letter-spacing:.06em;}
+  .badge i{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);}
+  .badge.live i{background:var(--good);box-shadow:0 0 8px var(--good);animation:pulse 1.6s infinite;}
+  .badge.reconnecting i{background:var(--high);box-shadow:0 0 8px var(--high);animation:pulse .9s infinite;}
+  .badge.connecting i{background:var(--ink-dim);animation:pulse 1.2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .spacer{flex:1;}
+  .window-toggle{display:flex;border:1px solid var(--panel-border);border-radius:10px;overflow:hidden;background:var(--panel);backdrop-filter:blur(8px);}
+  .window-toggle button{background:none;border:none;color:var(--ink-dim);font-size:11px;font-weight:700;letter-spacing:.05em;
+    padding:7px 12px;cursor:pointer;font-family:inherit;}
+  .window-toggle button.active{background:#1d2636;color:var(--ink);}
+
+  .stat-panel{position:absolute;top:64px;left:18px;z-index:5;width:272px;background:var(--panel);border:1px solid var(--panel-border);
+    border-radius:var(--radius);backdrop-filter:blur(10px);padding:16px;font-size:12px;}
+  .stat-panel h3{margin:0 0 10px;font-size:10px;letter-spacing:.1em;color:var(--ink-dim);text-transform:uppercase;font-weight:700;}
+  .stat-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);}
+  .stat-row:first-of-type{border-top:none;}
+  .stat-row b{font-size:14px;font-weight:700;}
+  .stat-row span{color:var(--ink-dim);}
+  .stat-note{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--ink-faint);font-size:10.5px;line-height:1.5;}
+
+  .feed-panel{position:absolute;top:64px;right:18px;z-index:5;width:298px;max-height:calc(100vh - 150px);
+    background:var(--panel);border:1px solid var(--panel-border);border-radius:var(--radius);backdrop-filter:blur(10px);
+    display:flex;flex-direction:column;overflow:hidden;}
+  .feed-panel h3{margin:0;padding:14px 16px 10px;font-size:10px;letter-spacing:.1em;color:var(--ink-dim);text-transform:uppercase;font-weight:700;
+    border-bottom:1px solid var(--line);}
+  .feed-list{overflow-y:auto;padding:6px 0;}
+  .feed-item{display:flex;flex-direction:column;gap:2px;padding:8px 16px;border-bottom:1px solid var(--line);font-size:11.5px;animation:slidein .3s ease-out;}
+  @keyframes slidein{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+  .feed-item .route{font-weight:700;}
+  .feed-item .route i{color:var(--ink-faint);font-style:normal;padding:0 3px;}
+  .feed-item .meta{color:var(--ink-dim);font-size:10px;}
+  .feed-empty{padding:22px 16px;color:var(--ink-faint);font-size:11.5px;line-height:1.6;}
+
+  footer{position:absolute;bottom:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:10px;
+    padding:10px 18px;background:linear-gradient(0deg,rgba(8,11,17,.94),rgba(8,11,17,0));font-size:10.5px;color:var(--ink-faint);}
+  footer button{background:none;border:1px solid var(--panel-border);color:var(--ink-dim);border-radius:8px;padding:5px 10px;
+    font-size:10.5px;cursor:pointer;font-family:inherit;}
+  footer .grow{flex:1;}
+
+  .method-overlay{position:absolute;inset:0;z-index:20;background:rgba(6,8,13,.88);backdrop-filter:blur(4px);
+    display:flex;align-items:center;justify-content:center;padding:24px;}
+  .method-card{max-width:560px;max-height:80vh;overflow-y:auto;background:#101725;border:1px solid var(--panel-border);
+    border-radius:16px;padding:26px 28px;font-size:13px;line-height:1.65;color:var(--ink-dim);}
+  .method-card h2{color:var(--ink);margin:0 0 14px;font-size:17px;}
+  .method-card h4{color:var(--ink);margin:16px 0 6px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;}
+  .method-card a{color:var(--accent);}
+  .method-card button{margin-top:18px;background:var(--accent);color:#1a1508;border:none;border-radius:8px;
+    padding:9px 16px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;}
+  .hidden{display:none !important;}
+
+  .cold-start{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;text-align:center;
+    color:var(--ink-dim);font-size:12.5px;pointer-events:none;}
+  .cold-start b{display:block;color:var(--ink);font-size:14px;margin-bottom:4px;}
+
+  @media (max-width:760px){
+    .stat-panel{width:auto;left:12px;right:12px;top:58px;}
+    .feed-panel{display:none;}
+    header{padding:10px 12px;flex-wrap:wrap;}
+    .brand small{display:none;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <svg id="map"></svg>
+  <div class="cold-start" id="coldStart"><b>CONNECTING TO ETHEREUM</b>Waiting for the first blocks…</div>
+
+  <header>
+    <div class="brand">LEDGER <b>ATLAS</b><small>LIVE · LITE</small></div>
+    <div class="badge connecting" id="statusBadge"><i></i><span id="statusText">CONNECTING</span></div>
+    <div class="spacer"></div>
+    <div class="window-toggle">
+      <button data-window="300000" class="active">5M</button>
+      <button data-window="3600000">1H</button>
+    </div>
+  </header>
+
+  <div class="stat-panel">
+    <h3>Ethereum · Observed this window</h3>
+    <div class="stat-row"><span>Stablecoin transfers seen</span><b id="statCount">0</b></div>
+    <div class="stat-row"><span>Total value observed</span><b id="statObserved">$0</b></div>
+    <div class="stat-row"><span>Evidenced (mapped)</span><b id="statMapped">$0</b></div>
+    <div class="stat-row"><span>No public jurisdiction evidence</span><b id="statUnresolved">$0</b></div>
+    <div class="stat-note">Only transfers touching a small set of publicly documented exchange wallets are drawn as routes. Everything else is real chain activity with no defensible jurisdiction &mdash; shown here as unresolved, never guessed.</div>
+  </div>
+
+  <div class="feed-panel">
+    <h3>Evidenced transfers · live</h3>
+    <div class="feed-list" id="feedList"><div class="feed-empty">Nothing evidenced yet in this window. Real unattributed transfers are arriving in the background &mdash; see the counter at left.</div></div>
+  </div>
+
+  <footer>
+    <span id="footerClock">&mdash;</span>
+    <span>·</span>
+    <span id="footerBlock">block &mdash;</span>
+    <div class="grow"></div>
+    <button id="methodBtn">What is this?</button>
+  </footer>
+
+  <div class="method-overlay hidden" id="methodOverlay">
+    <div class="method-card">
+      <h2>What you're looking at</h2>
+      <p>This is a lightweight, backend-free companion to <b>Ledger Atlas</b>. It reads real Ethereum mainnet USDC and USDT transfers directly from your browser, using free public endpoints, and draws a route only when both ends of a transfer touch a specific wallet this project has publicly documented evidence for.</p>
+      <h4>What's genuinely live</h4>
+      <p>Transfer counts, totals and evidenced routes are real, current chain activity, polled roughly every 20 seconds from a public Ethereum RPC endpoint. Prices come from CoinGecko's public API.</p>
+      <h4>What this page deliberately does not do</h4>
+      <p>It has no server and no database, so it has no memory beyond your current browser tab: only a 5-minute or 1-hour rolling window is available, there is no 24-hour or 7-day view, and there is no historical baseline or anomaly detection. Refreshing the page starts over. The full Ledger Atlas map (with longer windows and trend history) needs a small persistent backend &mdash; this page is the free, no-backend preview of it.</p>
+      <h4>Why most transfers show as unresolved</h4>
+      <p>A wallet address has no inherent physical location. This page only assigns a jurisdiction when it has a specific, sourced, public reason to &mdash; a small hand-curated list of major exchange wallets, each with a citation. Every other transfer is real value moving on Ethereum with genuinely no public evidence of who controls either end, so it is intentionally left unresolved rather than guessed.</p>
+      <h4>Sources</h4>
+      <p>Ethereum data: a free public JSON-RPC endpoint (no API key). Prices: <a href="https://www.coingecko.com/en/api" target="_blank" rel="noreferrer">CoinGecko's public API</a>. Geography: Natural Earth via world-atlas (public domain). Wallet evidence: see <code>known-entities.js</code> shipped alongside this page, which lists a source URL for every entry.</p>
+      <button id="methodClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="known-entities.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ---------- Configuration ---------- */
+var RPC_ENDPOINTS = ["https://eth.drpc.org", "https://1rpc.io/eth"];
+var PRICE_URL = "https://api.coingecko.com/api/v3/simple/price?ids=tether,usd-coin&vs_currencies=usd&precision=6";
+var WORLD_ATLAS_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+var POLL_INTERVAL_MS = 20000;
+var PRICE_INTERVAL_MS = 120000;
+var MAX_BLOCK_RANGE = 6;          // keep each eth_getLogs call small and polite to free providers
+var BUFFER_RETENTION_MS = 3660000; // keep a little over 1 hour so the 1H window is always full
+var RENDER_INTERVAL_MS = 4000;
+
+// USDC and USDT on Ethereum mainnet. Both are 6-decimal tokens. Source: Circle's and Tether's own
+// published contract registries (see docs/OPERATIONS.md in the main Ledger Atlas project).
+var CONTRACTS = {
+  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": "USDC",
+  "0xdac17f958d2ee523a2206206994597c13d831ec7": "USDT"
+};
+var TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+
+// Jurisdiction anchor points. Same reference points as the main Ledger Atlas app.
+var COUNTRIES = {
+  US:{name:"United States",anchor:[-98,38]}, CA:{name:"Canada",anchor:[-105,56]}, MX:{name:"Mexico",anchor:[-102,24]},
+  BR:{name:"Brazil",anchor:[-52,-12]}, AR:{name:"Argentina",anchor:[-64,-35]}, CO:{name:"Colombia",anchor:[-74,4]},
+  GB:{name:"United Kingdom",anchor:[-2,54]}, DE:{name:"Germany",anchor:[10,51]}, FR:{name:"France",anchor:[2,47]},
+  CH:{name:"Switzerland",anchor:[8.1,46.8]}, AE:{name:"United Arab Emirates",anchor:[54,24]}, TR:{name:"Türkiye",anchor:[35,39]},
+  NG:{name:"Nigeria",anchor:[8,9]}, ZA:{name:"South Africa",anchor:[25,-29]}, KE:{name:"Kenya",anchor:[38,0]},
+  IN:{name:"India",anchor:[79,23]}, SG:{name:"Singapore",anchor:[103.82,1.35]}, HK:{name:"Hong Kong",anchor:[114.17,22.32]},
+  JP:{name:"Japan",anchor:[138,36]}, KR:{name:"South Korea",anchor:[128,36]}, PH:{name:"Philippines",anchor:[122,12]},
+  ID:{name:"Indonesia",anchor:[113,-1]}, AU:{name:"Australia",anchor:[134,-25]}, MT:{name:"Malta",anchor:[14.5,35.9]},
+  SC:{name:"Seychelles",anchor:[55.5,-4.6]}, KY:{name:"Cayman Islands",anchor:[-81.2,19.3]}, EE:{name:"Estonia",anchor:[25.0,58.6]},
+  VG:{name:"British Virgin Islands",anchor:[-64.6,18.4]}
+};
+
+// KNOWN_ENTITIES is defined in known-entities.js, loaded above, so it's easy to update without
+// touching this file. Shape: { "<lowercased 0x address>": { entity, category, jurisdiction (ISO-2),
+// confidence: 'VERIFIED'|'HIGH', source, sourceUrl, evidenceNote } }
+var ENTITIES = (typeof KNOWN_ENTITIES !== "undefined") ? KNOWN_ENTITIES : {};
+if (Object.keys(ENTITIES).length === 0) {
+  console.warn("[Ledger Atlas Live] KNOWN_ENTITIES is empty — no corridor will ever be evidenced until known-entities.js is filled in.");
+}
+
+/* ---------- State ---------- */
+var rpcIndex = 0, rpcFailures = 0;
+var lastBlockProcessed = null;
+var prices = { USDT: null, USDC: null };
+var buffer = [];               // classified transfer records
+var currentWindowMs = 300000;
+var connectionState = "CONNECTING";
+var seenTx = new Set();
+
+/* ---------- RPC + price fetching ---------- */
+function rpcCall(method, params) {
+  var url = RPC_ENDPOINTS[rpcIndex];
+  return fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: method, params: params })
+  }).then(function(res){
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    return res.json();
+  }).then(function(body){
+    if (body.error) throw new Error(body.error.message || "RPC error");
+    return body.result;
+  }).catch(function(err){
+    rpcFailures++;
+    rpcIndex = (rpcIndex + 1) % RPC_ENDPOINTS.length;
+    throw err;
+  });
+}
+
+function fetchPrices() {
+  fetch(PRICE_URL).then(function(r){ return r.json(); }).then(function(j){
+    if (j.tether && typeof j.tether.usd === "number") prices.USDT = j.tether.usd;
+    if (j["usd-coin"] && typeof j["usd-coin"].usd === "number") prices.USDC = j["usd-coin"].usd;
+  }).catch(function(){ /* keep the last known price; never assume a $1 peg */ });
+}
+
+/* ---------- Decoding + classification ---------- */
+function decodeLog(log) {
+  if (log.removed) return null;
+  if (!log.topics || log.topics.length !== 3) return null;
+  if (log.topics[0].toLowerCase() !== TRANSFER_TOPIC) return null;
+  var asset = CONTRACTS[log.address.toLowerCase()];
+  if (!asset) return null;
+  var sender = "0x" + log.topics[1].slice(-40).toLowerCase();
+  var receiver = "0x" + log.topics[2].slice(-40).toLowerCase();
+  var amountAtomic;
+  try { amountAtomic = BigInt(log.data); } catch (e) { return null; }
+  var amount = Number(amountAtomic) / 1e6; // both USDC and USDT use 6 decimals
+  return { txHash: log.transactionHash, asset: asset, sender: sender, receiver: receiver, amount: amount };
+}
+
+function classify(sender, receiver) {
+  var a = ENTITIES[sender] || null, b = ENTITIES[receiver] || null;
+  var mapped = !!(a && b && a.jurisdiction && b.jurisdiction && a.jurisdiction !== b.jurisdiction
+    && (a.confidence === "VERIFIED" || a.confidence === "HIGH")
+    && (b.confidence === "VERIFIED" || b.confidence === "HIGH"));
+  return { origin: a, destination: b, mapped: mapped };
+}
+
+/* ---------- Polling loop ---------- */
+function poll() {
+  var tipP = rpcCall("eth_blockNumber", []);
+  tipP.then(function(tipHex){
+    var tip = parseInt(tipHex, 16);
+    if (lastBlockProcessed === null) lastBlockProcessed = Math.max(0, tip - 2);
+    if (tip <= lastBlockProcessed) { setConnectionState("LIVE"); return; }
+    var from = lastBlockProcessed + 1;
+    var to = Math.min(tip, from + MAX_BLOCK_RANGE - 1);
+    var fromHex = "0x" + from.toString(16), toHex = "0x" + to.toString(16);
+    return rpcCall("eth_getLogs", [{ fromBlock: fromHex, toBlock: toHex, address: Object.keys(CONTRACTS), topics: [TRANSFER_TOPIC] }])
+      .then(function(logs){ return rpcCall("eth_getBlockByNumber", [toHex, false]).then(function(block){ return {logs: logs, block: block}; }); })
+      .then(function(res){
+        var now = res.block && res.block.timestamp ? parseInt(res.block.timestamp, 16) * 1000 : Date.now();
+        for (var i = 0; i < res.logs.length; i++) {
+          var d = decodeLog(res.logs[i]);
+          if (!d || seenTx.has(d.txHash + ":" + res.logs[i].logIndex)) continue;
+          seenTx.add(d.txHash + ":" + res.logs[i].logIndex);
+          var price = prices[d.asset];
+          var usdValue = (typeof price === "number") ? d.amount * price : null;
+          var c = classify(d.sender, d.receiver);
+          buffer.push({
+            time: now, txHash: d.txHash, asset: d.asset, amount: d.amount, usdValue: usdValue,
+            origin: c.origin, destination: c.destination, mapped: c.mapped
+          });
+        }
+        lastBlockProcessed = to;
+        pruneSeen();
+        setConnectionState(to === tip ? "LIVE" : "CATCHING UP");
+        document.getElementById("footerBlock").textContent = "block " + tip.toLocaleString();
+      });
+  }).catch(function(){
+    setConnectionState(rpcFailures > 3 ? "RECONNECTING" : "CONNECTING");
+  });
+}
+
+function pruneSeen(){
+  var cutoff = Date.now() - BUFFER_RETENTION_MS;
+  while (buffer.length && buffer[0].time < cutoff) buffer.shift();
+  if (seenTx.size > 20000) seenTx.clear(); // bounded memory; safe since old buffer entries are gone anyway
+}
+
+function setConnectionState(s){
+  connectionState = s;
+  var badge = document.getElementById("statusBadge"), text = document.getElementById("statusText");
+  badge.className = "badge " + (s === "LIVE" ? "live" : s === "RECONNECTING" ? "reconnecting" : "connecting");
+  text.textContent = s;
+  var cold = document.getElementById("coldStart");
+  if (s === "LIVE" || s === "CATCHING UP") cold.classList.add("hidden"); else cold.classList.remove("hidden");
+}
+
+/* ---------- Map rendering ---------- */
+var svg = document.getElementById("map");
+var projection = null, pathGen = null, worldReady = false;
+var cachedTopo = null;
+
+function setupMap(topo){
+  cachedTopo = topo;
+  svg.innerHTML = ""; // safe to call repeatedly (e.g. on resize) — rebuild from scratch each time
+  var w = window.innerWidth, h = window.innerHeight;
+  svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+  svg.setAttribute("preserveAspectRatio", "xMidYMid slice");
+  projection = d3.geoEqualEarth().fitSize([w, h * 0.94], { type: "Sphere" }).translate([w/2, h*0.53]).scale(w/6.1);
+  pathGen = d3.geoPath(projection);
+  var land = topojson.feature(topo, topo.objects.countries);
+  var graticule = d3.geoGraticule10();
+
+  var gGrat = document.createElementNS("http://www.w3.org/2000/svg","path");
+  gGrat.setAttribute("class","graticule"); gGrat.setAttribute("d", pathGen(graticule));
+  svg.appendChild(gGrat);
+
+  var gLand = document.createElementNS("http://www.w3.org/2000/svg","g");
+  land.features.forEach(function(f){
+    var p = document.createElementNS("http://www.w3.org/2000/svg","path");
+    p.setAttribute("class","land"); p.setAttribute("d", pathGen(f) || "");
+    gLand.appendChild(p);
+  });
+  svg.appendChild(gLand);
+
+  var gAnchors = document.createElementNS("http://www.w3.org/2000/svg","g");
+  gAnchors.setAttribute("id","anchors");
+  Object.keys(COUNTRIES).forEach(function(code){
+    var pt = projection(COUNTRIES[code].anchor);
+    if (!pt) return;
+    var dot = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    dot.setAttribute("class","anchor-dot"); dot.setAttribute("id","anchor-" + code);
+    dot.setAttribute("cx", pt[0]); dot.setAttribute("cy", pt[1]); dot.setAttribute("r", 2.4);
+    gAnchors.appendChild(dot);
+    var label = document.createElementNS("http://www.w3.org/2000/svg","text");
+    label.setAttribute("class","anchor-label"); label.setAttribute("id","label-" + code);
+    label.setAttribute("x", pt[0] + 6); label.setAttribute("y", pt[1] + 3);
+    label.textContent = code;
+    gAnchors.appendChild(label);
+  });
+  svg.appendChild(gAnchors);
+
+  var gArcs = document.createElementNS("http://www.w3.org/2000/svg","g");
+  gArcs.setAttribute("id","arcs");
+  svg.appendChild(gArcs);
+
+  worldReady = true;
+}
+
+function arcPath(p0, p1){
+  var mx = (p0[0]+p1[0])/2, my = (p0[1]+p1[1])/2;
+  var dx = p1[0]-p0[0], dy = p1[1]-p0[1];
+  var dist = Math.sqrt(dx*dx+dy*dy);
+  var bend = Math.min(90, dist * 0.22);
+  var nx = -dy/(dist||1), ny = dx/(dist||1);
+  var cx = mx + nx*bend, cy = my + ny*bend;
+  return "M" + p0[0] + "," + p0[1] + " Q" + cx + "," + cy + " " + p1[0] + "," + p1[1];
+}
+
+var ASSET_COLORS = { USDC: "#81b9d1", USDT: "#9bc9a7" };
+
+function renderArcs(corridors){
+  var g = document.getElementById("arcs");
+  if (!g) return;
+  g.innerHTML = "";
+  var active = {};
+  var maxVal = 1; corridors.forEach(function(c){ if (c.value > maxVal) maxVal = c.value; });
+  corridors.forEach(function(c){
+    var o = COUNTRIES[c.origin], d = COUNTRIES[c.destination];
+    if (!o || !d) return;
+    var p0 = projection(o.anchor), p1 = projection(d.anchor);
+    if (!p0 || !p1) return;
+    active[c.origin] = true; active[c.destination] = true;
+    var width = 1 + Math.log10(1 + c.value) * 1.4;
+    var color = ASSET_COLORS[c.dominantAsset] || "#d3bd80";
+    var path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("class","flow-arc");
+    path.setAttribute("d", arcPath(p0,p1));
+    path.setAttribute("stroke", color);
+    path.setAttribute("stroke-width", width.toFixed(2));
+    path.setAttribute("style","color:" + color);
+    var pid = "path-" + c.origin + "-" + c.destination;
+    path.setAttribute("id", pid);
+    g.appendChild(path);
+
+    var particle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    particle.setAttribute("r", Math.min(4, 1.6 + width*0.3));
+    particle.setAttribute("fill", color);
+    particle.setAttribute("class","flow-particle");
+    particle.setAttribute("style","color:" + color);
+    var anim = document.createElementNS("http://www.w3.org/2000/svg","animateMotion");
+    anim.setAttribute("dur", (3.2 - Math.min(1.6, width*0.15)).toFixed(2) + "s");
+    anim.setAttribute("repeatCount","indefinite");
+    var mpath = document.createElementNS("http://www.w3.org/2000/svg","mpath");
+    mpath.setAttributeNS("http://www.w3.org/1999/xlink","href","#"+pid);
+    anim.appendChild(mpath);
+    particle.appendChild(anim);
+    g.appendChild(particle);
+  });
+  Object.keys(COUNTRIES).forEach(function(code){
+    var dot = document.getElementById("anchor-"+code), label = document.getElementById("label-"+code);
+    if (!dot || !label) return;
+    dot.classList.toggle("active", !!active[code]);
+    label.classList.toggle("active", !!active[code]);
+  });
+}
+
+/* ---------- Aggregation + stat panel ---------- */
+function money(n){
+  if (n === null || n === undefined) return "$0";
+  var a = Math.abs(n), d = a >= 1e9 ? 1e9 : a >= 1e6 ? 1e6 : a >= 1e3 ? 1e3 : 1;
+  var suffix = d === 1e9 ? "B" : d === 1e6 ? "M" : d === 1e3 ? "K" : "";
+  return "$" + (a/d).toFixed(d === 1 ? 0 : 2) + suffix;
+}
+
+function render(){
+  var now = Date.now(), start = now - currentWindowMs;
+  var inWindow = buffer.filter(function(t){ return t.time >= start; });
+  var observed = 0, mappedTotal = 0, unresolved = 0, count = inWindow.length;
+  var corridorMap = {};
+  var feedItems = [];
+  for (var i = inWindow.length - 1; i >= 0; i--) {
+    var t = inWindow[i];
+    if (t.usdValue === null) continue;
+    observed += t.usdValue;
+    if (t.mapped) {
+      mappedTotal += t.usdValue;
+      var key = t.origin.jurisdiction + "-" + t.destination.jurisdiction;
+      if (!corridorMap[key]) corridorMap[key] = { origin: t.origin.jurisdiction, destination: t.destination.jurisdiction, value: 0, count: 0, assets: {} };
+      corridorMap[key].value += t.usdValue; corridorMap[key].count++;
+      corridorMap[key].assets[t.asset] = (corridorMap[key].assets[t.asset] || 0) + t.usdValue;
+      if (feedItems.length < 24) feedItems.push(t);
+    } else {
+      unresolved += t.usdValue;
+    }
+  }
+  var corridors = Object.keys(corridorMap).map(function(k){
+    var c = corridorMap[k];
+    var dominant = Object.keys(c.assets).sort(function(a,b){ return c.assets[b]-c.assets[a]; })[0];
+    c.dominantAsset = dominant;
+    return c;
+  }).sort(function(a,b){ return b.value - a.value; }).slice(0, 24);
+
+  document.getElementById("statCount").textContent = count.toLocaleString();
+  document.getElementById("statObserved").textContent = money(observed);
+  document.getElementById("statMapped").textContent = money(mappedTotal);
+  document.getElementById("statUnresolved").textContent = money(unresolved);
+  document.getElementById("footerClock").textContent = new Date().toUTCString().slice(17,25) + " UTC";
+
+  if (worldReady) renderArcs(corridors);
+
+  var feedList = document.getElementById("feedList");
+  if (!feedItems.length) {
+    feedList.innerHTML = '<div class="feed-empty">Nothing evidenced yet in this window. Real unattributed transfers are arriving in the background &mdash; see the counter at left.</div>';
+  } else {
+    feedList.innerHTML = feedItems.map(function(t){
+      var ago = Math.max(0, Math.round((Date.now()-t.time)/1000));
+      return '<div class="feed-item"><span class="route">' + t.origin.entity + ' <i>&rarr;</i> ' + t.destination.entity +
+        '</span><span class="meta">' + money(t.usdValue) + ' ' + t.asset + ' · ' + t.origin.jurisdiction + '&rarr;' + t.destination.jurisdiction +
+        ' · ' + ago + 's ago</span></div>';
+    }).join("");
+  }
+}
+
+/* ---------- Wiring ---------- */
+document.querySelectorAll(".window-toggle button").forEach(function(btn){
+  btn.addEventListener("click", function(){
+    document.querySelectorAll(".window-toggle button").forEach(function(b){ b.classList.remove("active"); });
+    btn.classList.add("active");
+    currentWindowMs = parseInt(btn.getAttribute("data-window"), 10);
+    render();
+  });
+});
+document.getElementById("methodBtn").addEventListener("click", function(){ document.getElementById("methodOverlay").classList.remove("hidden"); });
+document.getElementById("methodClose").addEventListener("click", function(){ document.getElementById("methodOverlay").classList.add("hidden"); });
+
+fetch(WORLD_ATLAS_URL).then(function(r){ return r.json(); }).then(function(topo){
+  setupMap(topo);
+  render();
+}).catch(function(){
+  document.getElementById("coldStart").innerHTML = "<b>MAP GEOMETRY UNAVAILABLE</b>Could not load world geography. Data may still be flowing below.";
+});
+
+fetchPrices();
+poll();
+setInterval(fetchPrices, PRICE_INTERVAL_MS);
+setInterval(poll, POLL_INTERVAL_MS);
+setInterval(render, RENDER_INTERVAL_MS);
+var resizeTimer = null;
+window.addEventListener("resize", function(){
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function(){
+    if (cachedTopo) { setupMap(cachedTopo); render(); }
+  }, 250);
+});
+
+})();
+</script>
+</body>
+</html>
