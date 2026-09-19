@@ -14,6 +14,8 @@ Ranking uses log USD value, recency, confidence and anomaly, with 15% incumbent 
 
 Jurisdiction activity glow (client build): a jurisdiction anchor is lit in proportion to adjusted value touching at least one admissible endpoint there (the same known-endpoint denominator used for country coverage). A glow is one-sided evidenced activity and never draws or implies a route; routes still require two admissible endpoints in different jurisdictions.
 
+Inferred deposit addresses (client build): exchange customers deposit to per-customer addresses that the exchange sweeps into a labelled hot wallet. Within the retained buffer, an unlabelled address whose only outgoing transfers go to one registry entity, after receiving from outside that entity, and which forwarded at least 80% of what it received, is treated as that entity's deposit address. Such evidence is marked INFERRED in its category, source and note, cites the sweep transaction, carries HIGH confidence at the minimum admissible score, and is never persisted. It is inference from on-chain behaviour, not a published label; inspect any route to see which endpoints rest on it.
+
 Baselines use preceding same-duration windows; at least four complete windows are required. Ratio = current / mean; z-score uses sample standard deviation. Production does not claim baseline availability from incomplete capture. Unusual activity is not evidence of illegality.
 
 Demo uses a fixed seed and clock, the same Transfer and Corridor contracts, fictional entities, nominal synthetic USD prices and synthetic evidence. It is reproducible and is never labeled LIVE. No demo transaction links to a real block explorer.

@@ -50,13 +50,25 @@ confidence, and the regulator/court/company document that supports it) and
 `lib/atlas/known-addresses.ts` (one line per address: the exact Etherscan public name tag and the date
 it was read). `node scripts/verify-registry.cjs` checks every entry (see the main README).
 
-As of 2026-09-18 the registry holds **103 addresses across 29 entities and 17 jurisdictions**:
-Binance (Cayman Islands); Coinbase, Kraken, Gemini (US); OKX (Seychelles); Bitfinex (BVI); Upbit,
-Bithumb (South Korea); bitFlyer, Coincheck (Japan); CoinDCX (India); CoinSpot, CoinJar, Digital Surge,
-BTC Markets (Australia); Coinsquare/Bitbuy, Shakepay, Newton, Wealthsimple (Canada); Wintermute (UK);
-Bitvavo (Netherlands); Bitcoin Suisse, Copper (Switzerland); Paribu, BtcTurk (Türkiye); Coinmetro
+As of 2026-09-19 the registry holds **251 addresses across 39 entities and 17 jurisdictions**:
+Binance (Cayman Islands); Coinbase, Kraken, Gemini, Robinhood Crypto, Paxos/itBit, BitGo, Cumberland,
+Jump Trading, Galaxy Digital, FalconX (US); OKX, KuCoin, Bitget, MEXC (Seychelles); Bitfinex (BVI);
+Upbit, Bithumb (South Korea); bitFlyer, Coincheck (Japan); CoinDCX (India); CoinSpot, CoinJar, Digital
+Surge, BTC Markets (Australia); Coinsquare/Bitbuy, Shakepay, Newton, Wealthsimple (Canada); Wintermute
+(UK); Bitvavo (Netherlands); Bitcoin Suisse, Copper (Switzerland); Paribu, BtcTurk (Türkiye); Coinmetro
 (Estonia); Bitso (Gibraltar-licensed operator of the Mexican brand); Mercado Bitcoin (Brazil); VALR
-(South Africa). Each address was checked against its own Etherscan page; each entity's jurisdiction is
+(South Africa). The source list is `scripts/registry/addresses.txt`; regenerate the TypeScript with
+`node scripts/registry/gen-addresses.mjs scripts/registry/addresses.txt lib/atlas/known-addresses.ts`.
+
+**Inferred deposit addresses.** Even with hundreds of labelled wallets, exchange customers almost never
+send from one exchange's hot wallet to another's: they withdraw to a per-customer *deposit address*
+that the receiving exchange sweeps into its hot wallet minutes later. The live client watches for that
+sweep inside the buffered hour: an unlabelled address whose only outgoing transfers go to one registry
+entity, after receiving from outside it, and which forwarded at least 80% of what it received, is
+treated as that entity's deposit address for the rest of the session. Such evidence is marked
+**INFERRED** in its category, source and note, cites the sweep transaction, and is never persisted.
+This is what turns a Coinbase-to-Binance withdrawal into a US to Cayman Islands route. Open any route's
+"Why is this mapped here?" panel to see which endpoints rest on inference rather than a published label. Each address was checked against its own Etherscan page; each entity's jurisdiction is
 tied to a regulator register, court filing or the company's own legal page, with HIGH rather than
 VERIFIED wherever a brand runs several separately regulated affiliates. The entity file's header lists
 the rules and the exchanges deliberately left out because their controlling entity is disputed in

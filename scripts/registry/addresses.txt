@@ -150,3 +150,103 @@ bithumb|0x3052cd6bf951449a984fe4b5a38b46aef9455c8e|Bithumb 2|
 bithumb|0x558553d54183a8542f7832742e7b4ba9c33aa1e6|Bithumb 12|Former cold wallet, now near-empty.
 bithumb|0x88d34944cf554e9cccf4a24292d891f620e9c94f|Bithumb 1|Dormant since June 2020.
 bithumb|0x2140efd7ba31169c69dfff6cdc66c542f0211825|Bithumb 3|Dormant since September 2019.
+kucoin|0xd6216fc19db775df9774a6e33526131da7d19a2c|KuCoin 6|
+kucoin|0xf16e9b0d03470827a95cdfd0cb8a8a3b46969b91|KuCoin 9|Very active.
+kucoin|0xcad621da75a66c7a8f4ff86d30a2bf981bfc8fdd|KuCoin 10|
+kucoin|0x738cf6903e6c4e699d1c2dd9ab8b67fcdb3121ea|KuCoin 12|
+kucoin|0x41e29c02713929f800419abe5770faa8a5b4dadc|KuCoin 16|Very active.
+kucoin|0x45300136662dd4e58fc0df61e6290dffd992b785|KuCoin 17|Very active.
+kucoin|0x83c41363cbee0081dab75cb841fa24f3db46627e|KuCoin 18|Very active.
+kucoin|0x7491f26a0fcb459111b3a1db2fbfc4035d096933|KuCoin 19|Very active.
+kucoin|0x58edf78281334335effa23101bbe3371b6a36a51|KuCoin 20|Very active.
+kucoin|0xf97deb1c0bb4536ff16617d29e5f4b340fe231df|KuCoin 21|Very active.
+kucoin|0xa152f8bb749c55e9943a3a0a3111d18ee2b3f94e|KuCoin 22|Very active.
+kucoin|0xf8da05c625a6e601281110cba52b156e714e1dc2|KuCoin 37|Etherscan-applied tag sourced from a public compilation.
+kucoin|0xcd5f3c15120a1021155174719ec5fcf2c75adf5b|KuCoin: Hot Wallet 1|
+kucoin|0x53f78a071d04224b8e254e243fffc6d9f2f3fa23|KuCoin: Hot Wallet 2|
+kucoin|0x2933782b5a8d72f2754103d1489614f29bfa4625|KuCoin: Wallet|
+kucoin|0x2b5634c42055806a59e9107ed44d43c426e58258|KuCoin 1|
+kucoin|0x689c56aef474df92d44a1b70850f808488f9769c|KuCoin 2|
+kucoin|0xa1d8d972560c2f8144af871db508f0b0b10a3fbf|KuCoin 3|
+kucoin|0x4ad64983349c49defe8d7a4686202d24b25d0ce8|KuCoin 4|
+kucoin|0x1692e170361cefd1eb7240ec13d048fd9af6d667|KuCoin 5|
+kucoin|0xe59cd29be3be4461d79c0881d238cbe87d64595a|KuCoin 7|
+kucoin|0x899b5d52671830f567bf43a14684eb14e1f945fe|KuCoin 8|
+kucoin|0xec30d02f10353f8efc9601371f56e808751f396f|KuCoin 11|
+kucoin|0xd89350284c7732163765b23338f2ff27449e0bf5|KuCoin 13|
+kucoin|0x88bd4d3e2997371bceefe8d9386c6b5b4de60346|KuCoin 14|
+bitget|0xe80623a9d41f2f05780d9cd9cea0f797fd53062a|Bitget 1|
+bitget|0x51971c86b04516062c1e708cdc048cb04fbe959f|Bitget 2|Very active.
+bitget|0x97b9d2102a9a65a26e1ee82d59e42d1b73b68689|Bitget 3|Very active.
+bitget|0x0639556f03714a74a5feeaf5736a4a64ff70d206|Bitget 4|Very active.
+bitget|0x5bdf85216ec1e38d6458c870992a69e38e03f7ef|Bitget 5|Very active.
+bitget|0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23|Bitget 6|Very active.
+bitget|0xe6a421f24d330967a3af2f4cdb5c34067e7e4d75|Bitget: Hot Wallet 1|
+bitget|0xe2b406ec9227143a8830229eeb3eb6e24b5c60be|Bitget: Hot Wallet 2|Etherscan-applied tag sourced from a public compilation.
+bitget|0xf646d9b7d20babe204a89235774248ba18086dae|Bitget: Hot Wallet 3|Etherscan-applied tag sourced from a public compilation.
+bitget|0x149ded7438caf5e5bfdc507a6c25436214d445e1|Bitget: Hot Wallet 4|Etherscan-applied tag sourced from a public compilation.
+bitget|0x1ae3739e17d8500f2b2d80086ed092596a116e0b|Bitget 7|Etherscan-applied tag sourced from a public compilation.
+bitget|0x2bf7494111a59bd51f731dcd4873d7d71f8feeec|Bitget 8|Etherscan-applied tag sourced from a public compilation.
+bitget|0x31a36512d4903635b7dd6828a934c3915a5809be|Bitget 9|Etherscan-applied tag sourced from a public compilation.
+bitget|0x461f6dcdd5be42d41fe71611154279d87c06b406|Bitget 10|Etherscan-applied tag sourced from a public compilation.
+bitget|0x9e00816f61a709fa124d36664cd7b6f14c13ee05|Bitget 11|Etherscan-applied tag sourced from a public compilation.
+bitget|0xdfe4b89cf009bffa33d9bca1f19694fc2d4d943d|Bitget 12|Etherscan-applied tag sourced from a public compilation.
+bitget|0x1d5ba5414f2983212e03bf7725add9eb4cdb00dc|Bitget 19|Etherscan-applied tag sourced from a public compilation.
+bitget|0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54|Bitget 35|Very active. Etherscan-applied tag sourced from a public compilation.
+mexc|0x75e89d5979e4f6fba9f97c104c2f0afb3f1dcb88|MEXC 1|Very active.
+mexc|0x0211f3cedbef3143223d3acf0e589747933e8527|MEXC 2|
+mexc|0x3cc936b795a188f0e246cbb2d74c5bd190aecf18|MEXC 3|Very active.
+mexc|0x2e8f79ad740de90dc5f5a9f0d8d9661a60725e64|MEXC 5|
+mexc|0x83c1c224044ef8573e9a728dbb91013cf80827e6|MEXC 6|Etherscan-applied tag sourced from a public compilation.
+mexc|0xdf90c9b995a3b10a5b8570a47101e6c6a29eb945|MEXC 7|Etherscan-applied tag sourced from a public compilation.
+mexc|0x51e3d44172868acc60d68ca99591ce4230bc75e0|MEXC 8|Etherscan-applied tag sourced from a public compilation.
+mexc|0xffb3118124cdaebd9095fa9a479895042018cac2|MEXC 9|Etherscan-applied tag sourced from a public compilation.
+mexc|0x9b64203878f24eb0cdf55c8c6fa7d08ba0cf77e5|MEXC 10|Etherscan-applied tag sourced from a public compilation.
+mexc|0x576b81f0c21edbc920ad63feeeb2b0736b018a58|MEXC 11|Etherscan-applied tag sourced from a public compilation.
+mexc|0x8e1701cfd85258ddb8dfe89bc4c7350822b9601d|MEXC 12|Etherscan-applied tag sourced from a public compilation.
+mexc|0x4982085c9e2f89f2ecb8131eca71afad896e89cb|MEXC 13|Etherscan-applied tag sourced from a public compilation.
+mexc|0x0162cd2ba40e23378bf0fd41f919e1be075f025f|MEXC 14|Etherscan-applied tag sourced from a public compilation.
+mexc|0x4e3ae00e8323558fa5cac04b152238924aa31b60|MEXC 15|Etherscan-applied tag sourced from a public compilation.
+mexc|0x9642b23ed1e01df1092b92641051881a322f5d4e|MEXC 16|Very active.
+mexc|0x9bb6a22da110c6c9bab745bcaf0ee142ee83af37|MEXC 29|Etherscan-applied tag sourced from a public compilation.
+mexc|0xb86f1061e0d79e8319339d5fdbb187d4e7ad3300|MEXC 30|Etherscan-applied tag sourced from a public compilation.
+mexc|0x4b68038e910941b7438e70a3943dcc4fd543715c|MEXC 31|Etherscan-applied tag sourced from a public compilation.
+mexc|0x680178d61d910736153991660c5710841c440ec7|MEXC 32|Etherscan-applied tag sourced from a public compilation.
+mexc|0x016c685d3379a515c64e7d85de8c0be11127f1d5|MEXC 33|Etherscan-applied tag sourced from a public compilation.
+mexc|0x5c30940a4544ca845272fe97c4a27f2ed2cd7b64|MEXC 34|Etherscan-applied tag sourced from a public compilation.
+robinhood|0x40b38765696e3d5d8d9d834d8aad4bb6e418e489|Robinhood|
+robinhood|0x2efb50e952580f4ff32d8d2122853432bbf2e204|Robinhood 2|
+robinhood|0x6081258689a75d253d87ce902a8de3887239fe80|Robinhood 3|
+robinhood|0xa26e73c8e9507d50bf808b7a2ca9d5de4fcc4a04|Robinhood 4|Very active.
+robinhood|0x841ed663f2636863d40be4ee76243377dff13a34|Robinhood 5|Very active. Etherscan-applied tag sourced from a public compilation.
+robinhood|0x73af3bcf944a6559933396c1577b257e2054d935|Robinhood 6|Etherscan-applied tag sourced from a public compilation.
+robinhood|0x7c5830cb1a1efe898dcd5cf401165cb952508ccc|Robinhood 7|Etherscan-applied tag sourced from a public compilation.
+robinhood|0xe0f3e36dbdfa9696b7bcb0d3313522a0bb28d5f4|Robinhood 8|Very active. Etherscan-applied tag sourced from a public compilation.
+cumberland|0xad6eaa735d9df3d7696fd03984379dae02ed8862|Cumberland: 0xad6...862|
+cumberland|0x87b49a99cbce4a9030e67919b776aa97d538adda|Cumberland: 0x87b...Dda|
+jump|0xf584f8728b874a6a5c7a8d4d387c9aae9172d621|Jump Trading|
+galaxy|0x15abb66ba754f05cbc0165a64a11cded1543de48|Galaxy Digital: 0x15a...E48|
+galaxy|0x33566c9d8be6cf0b23795e0d380e112be9d75836|Galaxy Digital: OTC|Etherscan-applied tag sourced from a public compilation.
+galaxy|0x4adf44961a7cbe8ee46b2bf04e7198e879677825|Galaxy Digital: 0x4AD...825|
+galaxy|0x46f34c24a7ba7a2ac6dd76c3f09b32d41c144d08|Galaxy Digital: 0x46f...d08|
+galaxy|0x5797f722b1fee36e3d2c3481d938d1372bcd99a7|Galaxy Digital: 0x5799a7|Etherscan-applied tag sourced from a public compilation.
+galaxy|0x6ae55181f90c954993789546956a8453e63b0015|Galaxy Digital: 0x6ae015|Etherscan-applied tag sourced from a public compilation.
+galaxy|0xb9c3832e688736ed8c8954d158cb6b00fca6c8f2|Galaxy Digital: 0xb9c8f2|Etherscan-applied tag sourced from a public compilation.
+galaxy|0xcaf66b3c3c343064f19c697e53b126cbb9e7ad99|Galaxy Digital: 0xcafd99|Etherscan-applied tag sourced from a public compilation.
+galaxy|0xf4561c710ba450aab302ffc3557ee59bbce94ca6|Galaxy Digital: 0xf45ca6|Etherscan-applied tag sourced from a public compilation.
+falconx|0x1157a2076b9bb22a85cc2c162f20fab3898f4101|FalconX 1|Very active.
+falconx|0xe1ed4da4284924ddaf69983b4d813fb1be58c380|FalconX 2|Etherscan-applied tag sourced from a public compilation.
+falconx|0x9fc6bef0702cf47dcd2e5a42b48e19aed8732499|FalconX 3|Etherscan-applied tag sourced from a public compilation.
+falconx|0xf9ef3d2bbeacdd439653096c18a199305f8bee19|FalconX 4|Etherscan-applied tag sourced from a public compilation.
+falconx|0xf85856147bac1fd760e6b8e81fae4c2e4a02dc8d|FalconX 5|Etherscan-applied tag sourced from a public compilation.
+falconx|0xbb017c48a3184146ae05815365e9fa680832c330|FalconX 6|Etherscan-applied tag sourced from a public compilation.
+bitgo|0xbd02c51150a4ab6ce97b9de2025644594f3e75b8|BitGo 1|Etherscan-applied tag sourced from a public compilation.
+paxos|0xc5a8859c44ac8aa2169afacf45b87c08593bec10|Paxos|
+paxos|0x0c23fc0ef06716d2f8ba19bc4bed56d045581f2d|Paxos 2|Etherscan-applied tag sourced from a public compilation.
+paxos|0x286af5cf60ae834199949bbc815485f07cc9c644|Paxos 3|Etherscan-applied tag sourced from a public compilation.
+paxos|0x264bd8291fae1d75db2c5f573b07faa6715997b5|Paxos 4|Very active. Etherscan-applied tag sourced from a public compilation.
+paxos|0x7d766b06e7164be4196ee62e6036c9fcff68107d|Paxos 5|Etherscan-applied tag sourced from a public compilation.
+paxos|0x41b309236c87b1bc6fa8eb865833e44158fa991a|Paxos 6|Etherscan-applied tag sourced from a public compilation.
+paxos|0x2fb074fa59c9294c71246825c1c9a0c7782d41a4|Paxos 7|Very active.
+paxos|0xf845a0a05cbd91ac15c3e59d126de5dfbc2aabb7|Paxos 8|Very active. Etherscan-applied tag sourced from a public compilation.
+paxos|0x7bbfaa2f8b2d2a613b4439be3428dfbf0f405390|Paxos 9|Etherscan-applied tag sourced from a public compilation.
