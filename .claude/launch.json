@@ -23,6 +23,15 @@
         "start"
       ],
       "port": 3000
+    },
+    {
+      "name": "dist-check",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:/Users/jpercy/AppData/Local/Temp/claude/C--Users-jpercy-OneDrive---Corporate-Document-Solutions-ClaudeOneDrive-live-blockchain-flows/a974fbb2-812a-4e3e-bd24-5ea208c4b2e2/scratchpad/serve-dist.cjs",
+        "dist-live"
+      ],
+      "port": 5180
     }
   ]
 }

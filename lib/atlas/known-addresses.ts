@@ -297,5 +297,55 @@ export const ADDRESSES:Record<string,AddressRecord>={
  '0x41b309236c87b1bc6fa8eb865833e44158fa991a':a('paxos','Paxos 6','2026-09-18','Etherscan-applied tag sourced from a public compilation.'),
  '0x2fb074fa59c9294c71246825c1c9a0c7782d41a4':a('paxos','Paxos 7','2026-09-18','Very active.'),
  '0xf845a0a05cbd91ac15c3e59d126de5dfbc2aabb7':a('paxos','Paxos 8','2026-09-18','Very active. Etherscan-applied tag sourced from a public compilation.'),
- '0x7bbfaa2f8b2d2a613b4439be3428dfbf0f405390':a('paxos','Paxos 9','2026-09-18','Etherscan-applied tag sourced from a public compilation.')
+ '0x7bbfaa2f8b2d2a613b4439be3428dfbf0f405390':a('paxos','Paxos 9','2026-09-18','Etherscan-applied tag sourced from a public compilation.'),
+ // coinone
+ '0x167a9333bf582556f35bd4d16a7e80e191aa6476':a('coinone','Coinone 1','2026-09-18'),
+ '0x1e2fcfd26d36183f1a5d90f0e6296915b02bcb40':a('coinone','Coinone 2','2026-09-18'),
+ // korbit
+ '0x0c01089aedc45ab0f43467cceca6b4d3e4170bea':a('korbit','Korbit 1','2026-09-18','Verified BitGo multisig wallet contract that funds Korbit 5; treated as a hot wallet, not a forwarder.'),
+ '0x2864de013415b6c2c7a96333183b20f0f9cc7532':a('korbit','Korbit 2','2026-09-18'),
+ '0x8550e644d74536f1df38b17d5f69aa1bfe28ae86':a('korbit','Korbit 3','2026-09-18'),
+ '0xd03be958e6b8da2d28ac8231a2291d6e4f0a7ea7':a('korbit','Korbit 4','2026-09-18'),
+ '0xd6e0f7da4480b3ad7a2c8b31bc5a19325355ca15':a('korbit','Korbit 5','2026-09-18'),
+ '0xe83a48cae4d7120e8ba1c2e0409568ffba532e87':a('korbit','Korbit 7','2026-09-18'),
+ // gmocoin
+ '0x9c4fa4ee466dff080adccb12d39b99e83cdb1077':a('gmocoin','GMO Coin 1','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0xc39bdf685f289b1f261ee9b0b1b2bf9eae4c1980':a('gmocoin','GMO Coin 2','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0x86e284421664840cb65c5b918da59c01ed8fa666':a('gmocoin','GMO Coin 3','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0x85c0d1110c57a329ccd6cc91e50fb4666f2287c3':a('gmocoin','GMO Coin 4','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0x52b4567c37b48d51198b25caa6e79e4fda6d9734':a('gmocoin','GMO Coin 5','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0xb77c64a1fd89d57e0f26e1a5c0a4d5934ad84350':a('gmocoin','GMO Coin 6','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation. Inactive for about a year.'),
+ '0xa8eba6da3801489093c0299529ac79fc16c59b6d':a('gmocoin','GMO Coin 7','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ // bitbank
+ '0x620a3e5cddd2748e111a11810757f419d10b1aac':a('bitbank','Bitbank 1','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0x3727cfcbd85390bb11b3ff421878123adb866be8':a('bitbank','Bitbank 2','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0xeb6c4be4b92a52e969f4bf405025d997703d5383':a('bitbank','Bitbank 3','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0xdbfc4549b325b6f00013a3861b87aab6696fdbee':a('bitbank','Bitbank 4','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0xf9225f3288f6cb0d0f80a5561e73102565e8bd8c':a('bitbank','Bitbank 5','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ // coinhako
+ '0xd4bddf5e3d0435d7a6214a0b949c7bb58621f37c':a('coinhako','Coinhako 1','2026-09-18'),
+ '0xe66baa0b612003af308d78f066bbdb9a5e00ff6c':a('coinhako','Coinhako: Warm Wallet','2026-09-18'),
+ '0xf2d4766ad705e3a5c9ba5b0436b473085f82f82f':a('coinhako','Coinhako: Old Warm Wallet','2026-09-18','Verified WarmWallet contract; historical, near-empty.'),
+ '0xa193c943980a9340f306b3d59deb183dc501b35f':a('coinhako','Coinhako: Old Address','2026-09-18','Historical exchange address.'),
+ '0x1d1bd550197c7c0787b9ad0aea9c1cca66ee0e90':a('coinhako','Coinhako: Old Address 2','2026-09-18','Historical exchange address.'),
+ '0x1562bd4f90eb997611b5d7579ab38e5a23acb33e':a('coinhako','Coinhako 2','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation. Lightly used.'),
+ // indodax
+ '0x51836a753e344257b361519e948ffcaf5fb8d521':a('indodax','Indodax 1','2026-09-18','Very active.'),
+ '0x9cbadd5ce7e14742f70414a6dcbd4e7bb8712719':a('indodax','Indodax 2','2026-09-18'),
+ '0x3c02290922a3618a4646e3bbca65853ea45fe7c6':a('indodax','Indodax 6','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation. Very active since 2018.'),
+ // tokocrypto
+ '0x0068eb681ec52dbd9944517d785727310b494575':a('tokocrypto','Tokocrypto','2026-09-18','Small, lightly used exchange wallet.'),
+ // bitkub
+ '0xdb044b8298e04d442fdbe5ce01b8cc8f77130e33':a('bitkub','Bitkub: Hot Wallet 1','2026-09-18','Funded by Bitkub: Multisig 1. Etherscan also shows a Deposit Address badge on this wallet despite the Hot Wallet tag.'),
+ '0x3d1d8a1d418220fd53c18744d44c182c46f47468':a('bitkub','Bitkub: Hot Wallet 2','2026-09-18','Funded by Bitkub: Multisig 1.'),
+ '0x59e0cda5922efba00a57794faf09bf6252d64126':a('bitkub','Bitkub: Hot Wallet 3','2026-09-18','Funded by Bitkub: Multisig 1.'),
+ '0x1579b5f6582c7a04f5ffeec683c13008c4b0a520':a('bitkub','Bitkub: Hot Wallet 4','2026-09-18','Funded by Bitkub: Multisig 1.'),
+ '0x79169e7818968cd0c6dbd8929f24d797cc1af9a1':a('bitkub','Bitkub: Multisig 1','2026-09-18','Multisig reserve wallet contract that funds Hot Wallets 1-4. Etherscan discloses the label as sourced from a public researcher compilation.'),
+ // coinsph
+ '0xd84b4436b6aba0fa348c5cf35b4682448e94724a':a('coinsph','Coins.ph: Hot Wallet','2026-09-18','Very active.'),
+ // bitopro
+ '0x16905697103cd4ad6a22193b242941b62f660bbc':a('bitopro','BitoPro 2','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ '0xaa65cc699f9b0258064d952ad987269f7c9dbfad':a('bitopro','BitoPro 3','2026-09-18','Etherscan discloses the label as sourced from a public researcher compilation.'),
+ // maicoin
+ '0x477b8d5ef7c2c42db84deb555419cd817c336b6f':a('maicoin','MaiCoin 1','2026-09-18','Very active.')
 };
