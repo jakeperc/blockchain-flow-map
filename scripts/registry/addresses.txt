@@ -289,3 +289,121 @@ coinsph|0xd84b4436b6aba0fa348c5cf35b4682448e94724a|Coins.ph: Hot Wallet|Very act
 bitopro|0x16905697103cd4ad6a22193b242941b62f660bbc|BitoPro 2|Etherscan discloses the label as sourced from a public researcher compilation.
 bitopro|0xaa65cc699f9b0258064d952ad987269f7c9dbfad|BitoPro 3|Etherscan discloses the label as sourced from a public researcher compilation.
 maicoin|0x477b8d5ef7c2c42db84deb555419cd817c336b6f|MaiCoin 1|Very active.
+altcointrader|0xc58bb74606b73c5043b75d7aa25ebe1d5d4e7c72|AltCoinTrader 1|Main hot wallet, very active.
+altcointrader|0x1bc972db7b169c2d79719485803af1a23645108d|AltCoinTrader 3|Etherscan discloses the label as sourced from a public researcher compilation.
+altcointrader|0xa1495f85d30acab5126f5c1920cd9cb1ce265263|AltCoinTrader 4|Etherscan discloses the label as sourced from a public researcher compilation.
+altcointrader|0xa2fe6ec4244ee94853326f70893ce5ee20aa4ffb|AltCoinTrader 6|Etherscan discloses the label as sourced from a public researcher compilation.
+altcointrader|0xb56f9e1aecb821413c9f14822d3918a363d83226|AltCoinTrader 7|Etherscan discloses the label as sourced from a public researcher compilation.
+altcointrader|0x87b7ba194ed714a871c91f6b9ba8dc8182ed3a5d|AltCoinTrader: Cold 1|Cold wallet. Etherscan discloses the label as sourced from a public researcher compilation.
+bitpanda|0x7071f121c038a98f8a7d485648a27fcd48891ba8|Bitpanda 2|Etherscan discloses the label as sourced from a public researcher compilation. Legacy wallet, little outgoing activity since 2021.
+bitpanda|0x74dec05e5b894b0efec69cdf6316971802a2f9a1|Bitpanda 3|Etherscan discloses the label as sourced from a public researcher compilation. Main hot wallet, very active.
+bitpanda|0xf197c6f2ac14d25ee2789a73e4847732c7f16bc9|Bitpanda 4|Etherscan discloses the label as sourced from a public researcher compilation. Also a beacon-chain staking depositor.
+bitpanda|0xb10edd6fa6067dba8d4326f1c8f0d1c791594f13|Bitpanda 5|Etherscan discloses the label as sourced from a public researcher compilation. Also a beacon-chain staking depositor.
+bitpanda|0xb8cbbf78c7ad1cdf4ca0e111b35491f3bfe027ac|Bitpanda 6|Etherscan discloses the label as sourced from a public researcher compilation. Also a beacon-chain staking depositor.
+bitpanda|0xf32682d5f99ba4143532618d6f516859a055ea06|Bitpanda 8|Etherscan discloses the label as sourced from a public researcher compilation. Dormant for about five years.
+uphold|0x1c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d|Uphold|Very active.
+uphold|0x3d8fc1cffaa110f7a7f9f8bc237b73d54c4abf61|Uphold 2|
+uphold|0x340d693ed55d7ba167d184ea76ea2fd092a35bdc|Uphold.com|Very active; also carries a Fiat Gateway badge.
+uphold|0xa95350d70b18fa29f6b5eb8d627ceeeee499340d|Uphold 5|Etherscan discloses the label as sourced from a public researcher compilation. Dormant since 2025.
+ndax|0x14c4017f81675f7ac1321218d4a385a2d3117328|NDAX 1|Etherscan discloses the label as sourced from a public researcher compilation. Very active.
+netcoins|0x404460039499c774c48248552f802ce5dd482e32|Netcoins 1|Etherscan discloses the label as sourced from a public researcher compilation. Active.
+netcoins|0xe3743d1bf4bdc86bf1faac0ffe325a23cf495ad7|Netcoins 2|Etherscan discloses the label as sourced from a public researcher compilation. Legacy hot wallet, inactive since 2022.
+netcoins|0xba20996529d2722c4d9d800a7b20e96a0a235336|Netcoins: MultiSig 1|Multisig custody wallet contract. Etherscan discloses the label as sourced from a public researcher compilation.
+b2c2|0xc333e80ef2dec2805f239e3f1e810612d294f771|B2C2 Group 1|
+gsr|0xd8d6ffe342210057bf4dcc31da28d006f253cef0|GSR: 0xD8D...EF0|Low native balance; token activity only.
+ambergroup|0xe11970f2f3de9d637fb786f2d869f8fea44195ac|Amber Group|
+ambergroup|0x5b990c664ae7e759763acfec76e11c289c53be77|Amber Group: 0x5b9...e77|
+anchorage|0xd52055a39a3d2f7505c739f981f296ea31b50191|Anchorage Digital: Custodian 1|Etherscan discloses the label as sourced from a public researcher compilation.
+coinbase|0x95a9bd206ae52c4ba8eecfc93d18eacdd41c88cc|Coinbase 5|Very active. Etherscan has renumbered Coinbase tags over time; identified by address.
+coinbase|0x7c195d981abfdc3ddecd2ca0fed0958430488e34|Coinbase 4|Very active.
+coinbase|0x20fe51a9229eef2cf8ad9e89d91cab9312cf3b7a|Coinbase 14|Etherscan discloses the label as sourced from a public researcher compilation. Lightly used.
+coinbase|0x28e71d0b7f7f29106a1be2a5b289cab331e7b56f|Coinbase 38|Etherscan discloses the label as sourced from a public researcher compilation. Inactive since 2024.
+coinbase|0x02466e547bfdab679fc49e96bbfc62b9747d997c|Coinbase 56|Lightly used.
+coinbase|0x6b76f8b1e9e59913bfe758821887311ba1805cab|Coinbase 57|Lightly used.
+kraken|0x2910543af39aba0cd09dbb2d50200b3e800a63d2|Kraken 1|
+kraken|0x0a869d79a7052c7f1b55a8ebabbea3420f0d1e13|Kraken 2|
+kraken|0xe853c56864a2ebe4576a807d26fdc4a0ada51919|Kraken 3|
+kraken|0x53d284357ec70ce289d6d64134dfac8e511c8a3d|Kraken 6|Also carries a Cold Wallet badge.
+kraken|0x43984d578803891dfa9706bdeee6078d80cfc79e|Kraken 11|
+kraken|0x66c57bf505a85a74609d2c83e94aabb26d691e1f|Kraken 12|Active.
+kraken|0xa83b11093c858c86321fbc4c20fe82cdbd58e09e|Kraken 14|Active.
+kraken|0xce27fc71139d02f9a3d5cc1356add185750660ac|Kraken 15|
+kraken|0x0d0452f487d1edc869d1488ae984590ca2900d2f|Kraken 16|
+kraken|0x6d0cf1f651f5ae585d24dcaa188d44e389e93d26|Kraken 17|Active.
+kraken|0x8dfee7dbd859989bf3e80c4f64c42b7cd283671b|Kraken 68|Etherscan discloses the label as sourced from a public researcher compilation.
+kraken|0xa6715eafe5d215b82cb9e90a9d6c8970a7c90033|Kraken 73|Lightly used.
+kraken|0x109be9d7d5f64c8c391ced3a8f69bdef20fcaea9|Kraken 74|Lightly used.
+kraken|0x94dbf04e273d87e6d9bed68c616f43bf86560c74|Kraken 75|Active.
+kraken|0x479011b0cb148fd7cd0c3cca0c32f9c6777e577a|Kraken 123|Etherscan discloses the label as sourced from a public researcher compilation.
+kraken|0x8b973a304138eca1936d77ac07980840c5775258|Kraken 177|Etherscan discloses the label as sourced from a public researcher compilation.
+kraken|0xcc282e2004428939ee5149a9e7872f0b4d5d5ec7|Kraken: Hot Wallet 3|Very active.
+kraken|0x22af984f13dfb5c80145e3f9ee1050ae5a5fb651|Kraken: Cold Wallet|Cold wallet.
+kraken|0x8d05d9924fe935bd533a844271a1b2078eae6fcf|Kraken: Cold Wallet 3|Cold wallet holding a large ETH reserve.
+kraken|0x9f1799fb47b1514f453bcebbc37ecfe883756e83|Kraken: Cold Wallet 4|Cold wallet holding a large ETH reserve.
+robinhood|0x1887fa9edadeab7562b01cc3f4fa246ace2c3cdd|Robinhood 9|Very active.
+binance|0xfe9e8709d3215310075d67e3ed32a380ccf451c8|Binance 5|Active.
+binance|0x4e9ce36e442e55ecd9025b9a6e0d88485d628a67|Binance 6|
+binance|0x001866ae5b3de6caa5a51543fd9fb64f524f5478|Binance 9|Active.
+binance|0x345d8e3a1f62ee6b1d483890976fd66168e390f2|Binance 23|
+binance|0xc3c8e0a39769e2308869f7461364ca48155d1d9e|Binance 24|
+binance|0xa344c7ada83113b3b56941f6e85bf2eb425949f3|Binance 27|
+binance|0x00799bbc833d5b168f0410312d2a8fd9e0e3079c|Binance 31|
+binance|0x141fef8cd8397a390afe94846c8bd6f4ab981c48|Binance 32|Active.
+binance|0x3c783c21a0383057d128bae431894a5c19f9cf06|Binance 47|Etherscan discloses the label as sourced from a public researcher compilation.
+binance|0x8894e0a0c962cb723c1976a4421c95949be2d4e3|Binance 51|Active.
+binance|0xb38e8c17e38363af6ebdcb3dae12e0243582891d|Binance 54|Etherscan discloses the label as sourced from a public researcher compilation. Lightly used.
+binance|0x835678a611b28684005a5e2233695fb6cbbb0007|Binance 70|Etherscan discloses the label as sourced from a public researcher compilation. Active.
+binance|0x3304e22ddaa22bcdc5fca2269b418046ae7b566a|Binance 73|Etherscan discloses the label as sourced from a public researcher compilation.
+binance|0x98adef6f2ac8572ec48965509d69a8dd5e8bba9d|Binance 93|Very active; one of the largest Binance reserve wallets.
+binance|0x631fc1ea2270e98fbd9d92658ece0f5a269aa161|Binance: Hot Wallet|Legacy wallet, inactive since 2020.
+binance|0xf92402bb795fd7cd08fb83839689db79099c8c9c|Binance: Hot Wallet 1|Etherscan discloses the label as sourced from a public researcher compilation.
+binance|0xb1256d6b31e4ae87da1d56e5890c66be7f1c038e|Binance: Hot Wallet 2|Inactive since 2024.
+binance|0xeb2d2f1b8c558a40207669291fda468e50c8a0bb|Binance: Hot Wallet 10|Little Ethereum activity; mostly used on BNB Chain.
+binance|0x161ba15a5f335c9f06bb5bbb0a9ce14076fbb645|Binance: Hot Wallet 11|
+binance|0xbd612a3f30dca67bf60a39fd0d35e39b7ab80774|Binance: Hot Wallet 13|
+binance|0xa180fe01b906a1be37be6c534a3300785b20d947|Binance: Hot Wallet 16|
+binance|0x29bdfbf7d27462a2d115748ace2bd71a2646946c|Binance: Hot Wallet 17|
+binance|0x73f5ebe90f27b46ea12e5795d16c4b408b19cc6f|Binance: Hot Wallet 18|
+binance|0x01c952174c24e1210d26961d456a77a39e1f0bb0|Binance: Hot Wallet 23|
+binance|0xe2fc31f816a9b94326492132018c3aecc4a93ae1|Binance: Withdrawals 7|Withdrawal hot wallet. Etherscan discloses the label as sourced from a public researcher compilation.
+okx|0x461249076b88189f8ac9418de28b365859e46bfd|OKX 9|
+okx|0xc5451b523d5fffe1351337a221688a62806ad91a|OKX 10|Large USDT reserve wallet.
+okx|0x42436286a9c8d63aafc2eebbca193064d68068f2|OKX 11|
+okx|0x69a722f0b5da3af02b4a205d6f0c285f4ed8f396|OKX 12|Large USDT reserve wallet.
+okx|0xc708a1c712ba26dc618f972ad7a187f76c8596fd|OKX 13|
+okx|0x6fb624b48d9299674022a23d92515e76ba880113|OKX 14|
+okx|0xf59869753f41db720127ceb8dbb8afaf89030de4|OKX 15|
+okx|0x65a0947ba5175359bb457d3b34491edf4cbf7997|OKX 16|
+okx|0xbda23b750dd04f792ad365b5f2a6f1d8593796f2|OKX 21|Inactive since 2023.
+okx|0x276cdba3a39abf9cedba0f1948312c0681e6d5fd|OKX 22|Very active.
+okx|0x3d55ccb2a943d88d39dd2e62daf767c69fd0179f|OKX 23|
+okx|0xbf94f0ac752c739f623c463b5210a7fb2cbb420b|OKX 24|Very active.
+okx|0x868dab0b8e21ec0a48b726a1ccf25826c78c6d7f|OKX 76|Etherscan discloses the label as sourced from a public researcher compilation.
+okx|0xc68c17e6eec0fde3605c595c9b98de5c1a4cc3e4|OKX 101|Etherscan discloses the label as sourced from a public researcher compilation.
+okx|0xa9ac43f5b5e38155a288d1a01d2cbc4478e14573|OKX: Hot Wallet 3|Very active.
+bitfinex|0x36a85757645e8e8aec062a1dee289c7d615901ca|Bitfinex 10|Lightly used.
+bitfinex|0x0b73f67a49273fc4b9a65dbd25d7d0918e734e63|Bitfinex 12|
+bitfinex|0x1b8766d041567eed306940c587e21c06ab968663|Bitfinex 14|Inactive since 2024.
+bitfinex|0x28140cb1ac771d4add91ee23788e50249c10263d|Bitfinex 16|
+bitfinex|0x0cd76cd43992c665fdc2d8ac91b935ca3165e782|Bitfinex 18|
+bitfinex|0xab7c74abc0c4d48d1bdad5dcb26153fc8780f83e|Bitfinex: MultiSig 1|Verified multisig wallet contract; little balance.
+bitfinex|0xc61b9bb3a7a0767e3179713f3a5c7a9aedce193c|Bitfinex: MultiSig 2|Safe multisig holding the exchange's main LEO and ETH reserves.
+bithumb|0xa0ff1e0f30b5dda2dc01e7e828290bc72b71e57d|Bithumb 4|Inactive since 2020.
+bithumb|0x6fc48de8f167456b7aa27dd4ecfabba329ea623d|Bithumb 13|
+bithumb|0x6916e682263df22c0a002950813bb7712d4fd441|Bithumb 23|
+bithumb|0x22b84d5ffea8b801c0422afe752377a64aa738c2|Bithumb 34|Etherscan discloses the label as sourced from a public researcher compilation. Inactive since 2021.
+bithumb|0xc257274276a4e539741ca11b590b9447b26a8051|Bithumb 44|Etherscan discloses the label as sourced from a public researcher compilation. Very active.
+bithumb|0xc03498cfcdb97aa2cf8e5939d7297c4496f4ee91|Bithumb 446|Etherscan discloses the label as sourced from a public researcher compilation. Active.
+bithumb|0x4a49700676ca4649c2c2631f771198fcb3abb438|Bithumb 458|Etherscan discloses the label as sourced from a public researcher compilation. Lightly used.
+gemini|0x183b1ffb0aa9213b9335adfad82e47bfb02f8d24|Gemini 8|Etherscan discloses the label as sourced from a public researcher compilation. Inactive since 2017.
+gemini|0xf51710015536957a01f32558402902a2d9c35d82|Gemini 9|Etherscan discloses the label as sourced from a public researcher compilation. Very active.
+gemini|0x3e6722f32cbe5b3c7bd3dca7017c7ffe1b9e5a2a|Gemini 10|Etherscan discloses the label as sourced from a public researcher compilation.
+kucoin|0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23|KuCoin 15|Upgradeable proxy contract wallet; very active.
+kucoin|0x446b86a33e2a438f569b15855189e3da28d027ba|KuCoin 38|Upgradeable proxy contract wallet. Etherscan discloses the label as sourced from a public researcher compilation.
+kucoin|0xaa99fc695eb1bbfb359fbad718c7c6dafc03a839|KuCoin 39|Upgradeable proxy contract wallet. Etherscan discloses the label as sourced from a public researcher compilation. Very active.
+bitget|0xbc942e2250ec7ab83bfc4516bca4e281dbfbb393|Bitget 17|Etherscan discloses the label as sourced from a public researcher compilation.
+mexc|0xee136c0389733849dd710ac7104e92c6bf497574|MEXC 4|Safe multisig reserve wallet.
+mexc|0xfaf17849fb05a11a4e233f221bac99ca43fc83f8|MEXC 17|Upgradeable proxy contract wallet; very active.
+mexc|0x12c5e4eeeaa20e25847b5453d23246983c512db7|MEXC 21|Safe multisig reserve wallet.
+mexc|0x1f7370792a057227024e7a8cc15b40e3ed171ffc|MEXC 23|Safe multisig reserve wallet.
+mexc|0x469afe803c54a36674c55231489cf4b61da8c1bc|MEXC 28|Safe multisig reserve wallet.

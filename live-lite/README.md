@@ -50,15 +50,16 @@ confidence, and the regulator/court/company document that supports it) and
 `lib/atlas/known-addresses.ts` (one line per address: the exact Etherscan public name tag and the date
 it was read). `node scripts/verify-registry.cjs` checks every entry (see the main README).
 
-As of 2026-09-19 the registry holds **290 addresses across 50 entities and 22 jurisdictions**:
-Binance (Cayman Islands); Coinbase, Kraken, Gemini, Robinhood Crypto, Paxos/itBit, BitGo, Cumberland,
-Jump Trading, Galaxy Digital, FalconX (US); OKX, KuCoin, Bitget, MEXC (Seychelles); Bitfinex (BVI);
-Upbit, Bithumb, Coinone, Korbit (South Korea); bitFlyer, Coincheck, GMO Coin, bitbank (Japan); Coinhako
-(Singapore); Indodax, Tokocrypto (Indonesia); Bitkub (Thailand); Coins.ph (Philippines); BitoPro, MaiCoin
-(Taiwan); CoinDCX (India); CoinSpot, CoinJar, Digital Surge, BTC Markets (Australia); Coinsquare/Bitbuy,
-Shakepay, Newton, Wealthsimple (Canada); Wintermute (UK); Bitvavo (Netherlands); Bitcoin Suisse, Copper
-(Switzerland); Paribu, BtcTurk (Türkiye); Coinmetro (Estonia); Bitso (Gibraltar-licensed operator of the
-Mexican brand); Mercado Bitcoin (Brazil); VALR (South Africa). The source list is `scripts/registry/addresses.txt`; regenerate the TypeScript with
+As of 2026-09-19 the registry holds **408 addresses across 59 entities and 24 jurisdictions**:
+Binance, Amber Group (Cayman Islands); Coinbase, Kraken, Gemini, Robinhood Crypto, Uphold, Paxos/itBit,
+BitGo, Anchorage Digital, Cumberland, Jump Trading, Galaxy Digital, FalconX (US); OKX, KuCoin, Bitget,
+MEXC (Seychelles); Bitfinex (BVI); Upbit, Bithumb, Coinone, Korbit (South Korea); bitFlyer, Coincheck,
+GMO Coin, bitbank (Japan); GSR (Hong Kong); Coinhako (Singapore); Indodax, Tokocrypto (Indonesia); Bitkub
+(Thailand); Coins.ph (Philippines); BitoPro, MaiCoin (Taiwan); CoinDCX (India); CoinSpot, CoinJar, Digital
+Surge, BTC Markets (Australia); Coinsquare/Bitbuy, Shakepay, Newton, Wealthsimple, NDAX, Netcoins (Canada);
+Wintermute, B2C2 (UK); Bitvavo (Netherlands); Bitpanda (Austria); Bitcoin Suisse, Copper (Switzerland);
+Paribu, BtcTurk (Türkiye); Coinmetro (Estonia); Bitso (Gibraltar-licensed operator of the Mexican brand);
+Mercado Bitcoin (Brazil); VALR, AltCoinTrader (South Africa). The source list is `scripts/registry/addresses.txt`; regenerate the TypeScript with
 `node scripts/registry/gen-addresses.mjs scripts/registry/addresses.txt lib/atlas/known-addresses.ts`.
 
 **Inferred deposit addresses.** Even with hundreds of labelled wallets, exchange customers almost never
@@ -73,10 +74,17 @@ This is what turns a Coinbase-to-Binance withdrawal into a US to Cayman Islands 
 tied to a regulator register, court filing or the company's own legal page, with HIGH rather than
 VERIFIED wherever a brand runs several separately regulated affiliates. The entity file's header lists
 the rules and the exchanges deliberately left out because their controlling entity is disputed in
-public sources (Bybit, Crypto.com, Bitstamp, Luno, WazirX, HTX, CEX.IO, Nexo among them). A second group
+public sources (Bybit, Crypto.com, Bitstamp, Luno, WazirX, HTX, CEX.IO, Nexo among them). A much larger group
 is regulated and unambiguous but simply has no publicly labelled Ethereum wallet, so nothing can be
-attributed to it yet: Gopax, SBI VC Trade, Zaif, HashKey Exchange, OSL, Independent Reserve, Pintu and
-PDAX. They would join the registry the day a public label appears.
+attributed to it yet. That is the case for essentially every Latin American, African, Gulf and Indian
+exchange checked (Lemon, Ripio, Buda, Foxbit, NovaDAX, Volabit, Yellow Card, Quidax, Busha, Ovex, Rain,
+CoinMENA, BitOasis, M2, ZebPay, Bitbns, Giottus, Mudrex), for Gopax, SBI VC Trade, Zaif, HashKey, OSL,
+Independent Reserve, Pintu and PDAX in Asia, and for Bit2Me, Young Platform, Swissquote, BISON and
+Bitcoin.de in Europe. Those regions therefore glow and route less than their real activity, and the map
+says so rather than guessing. They would join the registry the day a public label appears. A few more
+have clean labels but an ambiguous or lapsed operating entity and stay out on purpose: WhiteBIT, Revolut,
+zondacrypto (Estonian licence revoked June 2026), Kuna (ceased trading 2025), Genesis Trading (ceased
+2023) and DWF Labs.
 
 A route is drawn only when **both** ends of a transfer are evidenced wallets in **different**
 jurisdictions. Most on-chain transfers aren't, so most value shows as unresolved and lights a glow at
