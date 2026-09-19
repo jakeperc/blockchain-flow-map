@@ -50,16 +50,20 @@ confidence, and the regulator/court/company document that supports it) and
 `lib/atlas/known-addresses.ts` (one line per address: the exact Etherscan public name tag and the date
 it was read). `node scripts/verify-registry.cjs` checks every entry (see the main README).
 
-As of 2026-09-19 the registry holds **408 addresses across 59 entities and 24 jurisdictions**:
-Binance, Amber Group (Cayman Islands); Coinbase, Kraken, Gemini, Robinhood Crypto, Uphold, Paxos/itBit,
-BitGo, Anchorage Digital, Cumberland, Jump Trading, Galaxy Digital, FalconX (US); OKX, KuCoin, Bitget,
-MEXC (Seychelles); Bitfinex (BVI); Upbit, Bithumb, Coinone, Korbit (South Korea); bitFlyer, Coincheck,
-GMO Coin, bitbank (Japan); GSR (Hong Kong); Coinhako (Singapore); Indodax, Tokocrypto (Indonesia); Bitkub
-(Thailand); Coins.ph (Philippines); BitoPro, MaiCoin (Taiwan); CoinDCX (India); CoinSpot, CoinJar, Digital
-Surge, BTC Markets (Australia); Coinsquare/Bitbuy, Shakepay, Newton, Wealthsimple, NDAX, Netcoins (Canada);
-Wintermute, B2C2 (UK); Bitvavo (Netherlands); Bitpanda (Austria); Bitcoin Suisse, Copper (Switzerland);
-Paribu, BtcTurk (Türkiye); Coinmetro (Estonia); Bitso (Gibraltar-licensed operator of the Mexican brand);
-Mercado Bitcoin (Brazil); VALR, AltCoinTrader (South Africa). The source list is `scripts/registry/addresses.txt`; regenerate the TypeScript with
+As of 2026-09-19 the registry holds **805 addresses across 70 entities and 28 jurisdictions**:
+Binance, Amber Group (Cayman Islands); Coinbase, Kraken, Gemini, Binance.US, Robinhood Crypto, Uphold,
+Paxos/itBit, BitGo, Anchorage Digital, Fidelity Digital Assets, Zero Hash, Cumberland, Jump Trading,
+Galaxy Digital, FalconX (US); OKX, KuCoin, Bitget, MEXC, Poloniex (Seychelles); Bitfinex (BVI); Upbit,
+Bithumb, Coinone, Korbit (South Korea); bitFlyer, Coincheck, GMO Coin, bitbank (Japan); GSR (Hong Kong);
+Coinhako (Singapore); Indodax, Tokocrypto (Indonesia); Bitkub (Thailand); Coins.ph (Philippines);
+BitoPro, MaiCoin (Taiwan); CoinDCX (India); CoinSpot, CoinJar, Digital Surge, BTC Markets (Australia);
+Coinsquare/Bitbuy, Shakepay, Newton, Wealthsimple, NDAX, Netcoins (Canada); Wintermute, B2C2 (UK);
+Bitvavo (Netherlands); Bitpanda (Austria); Bitcoin Suisse, Copper (Switzerland); LCX (Liechtenstein);
+SwissBorg (France); Firi, NBX (Norway); Paribu, BtcTurk, Bitci (Türkiye); Coinmetro (Estonia); Cryptal
+(Georgia); Bitso, Bullish (Gibraltar); Mercado Bitcoin (Brazil); VALR, AltCoinTrader (South Africa).
+Roughly half the wallets belong to Bithumb, Coinbase, Kraken, Binance and OKX, whose numbered hot, cold
+and collector wallets were traced one by one; a few dozen labelled wallets with no Ethereum mainnet
+activity at all were left out. The source list is `scripts/registry/addresses.txt`; regenerate the TypeScript with
 `node scripts/registry/gen-addresses.mjs scripts/registry/addresses.txt lib/atlas/known-addresses.ts`.
 
 **Inferred deposit addresses.** Even with hundreds of labelled wallets, exchange customers almost never
@@ -84,7 +88,9 @@ Bitcoin.de in Europe. Those regions therefore glow and route less than their rea
 says so rather than guessing. They would join the registry the day a public label appears. A few more
 have clean labels but an ambiguous or lapsed operating entity and stay out on purpose: WhiteBIT, Revolut,
 zondacrypto (Estonian licence revoked June 2026), Kuna (ceased trading 2025), Genesis Trading (ceased
-2023) and DWF Labs.
+2023), BitMEX (winding up September 2026), EXMO (sanctioned May 2026), DWF Labs, Blockchain.com, Deribit,
+BitMart, Phemex, AscendEX, Bitrue, LBank, CoinEx, BingX, WOO X, XT.com and HitBTC (no document identifies
+which of several affiliates controls the wallet, or the claimed operator is contradicted by a regulator).
 
 A route is drawn only when **both** ends of a transfer are evidenced wallets in **different**
 jurisdictions. Most on-chain transfers aren't, so most value shows as unresolved and lights a glow at
