@@ -128,18 +128,35 @@ export const ENTITIES:Record<string,EntityRecord>={
  // wave-global2 (2026-09-19)
  poloniex:e('poloniex','Poloniex','SC','HIGH','Etherscan public labels + Ontario Capital Markets Tribunal statement of allegations (May 2021) describing Polo Digital Assets, Ltd. as a corporation incorporated in the Republic of Seychelles + FCA warning notice (December 2023) giving its Eden Island, Seychelles address','https://www.capitalmarketstribunal.ca/en/proceedings/polo-digital-assets-ltd-re/statement-allegations-matter-polo-digital-assets-ltd','Polo Digital Assets, Ltd., Eden Island, Seychelles. Rated HIGH: the tags name only the brand and the older wallets were created under the previous US operator before the November 2019 sale.','2026-09-19')
 };
-const memo=new Map<string,Attribution|null>();
+/**
+ * The index is built once, eagerly, and holds only real entries. It is deliberately NOT a lazy cache:
+ * the live client asks about both endpoints of every transfer it sees, tens of thousands of distinct
+ * unknown addresses per hour, and a cache that memoised those misses grew without bound in a page meant
+ * to stay open all day. Bounded by the registry instead.
+ */
+const INDEX=new Map<string,Attribution>();
+for(const [key,rec] of Object.entries(ADDRESSES)){
+ const ent=ENTITIES[rec.entity];if(!ent)continue;
+ const verified=new Date(Math.min(Date.parse(ent.lastVerified),Date.parse(rec.checked))).toISOString();
+ INDEX.set(key,{entity:ent.name,addressCluster:ent.id,category:ent.category,jurisdiction:ent.jurisdiction,confidence:ent.confidence,score:ent.confidence==='VERIFIED'?.95:.85,source:ent.source,sourceUrl:`https://etherscan.io/address/${key}`,evidenceNote:`Etherscan labels this address '${rec.label}' (checked ${rec.checked}).${rec.note?` ${rec.note}`:''} ${ent.evidenceNote} Jurisdiction source: ${ent.sourceUrl}`,lastVerified:verified,association:'operating entity',synthetic:false});
+}
 /** Evidence in the model's Attribution shape, or null when the address has no admissible public evidence. One shared object per address. */
 export function knownAttribution(address:string):Attribution|null{
- const key=address.toLowerCase();
- const cached=memo.get(key);if(cached!==undefined)return cached;
- const rec=ADDRESSES[key],ent=rec?ENTITIES[rec.entity]:undefined;
- let out:Attribution|null=null;
- if(rec&&ent){
-  const verified=new Date(Math.min(Date.parse(ent.lastVerified),Date.parse(rec.checked))).toISOString();
-  out={entity:ent.name,addressCluster:ent.id,category:ent.category,jurisdiction:ent.jurisdiction,confidence:ent.confidence,score:ent.confidence==='VERIFIED'?.95:.85,source:ent.source,sourceUrl:`https://etherscan.io/address/${key}`,evidenceNote:`Etherscan labels this address '${rec.label}' (checked ${rec.checked}).${rec.note?` ${rec.note}`:''} ${ent.evidenceNote} Jurisdiction source: ${ent.sourceUrl}`,lastVerified:verified,association:'operating entity',synthetic:false};
+ return INDEX.get(address.toLowerCase())??null;
+}
+/**
+ * Whether the registry is still usable, and until when. `admissible()` refuses evidence older than 180
+ * days, so evidence does not decay gradually — the whole registry stops drawing routes on one day. The
+ * live client surfaces this so an expired map explains itself instead of looking empty.
+ */
+export function registryHealth(at=Date.now()):{total:number;expired:number;earliestExpiry:number}{
+ let expired=0,earliest=Infinity;
+ for(const a of INDEX.values()){
+  const expiry=Date.parse(a.lastVerified)+180*86400000;
+  if(expiry<earliest)earliest=expiry;
+  if(at>expiry)expired++;
  }
- memo.set(key,out);return out;
+ return {total:INDEX.size,expired,earliestExpiry:earliest};
 }
 /** Counts for documentation and the registry verifier. */
 export function registryStats(){

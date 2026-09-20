@@ -22,3 +22,9 @@
 @media(max-width:650px){.atlas-shell[data-playback=true] .time-strip{height:122px;padding-top:38px}.atlas-shell[data-playback=true] .timeline{display:block;position:absolute;left:0;right:0;top:10px;height:36px;max-width:none}.atlas-shell[data-playback=true] .route-summary{bottom:180px}.atlas-shell[data-playback=true] .map-legend{bottom:205px}.atlas-shell[data-playback=true] .map-controls{bottom:285px}}
 .map-hint{position:absolute;left:14px;top:14px;z-index:8;display:flex;align-items:center;gap:10px;background:#172227e6;border:1px solid #41504c;border-radius:6px;padding:8px 12px;font-size:12px;color:#a0b2aa;pointer-events:auto}.map-hint b{color:#d0dfcc;font-weight:500}.map-hint button{background:none;border:0;color:#d0dfcc;display:flex;align-items:center;gap:5px;font-size:12px;padding:0;cursor:pointer}.map-hint i{width:6px;height:6px;border-radius:50%;background:#8fc7a8;flex:none;animation:atlas-hint-blink 1.6s infinite}@keyframes atlas-hint-blink{50%{opacity:.3}}.anchor-glow{transition:opacity .8s}
 @media(max-width:650px){.map-hint{left:8px;top:8px;font-size:11px;padding:6px 10px;gap:8px}.map-hint button span{display:none}}
+
+/* Unfiltered denominator sample, shown under the accounting so the evidenced-only totals above cannot be misread as all on-chain activity. */
+.sample-note{margin-top:18px;padding-top:16px;border-top:1px solid var(--hairline,rgba(255,255,255,.08))}
+.sample-note h4{margin:0 0 6px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted,#8a9691)}
+.sample-note p{margin:0 0 10px;font-size:12px;line-height:1.5;color:var(--muted,#8a9691)}
+.sample-note p:last-child{margin:10px 0 0;font-style:italic}

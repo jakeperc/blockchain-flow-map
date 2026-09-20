@@ -1,4 +1,18 @@
 import {readFileSync,writeFileSync} from 'node:fs';
+/**
+ * The date every generated row is stamped with. One constant rather than a per-row column because every
+ * address in addresses.txt was read on the same research pass. admissible() refuses evidence older than
+ * 180 days, so a regeneration that silently re-stamped a stale date would quietly shorten the life of
+ * the published build. This refuses instead: bump CHECKED only when the addresses are genuinely re-read
+ * against their explorer pages.
+ */
+const CHECKED='2026-09-18';
+{
+ const ageDays=(Date.now()-Date.parse(CHECKED))/86400000;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(CHECKED)||!Number.isFinite(ageDays))throw Error('CHECKED must be an ISO date');
+ if(ageDays<0)throw Error('CHECKED is in the future, which admissible() rejects outright');
+ if(ageDays>150)throw Error(`CHECKED (${CHECKED}) is ${Math.round(ageDays)} days old, close to the 180-day expiry. Re-verify the addresses against their explorer pages and bump CHECKED rather than regenerating with a stale date.`);
+}
 const [,,src,dst]=process.argv;
 const lines=readFileSync(src,'utf8').split(/\r?\n/).filter(l=>l.trim()&&!l.startsWith('#'));
 const seen=new Set();const groups=new Map();
@@ -27,7 +41,7 @@ const header=[
 const body=[];
 for(const [entity,rows] of groups){
  body.push(' // '+entity);
- for(const r of rows)body.push(` '${r.key}':a(${q(entity)},${q(r.label)},'2026-09-18'${r.note?','+q(r.note):''}),`);
+ for(const r of rows)body.push(` '${r.key}':a(${q(entity)},${q(r.label)},'${CHECKED}'${r.note?','+q(r.note):''}),`);
 }
 body[body.length-1]=body[body.length-1].replace(/,$/,'');
 writeFileSync(dst,[...header,...body,'};',''].join('\n'));

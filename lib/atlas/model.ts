@@ -27,12 +27,20 @@ export interface Corridor {
   baseline:number|null; baselineSamples:number; anomalyRatio:number|null; anomalyScore:number|null; lastActivity:number; rankScore:number;
 }
 export interface CountrySummary {code:string;inbound:number;outbound:number;knownEndpointAdjusted:number;coverage:number|null;}
+export type Totals={observed:number;adjusted:number;attributed:number;domestic:number;unattributed:number;excluded:number;unresolved:number;unpricedCount:number;transactionCount:number;coverage:number|null};
 export interface Snapshot {
   mode:'demo'|'production';window:WindowKey;at:number;seed:number;
   health:'DEMO DATA'|'LIVE'|'DELAYED'|'RECONNECTING'|'NOT CONNECTED';lastReceived:number|null;message:string;corridors:Corridor[];
-  totals:{observed:number;adjusted:number;attributed:number;domestic:number;unattributed:number;excluded:number;unresolved:number;unpricedCount:number;transactionCount:number;coverage:number|null};
+  totals:Totals;
   classifications:Record<string,number>;countries:CountrySummary[];history:{at:number;value:number}[];
   chainHealth:{chain:Chain;status:string;lastReceived:number|null}[];
+  /**
+   * Optional unfiltered denominator sample. The client build reads only transfers touching an evidenced
+   * wallet, so its `totals` describe evidenced settlement rather than all chain activity; this reports an
+   * exact accounting over a stated amount of sampled chain time, so coverage can be quoted honestly
+   * without extrapolating. The backend, which sees every transfer, leaves it undefined.
+   */
+  sample?:{totals:Totals;sampledMs:number};
 }
 export const UNKNOWN:Attribution={entity:'Unattributed address',addressCluster:'unknown',category:'unknown',jurisdiction:null,confidence:'UNKNOWN',score:0,source:'No admissible evidence',sourceUrl:null,evidenceNote:'No verified entity-to-jurisdiction relationship is available.',lastVerified:'',association:'unknown',synthetic:false};
 export function admissible(a:Attribution,at:number,allowSynthetic=false):boolean {
