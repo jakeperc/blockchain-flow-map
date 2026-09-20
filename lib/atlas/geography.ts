@@ -8,6 +8,14 @@ export const COUNTRIES:Record<string,{name:string;numeric:string;anchor:[number,
 };
 export const nameOf=(code:string)=>COUNTRIES[code]?.name??code;
 export const CHAIN_COLORS:Record<string,string>={Ethereum:'#92a9e7',Tron:'#de967d',Solana:'#b7a0d9',Base:'#5c9ddd',Arbitrum:'#81bfb3'};
+/** The public block explorer for each chain, so evidence links and "checked on" wording name the right one. */
+export const EXPLORERS:Record<string,{name:string;address:(a:string)=>string;tx:(h:string)=>string}>={
+ Ethereum:{name:'Etherscan',address:a=>`https://etherscan.io/address/${a}`,tx:h=>`https://etherscan.io/tx/${h}`},
+ Base:{name:'Basescan',address:a=>`https://basescan.org/address/${a}`,tx:h=>`https://basescan.org/tx/${h}`},
+ Arbitrum:{name:'Arbiscan',address:a=>`https://arbiscan.io/address/${a}`,tx:h=>`https://arbiscan.io/tx/${h}`},
+ Tron:{name:'Tronscan',address:a=>`https://tronscan.org/#/address/${a}`,tx:h=>`https://tronscan.org/#/transaction/${h}`},
+ Solana:{name:'Solscan',address:a=>`https://solscan.io/account/${a}`,tx:h=>`https://solscan.io/tx/${h}`}
+};
 export const ASSET_COLORS:Record<string,string>={USDC:'#81b9d1',USDT:'#9bc9a7'};
 export const CONFIDENCE_COLORS:Record<string,string>={VERIFIED:'#b2d4c6',HIGH:'#d3bd80',MEDIUM:'#cd947a',UNKNOWN:'#697579'};
 export type ColorMode='CHAIN'|'ASSET'|'CONFIDENCE';

@@ -1,48 +1,108 @@
-import {readFileSync,writeFileSync} from 'node:fs';
 /**
- * The date every generated row is stamped with. One constant rather than a per-row column because every
- * address in addresses.txt was read on the same research pass. admissible() refuses evidence older than
- * 180 days, so a regeneration that silently re-stamped a stale date would quietly shorten the life of
- * the published build. This refuses instead: bump CHECKED only when the addresses are genuinely re-read
- * against their explorer pages.
+ * Generate lib/atlas/known-addresses.ts from the curated list and the mechanical code probe.
+ *
+ *   node scripts/registry/gen-addresses.mjs scripts/registry/addresses.txt lib/atlas/known-addresses.ts
+ *
+ * addresses.txt rows are `chain|entity|address|label|checked|note`; `#` lines are comments. `checked`
+ * is the date the address's own explorer page was read, per row — admissible() refuses evidence older
+ * than 180 days, so it must be real, never a placeholder. code-probe.json (from probe-code.mjs) supplies
+ * each address's kind on each chain; a row with no probe entry fails the build, so a registry can never
+ * ship with an unknown wallet type.
+ *
+ * DERIVED rows: an Ethereum row whose address is a plain key-controlled account (eoa or delegated) on
+ * Ethereum AND on the target chain is listed as derivable there, unless a first-party row already exists
+ * for that chain and address (first-party always wins). Contract addresses never derive: the same
+ * address on another chain may be an unrelated deployment.
  */
-const CHECKED='2026-09-18';
-{
- const ageDays=(Date.now()-Date.parse(CHECKED))/86400000;
- if(!/^\d{4}-\d{2}-\d{2}$/.test(CHECKED)||!Number.isFinite(ageDays))throw Error('CHECKED must be an ISO date');
- if(ageDays<0)throw Error('CHECKED is in the future, which admissible() rejects outright');
- if(ageDays>150)throw Error(`CHECKED (${CHECKED}) is ${Math.round(ageDays)} days old, close to the 180-day expiry. Re-verify the addresses against their explorer pages and bump CHECKED rather than regenerating with a stale date.`);
-}
-const [,,src,dst]=process.argv;
+import {readFileSync,writeFileSync} from 'node:fs';
+import {dirname,join} from 'node:path';
+const [,,src='scripts/registry/addresses.txt',dst='lib/atlas/known-addresses.ts']=process.argv;
+const probePath=join(dirname(src),'code-probe.json');
+const CHAINS=new Set(['Ethereum','Base','Arbitrum','Tron','Solana']);
+const EVM=['Ethereum','Base','Arbitrum'];
+const KINDS=new Set(['eoa','delegated','contract']);
+const today=new Date().toISOString().slice(0,10);
+
+const probe=JSON.parse(readFileSync(probePath,'utf8'));
+if(!probe.probedAt||!/^\d{4}-\d{2}-\d{2}$/.test(probe.probedAt))throw Error('code-probe.json lacks a probedAt date');
+const probeAge=(Date.now()-Date.parse(probe.probedAt))/86400000;
+if(probeAge>150)throw Error(`code-probe.json is ${Math.round(probeAge)} days old; re-run probe-code.mjs`);
+
 const lines=readFileSync(src,'utf8').split(/\r?\n/).filter(l=>l.trim()&&!l.startsWith('#'));
-const seen=new Set();const groups=new Map();
+const seen=new Set();const groups=new Map();const byChainAddr=new Map();
 for(const l of lines){
- const [entity,addr,label,note='']=l.split('|');
- const key=addr.trim().toLowerCase();
- if(!/^0x[0-9a-f]{40}$/.test(key))throw Error('bad address '+addr);
- if(seen.has(key))throw Error('duplicate '+key);
- seen.add(key);
- if(!groups.has(entity.trim()))groups.set(entity.trim(),[]);
- groups.get(entity.trim()).push({key,label:label.trim(),note:note.trim()});
+ const p=l.split('|');
+ if(p.length<5)throw Error('row needs chain|entity|address|label|checked|note: '+l);
+ const [chain,entity,addr,label,checked,...rest]=p.map(s=>s.trim());
+ const note=rest.join('|').trim();
+ if(!CHAINS.has(chain))throw Error(`unknown chain '${chain}': ${l}`);
+ const key=EVM.includes(chain)?addr.toLowerCase():addr;
+ if(EVM.includes(chain)&&!/^0x[0-9a-f]{40}$/.test(key))throw Error('bad address '+addr);
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(checked))throw Error(`'checked' must be an ISO date: ${l}`);
+ if(checked>today)throw Error(`'checked' is in the future: ${l}`);
+ if((Date.now()-Date.parse(checked))/86400000>150)throw Error(`'checked' ${checked} is close to the 180-day expiry; re-read the explorer page and update the date: ${l}`);
+ const id=`${chain}:${key}`;
+ if(seen.has(id))throw Error('duplicate '+id);
+ seen.add(id);
+ const kind=probe[chain]?.[key];
+ if(EVM.includes(chain)&&!KINDS.has(kind))throw Error(`${id}: no code-probe entry; run scripts/registry/probe-code.mjs`);
+ if(!groups.has(entity))groups.set(entity,[]);
+ const rec={id,chain,key,label,checked,kind:kind??'eoa',note};
+ groups.get(entity).push(rec);
+ byChainAddr.set(id,rec);
 }
-const q=s=>"'"+s.replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'";
+
+// Derivations: Ethereum plain accounts onto the other EVM chains.
+const derived=[];
+for(const target of EVM.filter(c=>c!=='Ethereum')){
+ const addresses=[];
+ for(const rec of byChainAddr.values()){
+  if(rec.chain!=='Ethereum')continue;
+  if(rec.kind==='contract')continue;
+  const targetKind=probe[target]?.[rec.key];
+  if(targetKind!=='eoa'&&targetKind!=='delegated')continue;
+  if(byChainAddr.has(`${target}:${rec.key}`))continue; // first-party wins
+  addresses.push(rec.key);
+ }
+ derived.push({chain:target,addresses});
+}
+
+const q=s=>`'${String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")}'`;
 const header=[
  '/**',
- ' * Ethereum addresses with public evidence of the operating entity that controls them. Pure data.',
- ' * Keys are lowercase 0x addresses. `entity` is a key of ENTITIES in known-entities.ts; `label` is the',
- " * exact Etherscan public name tag read from the address's own page; `checked` is the date that page",
- ' * was read. Rules and the exclusion list live in known-entities.ts; read them before adding a line.',
- ' * Generated by scripts/registry/gen-addresses.mjs from scripts/registry/addresses.txt; edit that list and regenerate.',
+ ' * Chain-qualified addresses with public evidence of the operating entity that controls them. Pure data.',
+ ' * Keys are `${chain}:${address}` (lowercase on EVM chains), matching the backend\'s evidence keys. `entity`',
+ ' * is a key of ENTITIES in known-entities.ts; `label` is the exact public name tag read from the',
+ ' * address\'s own explorer page on that chain; `checked` is the date it was read; `kind` is the result of',
+ ' * eth_getCode on that chain. DERIVED lists Ethereum plain accounts that carry no code on the target',
+ ' * chain either, so the same key holder controls the address there; known-entities.ts turns those into',
+ ' * clearly-marked derived evidence at the minimum admissible score. Rules and the exclusion list live in',
+ ' * known-entities.ts; read them before adding a line.',
+ ' * GENERATED by scripts/registry/gen-addresses.mjs from scripts/registry/addresses.txt and',
+ ' * scripts/registry/code-probe.json; edit those and regenerate.',
  ' */',
- 'export interface AddressRecord {entity:string;label:string;checked:string;note?:string;}',
- 'const a=(entity:string,label:string,checked:string,note?:string):AddressRecord=>note?{entity,label,checked,note}:{entity,label,checked};',
+ "import type {Chain} from './model';",
+ "export type AddressKind='eoa'|'delegated'|'contract';",
+ 'export interface AddressRecord {chain:Chain;entity:string;label:string;checked:string;kind:AddressKind;note?:string;}',
+ 'const a=(chain:Chain,entity:string,label:string,checked:string,kind:AddressKind,note?:string):AddressRecord=>note?{chain,entity,label,checked,kind,note}:{chain,entity,label,checked,kind};',
  'export const ADDRESSES:Record<string,AddressRecord>={'
 ];
 const body=[];
 for(const [entity,rows] of groups){
  body.push(' // '+entity);
- for(const r of rows)body.push(` '${r.key}':a(${q(entity)},${q(r.label)},'${CHECKED}'${r.note?','+q(r.note):''}),`);
+ for(const r of rows)body.push(` ${q(r.id)}:a(${q(r.chain)},${q(entity)},${q(r.label)},${q(r.checked)},${q(r.kind)}${r.note?','+q(r.note):''}),`);
 }
 body[body.length-1]=body[body.length-1].replace(/,$/,'');
-writeFileSync(dst,[...header,...body,'};',''].join('\n'));
-console.log('addresses:',seen.size,'entities:',groups.size);
+const tail=[
+ '};',
+ `/** Ethereum plain accounts with no contract code on the target chain (probed ${probe.probedAt}). Never hand-edited. */`,
+ `export const CODE_PROBED_AT=${q(probe.probedAt)};`,
+ 'export const DERIVED:{chain:Chain;addresses:string[]}[]=[',
+ ...derived.map((d,i)=>` {chain:${q(d.chain)},addresses:[${d.addresses.map(q).join(',')}]}${i<derived.length-1?',':''}`),
+ '];',
+ ''
+];
+writeFileSync(dst,[...header,...body,...tail].join('\n'));
+const perChain={};for(const r of byChainAddr.values())perChain[r.chain]=(perChain[r.chain]??0)+1;
+const kinds={};for(const r of byChainAddr.values())kinds[r.kind]=(kinds[r.kind]??0)+1;
+console.log('addresses:',seen.size,JSON.stringify(perChain),'kinds:',JSON.stringify(kinds),'entities:',groups.size,'derived:',derived.map(d=>`${d.chain}=${d.addresses.length}`).join(' '));

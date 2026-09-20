@@ -7,9 +7,10 @@ export {CONTRACTS,ERC20_TRANSFER_TOPIC,type EvmLog};
 export const intakeSchema=z.object({chain:z.enum(CHAINS),transactionId:z.string().min(10).max(150),eventIndex:z.string().min(1).max(50),blockNumber:z.number().int().nonnegative(),blockHash:z.string().min(1).max(150),blockTime:z.number().int().positive(),tokenContract:z.string().min(20).max(100),amountAtomic:z.string().regex(/^\d{1,40}$/),sender:z.string().min(10).max(100),receiver:z.string().min(10).max(100),finality:z.enum(['finalized','confirmed']),economicClass:z.enum(['payment','exchange flow','institutional settlement','treasury movement','DeFi','bridge','mint/burn','infrastructure','unknown']).default('unknown'),classificationEvidence:z.string().max(2000).default(''),price:z.object({usd:z.number().positive().finite().max(100),at:z.number().int().positive(),source:z.string().min(3).max(300)}).nullable().default(null)}).strict();
 export type Intake=z.infer<typeof intakeSchema>;
 export async function normalize(input:Intake):Promise<Transfer>{
- const t=intakeSchema.parse(input),contract=addressKey(t.chain,t.tokenContract),asset=CONTRACTS[t.chain]?.[contract];if(!asset)throw Error('Token contract is not allowlisted');
+ const t=intakeSchema.parse(input),contract=addressKey(t.chain,t.tokenContract),spec=CONTRACTS[t.chain]?.[contract];if(!spec)throw Error('Token contract is not allowlisted');
+ const asset=spec.asset;
  if(t.blockTime>Date.now()+30000)throw Error('Future event rejected');
- const amountAtomic=BigInt(t.amountAtomic),denom=BigInt(1000000),amount=`${amountAtomic/denom}.${(amountAtomic%denom).toString().padStart(6,'0')}`;
+ const amountAtomic=BigInt(t.amountAtomic),denom=BigInt(10)**BigInt(spec.decimals),amount=`${amountAtomic/denom}.${(amountAtomic%denom).toString().padStart(spec.decimals,'0')}`;
  const sender=addressKey(t.chain,t.sender),receiver=addressKey(t.chain,t.receiver);
  const [senderEntity,receiverEntity]=await Promise.all([resolveAttribution(t.chain,sender),resolveAttribution(t.chain,receiver)]);
  const price=t.price&&Math.abs(t.price.at-t.blockTime)<=300000?t.price:null;
@@ -36,7 +37,7 @@ export async function pollEvm(chain:'Ethereum'|'Base'|'Arbitrum'){
  const logs=await rpc(url,'eth_getLogs',[{fromBlock:'0x'+from.toString(16),toBlock:'0x'+to.toString(16),address:Object.keys(CONTRACTS[chain]),topics:[ERC20_TRANSFER_TOPIC]}]) as EvmLog[];
  const blockIds=[...new Set([...logs.map(l=>l.blockNumber),'0x'+from.toString(16),'0x'+to.toString(16)])];
  const blocks=new Map<string,any>();for(let i=0;i<blockIds.length;i+=4){await Promise.all(blockIds.slice(i,i+4).map(async id=>{const b=await rpc(url,'eth_getBlockByNumber',[id,false]);if(!b)throw Error('Missing finalized block');blocks.set(id,b);}));}
- const events:Transfer[]=[];for(const log of logs){const b=blocks.get(log.blockNumber);if(log.blockHash!==b.hash)throw Error('Inconsistent finalized block hash');const raw=decodeEvmLog(chain,log,parseInt(b.timestamp,16)*1000);if(raw){raw.price=await priceAt(CONTRACTS[chain][raw.tokenContract],raw.blockTime);events.push(await normalize(raw));}}
+ const events:Transfer[]=[];for(const log of logs){const b=blocks.get(log.blockNumber);if(log.blockHash!==b.hash)throw Error('Inconsistent finalized block hash');const raw=decodeEvmLog(chain,log,parseInt(b.timestamp,16)*1000);if(raw){raw.price=await priceAt(CONTRACTS[chain][raw.tokenContract].asset,raw.blockTime);events.push(await normalize(raw));}}
  const inserted=await persist(events),captured=parseInt(blocks.get('0x'+to.toString(16)).timestamp,16)*1000,start=parseInt(blocks.get('0x'+from.toString(16)).timestamp,16)*1000;
  const state=to===tip?'LIVE':'DELAYED';await db.prepare('INSERT INTO feeds (chain,cursor,last_received,captured_to,coverage_start,state,error) VALUES (?,?,?,?,?,?,NULL) ON CONFLICT(chain) DO UPDATE SET cursor=excluded.cursor,last_received=excluded.last_received,captured_to=excluded.captured_to,state=excluded.state,error=NULL WHERE CAST(excluded.cursor AS INTEGER)>=CAST(feeds.cursor AS INTEGER)').bind(chain,String(to),Date.now(),captured,start,state).run();return{chain,status:state,inserted};
 }

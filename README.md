@@ -43,7 +43,7 @@ Generate new schema changes with `pnpm db:generate`. Never rewrite an applied mi
 
 ## Static live build (no backend)
 
-`pnpm build:live` builds the full UI as plain static files in `dist-live/` with an in-browser live Ethereum source (`lib/atlas/live-client.ts`) in place of the server API, deployable by FTP to any folder. See [live-lite/README.md](live-lite/README.md) for scope and limits.
+`pnpm build:live` builds the full UI as plain static files in `dist-live/` with an in-browser live source for Ethereum, Base and Arbitrum (`lib/atlas/live-client.ts`) in place of the server API, deployable by FTP to any folder. See [live-lite/README.md](live-lite/README.md) for scope and limits.
 
 ## Validation
 

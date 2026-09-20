@@ -20,14 +20,25 @@ app changes.
 
 - `live-lite/main.tsx` mounts the same `Atlas` component the main app uses, passing it an in-browser
   data source instead of letting it call `/api/snapshot`. It opens on the 1-hour window in live mode.
-- `lib/atlas/live-client.ts` is that source. On load it backfills the preceding hour (about 300
-  blocks, fetched in 50-block chunks from a free public Ethereum RPC endpoint, `eth.drpc.org` with
-  `1rpc.io/eth` as fallback), then polls for new blocks every ~20 seconds. Transfers are priced with
-  CoinGecko's free public API using its 5-minute price series (never an assumed $1 peg), evidence is
-  attached from the registry, and every transfer runs through the project's **real** classification
-  and aggregation code in `lib/atlas/engine.ts`. Totals, corridor ranking and the accounting panel are
-  therefore computed exactly as the production backend would compute them. Block times inside the
-  backfilled hour are interpolated between fetched block headers (about ±12 s); live blocks are exact.
+- `lib/atlas/live-client.ts` is that source, one feed per chain: Ethereum (USDC, USDT), Base (USDC) and
+  Arbitrum (USDC, USDT). On load each feed backfills the preceding hour — 300 Ethereum blocks, 1,800 Base
+  blocks or 14,400 Arbitrum blocks — from keyless public RPC endpoints, then polls every ~20 seconds.
+  **The feed is filtered**: it asks the node only for transfers that touch a wallet with evidence on that
+  chain, using the two indexed address positions of the Transfer event. Measured on 2026-09-20 that is
+  about 4 MB down and 2 MB up for one hour across all three chains, against roughly 140 MB unfiltered.
+  Nothing that can draw a route is lost, because a corridor needs an evidenced wallet at each end and the
+  deposit sweeps inference rests on are funded by exchange hot wallets. The cost is the denominator: the
+  headline is therefore "Observed on evidenced wallets", and a small unfiltered sample of chain time is
+  read every fifteen minutes and shown separately, never scaled up. Transfers are priced with CoinGecko's
+  free public API using its 5-minute price series (never an assumed $1 peg), evidence is attached from the
+  registry, and every transfer runs through the project's **real** classification and aggregation code in
+  `lib/atlas/engine.ts`. Block times inside the backfilled hour are interpolated between fetched block
+  headers; live blocks are exact. A chunk a public endpoint fails to serve is counted and the page reports
+  the window as partial with its real start time, rather than quietly showing a short hour.
+- The pure parts of that client — decoding, pricing, block-time interpolation, retention and the
+  deposit-address inference — live in `lib/atlas/live-core.ts` and are exercised by
+  `scripts/verify-live.cjs`. `pnpm build:live` runs every verifier first and refuses to build on a failure,
+  including when the evidence registry would expire within 60 days of the build.
 - **Country glow.** Most evidenced transfers have only one evidenced end (an exchange wallet and an
   unknown counterparty). Those can never be a route, but the app already sums them per jurisdiction as
   known-endpoint activity, so the map lights the jurisdiction's anchor in proportion. A glow is
@@ -41,7 +52,8 @@ It has no memory beyond the open browser tab: transfers are kept for about 90 mi
 anomaly scores, playback only reaches back as far as the retained buffer, and refreshing the page
 starts over (it re-backfills the hour). Those features need somewhere to remember data between visits:
 the main app's existing Cloudflare Workers + D1 backend, the phase 2 upgrade whenever you want it.
-Currently Ethereum only; Base and Arbitrum follow the same pattern.
+Tron needs a keyed TronGrid account and Solana a paid indexer, so both stay "Not connected" and the chain
+filter only offers what the build actually reads.
 
 ## The evidence registry
 
@@ -63,8 +75,10 @@ SwissBorg (France); Firi, NBX (Norway); Paribu, BtcTurk, Bitci (Türkiye); Coinm
 (Georgia); Bitso, Bullish (Gibraltar); Mercado Bitcoin (Brazil); VALR, AltCoinTrader (South Africa).
 Roughly half the wallets belong to Bithumb, Coinbase, Kraken, Binance and OKX, whose numbered hot, cold
 and collector wallets were traced one by one; a few dozen labelled wallets with no Ethereum mainnet
-activity at all were left out. The source list is `scripts/registry/addresses.txt`; regenerate the TypeScript with
-`node scripts/registry/gen-addresses.mjs scripts/registry/addresses.txt lib/atlas/known-addresses.ts`.
+activity at all were left out. The source list is `scripts/registry/addresses.txt` (`chain|entity|address|label|checked|note`, one row
+per address per chain); regenerate the TypeScript with
+`node scripts/registry/gen-addresses.mjs scripts/registry/addresses.txt lib/atlas/known-addresses.ts`
+after running `node scripts/registry/probe-code.mjs`.
 
 **Inferred deposit addresses.** Even with hundreds of labelled wallets, exchange customers almost never
 send from one exchange's hot wallet to another's: they withdraw to a per-customer *deposit address*
@@ -74,7 +88,17 @@ entity, after receiving from outside it, and which forwarded at least 80% of wha
 treated as that entity's deposit address for the rest of the session. Such evidence is marked
 **INFERRED** in its category, source and note, cites the sweep transaction, and is never persisted.
 This is what turns a Coinbase-to-Binance withdrawal into a US to Cayman Islands route. Open any route's
-"Why is this mapped here?" panel to see which endpoints rest on inference rather than a published label. Each address was checked against its own Etherscan page; each entity's jurisdiction is
+"Why is this mapped here?" panel to see which endpoints rest on inference rather than a published label.
+
+**Derived cross-chain evidence.** An Etherscan label is evidence about Ethereum. For Base and Arbitrum the
+build starts from the same registry: every Ethereum address is classified with `eth_getCode` on all three
+chains (`scripts/registry/probe-code.mjs`, result in `scripts/registry/code-probe.json`), and an address
+that is a plain key-controlled account on Ethereum *and* on the target chain is reused there as DERIVED
+evidence — HIGH at the minimum admissible score, never VERIFIED, with the derivation stated in the
+evidence panel. Of the 805 Ethereum addresses, 46 are contracts (multisigs, proxies) and never derive; 9
+more carry code on Base and 6 on Arbitrum and are excluded there too. A first-party Basescan or Arbiscan
+label always wins over a derivation, and only a first-party label can anchor a deposit-address inference,
+so routes on Base and Arbitrum depend on the labels read on those explorers. Each address was checked against its own Etherscan page; each entity's jurisdiction is
 tied to a regulator register, court filing or the company's own legal page, with HIGH rather than
 VERIFIED wherever a brand runs several separately regulated affiliates. The entity file's header lists
 the rules and the exchanges deliberately left out because their controlling entity is disputed in
