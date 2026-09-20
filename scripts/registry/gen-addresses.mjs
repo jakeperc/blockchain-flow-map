@@ -29,7 +29,7 @@ const probeAge=(Date.now()-Date.parse(probe.probedAt))/86400000;
 if(probeAge>150)throw Error(`code-probe.json is ${Math.round(probeAge)} days old; re-run probe-code.mjs`);
 
 const lines=readFileSync(src,'utf8').split(/\r?\n/).filter(l=>l.trim()&&!l.startsWith('#'));
-const seen=new Set();const groups=new Map();const byChainAddr=new Map();
+const seen=new Set();const groups=new Map();const byChainAddr=new Map();const orphans=[];
 for(const l of lines){
  const p=l.split('|');
  if(p.length<5)throw Error('row needs chain|entity|address|label|checked|note: '+l);
@@ -46,11 +46,17 @@ for(const l of lines){
  seen.add(id);
  const kind=probe[chain]?.[key];
  if(EVM.includes(chain)&&!KINDS.has(kind))throw Error(`${id}: no code-probe entry; run scripts/registry/probe-code.mjs`);
+ // An address that is a contract on Ethereum but carries no code on another chain is orphaned there:
+ // the multisig or proxy that controls it on Ethereum does not exist on that chain, so nobody can spend
+ // from it and inflows to it are stuck, not settlement. An explorer may still label it. Refuse it.
+ if(chain!=='Ethereum'&&EVM.includes(chain)&&probe.Ethereum?.[key]==='contract'&&kind!=='contract'){orphans.push(`${id} (${label})`);continue;}
  if(!groups.has(entity))groups.set(entity,[]);
  const rec={id,chain,key,label,checked,kind:kind??'eoa',note};
  groups.get(entity).push(rec);
  byChainAddr.set(id,rec);
 }
+
+if(orphans.length)throw Error('orphaned rows, contracts on Ethereum with no code on the target chain; remove them from addresses.txt:\n  '+orphans.join('\n  '));
 
 // Derivations: Ethereum plain accounts onto the other EVM chains.
 const derived=[];

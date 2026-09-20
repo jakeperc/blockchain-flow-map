@@ -804,3 +804,318 @@ Ethereum|mexc|0xd67f25ef2399a0c769b1a35634c5ce77166714db|MEXC 20|2026-09-18|Cold
 Ethereum|mexc|0xf95334a86d09a6eec74d69da344efaca424b13a9|MEXC 24|2026-09-18|Cold wallet. Safe multisig reserve wallet contract. Holds a very large reserve balance.
 Ethereum|mexc|0xe4e3eca65460c14a5245b09fee15a92ba09458b6|MEXC 26|2026-09-18|Cold wallet. Safe multisig reserve wallet contract. Holds a very large reserve balance.
 Ethereum|mexc|0xf016e1d45ef23bdd414e7a2e4d46e1b34577b508|MEXC 27|2026-09-18|Cold wallet. Safe multisig reserve wallet contract. Holds a very large reserve balance.
+
+# Arbitrum first-party rows (2026-09-20). Tags read from Arbiscan's own transaction-list page header, since address pages answered 403 to automated fetches; the label text is Arbiscan's.
+Arbitrum|binance|0xb38e8c17e38363af6ebdcb3dae12e0243582891d|Binance 54|2026-09-20|Primary Binance hot wallet on Arbitrum; very active. Arbiscan discloses the label as sourced from a public researcher compilation.
+Arbitrum|binance|0xf977814e90da44bfa03b6295a0616a897441acec|Binance: Hot Wallet 20|2026-09-20|Large reserve wallet; active.
+Arbitrum|binance|0x25681ab599b4e2ceea31f8b498052c53fc2d74db|Binance 94|2026-09-20|Very active.
+Arbitrum|binance|0x1b5b4e441f5a22bfd91b7772c780463f66a74b35|Binance 56|2026-09-20|Very active.
+Arbitrum|binance|0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055|Binance: Hot Wallet 34|2026-09-20|Very active; fed by Binance 54.
+Arbitrum|binance|0x28c6c06298d514db089934071355e5743bf21d60|Binance 14|2026-09-20|Lightly used on Arbitrum.
+Arbitrum|binance|0xdfd5293d8e347dfe59e90efd55b2956a1343963d|Binance 16|2026-09-20|Lightly used on Arbitrum.
+Arbitrum|binance|0x21a31ee1afc51d94c2efccaa2092ad1028285549|Binance 15|2026-09-20|Lightly used on Arbitrum.
+Arbitrum|binance|0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be|Binance|2026-09-20|Lightly used on Arbitrum.
+Arbitrum|binance|0x3c783c21a0383057d128bae431894a5c19f9cf06|Binance 47|2026-09-20|Dormant on Arbitrum.
+Arbitrum|binance|0xbd612a3f30dca67bf60a39fd0d35e39b7ab80774|Binance: Hot Wallet 13|2026-09-20|Dormant on Arbitrum.
+Arbitrum|binance|0x631fc1ea2270e98fbd9d92658ece0f5a269aa161|Binance: Hot Wallet|2026-09-20|Dormant on Arbitrum.
+Arbitrum|binance|0x515b72ed8a97f42c568d6a143232775018f133c8|Binance: Hot Wallet 12|2026-09-20|Dormant on Arbitrum.
+Arbitrum|binance|0xa180fe01b906a1be37be6c534a3300785b20d947|Binance: Hot Wallet 16|2026-09-20|Dormant on Arbitrum.
+Arbitrum|okx|0xafee421482faea92292ed3ffe29371742542ad72|OKX 230|2026-09-20|Current OKX hot wallet on Arbitrum; very active.
+Arbitrum|okx|0x62383739d68dd0f844103db8dfb05a7eded5bbe6|OKX 37|2026-09-20|Very active historically; quiet since May 2026. Arbiscan discloses the label as sourced from a public researcher compilation.
+Arbitrum|okx|0x0938c63109801ee4243a487ab84dffa2bba4589e|OKX|2026-09-20|Retired hot wallet; inactive since 2025.
+Arbitrum|okx|0xa7efae728d2936e78bda97dc267687568dd593f3|OKX 3|2026-09-20|Dormant on Arbitrum.
+Arbitrum|mexc|0x9b64203878f24eb0cdf55c8c6fa7d08ba0cf77e5|MEXC 10|2026-09-20|Very active hot wallet. Arbiscan discloses the label as sourced from a public researcher compilation.
+Arbitrum|mexc|0xb86f1061e0d79e8319339d5fdbb187d4e7ad3300|MEXC 30|2026-09-20|Active sweep target. Arbiscan discloses the label as sourced from a public researcher compilation.
+Arbitrum|mexc|0x75e89d5979e4f6fba9f97c104c2f0afb3f1dcb88|MEXC 1|2026-09-20|Dormant on Arbitrum.
+Arbitrum|mexc|0x9642b23ed1e01df1092b92641051881a322f5d4e|MEXC 16|2026-09-20|Dormant on Arbitrum.
+Arbitrum|mexc|0x4982085c9e2f89f2ecb8131eca71afad896e89cb|MEXC 13|2026-09-20|Dormant on Arbitrum.
+Arbitrum|bitget|0x5bdf85216ec1e38d6458c870992a69e38e03f7ef|Bitget 5|2026-09-20|Primary Bitget hot wallet on Arbitrum; very active.
+Arbitrum|bitget|0x97b9d2102a9a65a26e1ee82d59e42d1b73b68689|Bitget 3|2026-09-20|Active.
+Arbitrum|kucoin|0x03e6fa590cadcf15a38e86158e9b3d06ff3399ba|KuCoin 24|2026-09-20|Very active hot wallet.
+Arbitrum|kucoin|0xf3f094484ec6901ffc9681bcb808b96bafd0b8a8|KuCoin 25|2026-09-20|Active sweep target that forwards to KuCoin 24.
+Arbitrum|kucoin|0xd6216fc19db775df9774a6e33526131da7d19a2c|KuCoin 6|2026-09-20|Quiet since late 2025.
+Arbitrum|kucoin|0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23|KuCoin 15|2026-09-20|Active; inbound-heavy.
+Arbitrum|kucoin|0x58edf78281334335effa23101bbe3371b6a36a51|KuCoin 20|2026-09-20|Dormant on Arbitrum.
+Arbitrum|coinbase|0x3dd1d15b3c78d6acfd75a254e857cbe5b9ff0af2|Coinbase 17|2026-09-20|Very active. Arbiscan discloses the label as sourced from a public researcher compilation.
+Arbitrum|coinbase|0x05e3a758fdd29d28435019ac453297ea37b61b62|Coinbase 20|2026-09-20|Very active.
+Arbitrum|coinbase|0xa656f7d2a93a6f5878aa768f24eb38ec8c827fe2|Coinbase 26|2026-09-20|Very active.
+Arbitrum|coinbase|0xe68ee8a12c611fd043fb05d65e1548dc1383f2b9|Coinbase 28|2026-09-20|Very active.
+Arbitrum|coinbase|0x563537412ad5d49faa7fa442b9193b8238d98c3c|Coinbase 40|2026-09-20|Very active.
+Arbitrum|coinbase|0xb5d85cbf7cb3ee0d56b3bb207d5fc4b82f43f511|Coinbase 44|2026-09-20|Lightly used on Arbitrum.
+Arbitrum|kraken|0xd2dd7b597fd2435b6db61ddf48544fd931e6869f|Kraken 246|2026-09-20|Active; holds a large ARB reserve.
+Arbitrum|kraken|0xe9f7ecae3a53d2a67105292894676b00d1fab785|Kraken: Hot Wallet 1|2026-09-20|Dormant on Arbitrum.
+Arbitrum|wintermute|0xdbf5e9c5206d0db70a90108bf936da60221dc080|Wintermute: 0xdbf...080|2026-09-20|Quiet since late 2025.
+Arbitrum|bitfinex|0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec|Bitfinex: Hot Wallet|2026-09-20|Very active.
+Arbitrum|robinhood|0xa26e73c8e9507d50bf808b7a2ca9d5de4fcc4a04|Robinhood 4|2026-09-20|Active.
+Arbitrum|bitpanda|0x74dec05e5b894b0efec69cdf6316971802a2f9a1|Bitpanda 3|2026-09-20|Dormant on Arbitrum.
+Arbitrum|bithumb|0x17e5545b11b468072283cee1f066a059fb0dbf24|Bithumb: Hot Wallet|2026-09-20|Dormant on Arbitrum.
+Arbitrum|bitvavo|0xab782bc7d4a2b306825de5a7730034f8f63ee1bc|Bitvavo: Hot 3|2026-09-20|Primary Bitvavo hot wallet on Arbitrum; very active.
+Arbitrum|bitvavo|0xd2674da94285660c9b2353131bef2d8211369a4b|Bitvavo 15|2026-09-20|Lightly used. Arbiscan discloses the label as sourced from a public researcher compilation.
+Arbitrum|poloniex|0xa910f92acdaf488fa6ef02174fb86208ad7722ba|Poloniex 4|2026-09-20|Dormant on Arbitrum.
+Arbitrum|paxos|0x264bd8291fae1d75db2c5f573b07faa6715997b5|Paxos 4|2026-09-20|Very active operational wallet.
+Arbitrum|binanceus|0xa74e8ae2f83d2564af25420ad4d6a7fe224b053f|Binance US 9|2026-09-20|Dormant on Arbitrum.
+
+# Base first-party rows (2026-09-20), each read on its own Basescan address page. Basescan numbers wallets independently of Etherscan. Left out on purpose: BitGo and Bullish multisigs, Gemini 2/5/6 and Bullish 1-3 (contracts on Ethereum with no code on Base, so orphaned there), LCX Company Reserve (treasury) and Coinbase Miscellaneous. The generator additionally refused 22 Base rows and 1 Arbitrum row whose address is a contract on Ethereum with no code on the target chain (Kraken 5, Gemini 3 and Cold Wallet, Bitget 1/13-16/18 and Hot Wallets 1-2, MEXC 14/17, Paxos 2, Bullish 4 and MultiSig 4, Uphold 3/4, Poloniex 10, Indodax 4, Bitso 6/7; Bitfinex MultiSig 2 on Arbitrum).
+Base|coinbase|0x20fe51a9229eef2cf8ad9e89d91cab9312cf3b7a|Coinbase 14|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|coinbase|0x739120ade7ed878fca5bbdb806263a8258fe2360|Coinbase 22|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|coinbase|0x6dcbce46a8b494c885d0e7b6817d2b519df64467|Coinbase 25|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|coinbase|0xd34ea7278e6bd48defe656bbe263aef11101469c|Coinbase 27|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|coinbase|0x1985ea6e9c68e1c272d8209f3b478ac2fdb25c87|Coinbase 35|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|coinbase|0xb4807865a786e9e9e26e6a9610f2078e7fc507fb|Coinbase 36|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|coinbase|0x40ebc1ac8d4fedd2e144b75fe9c0420be82750c6|Coinbase 42|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|coinbase|0x71660c4005ba85c37ccec55d0c4493e66fe775d3|Coinbase 1|2026-09-20|Lightly used on Base.
+Base|coinbase|0x77696bb39917c91a0c3908d577d5e322095425ca|Coinbase 3|2026-09-20|Lightly used on Base. Base numbers its Coinbase wallets independently of Etherscan.
+Base|coinbase|0x7c195d981abfdc3ddecd2ca0fed0958430488e34|Coinbase 4|2026-09-20|Lightly used on Base.
+Base|coinbase|0x95a9bd206ae52c4ba8eecfc93d18eacdd41c88cc|Coinbase 5|2026-09-20|Lightly used on Base.
+Base|coinbase|0xb739d0895772dbb71a89a3754a160269068f0d45|Coinbase 6|2026-09-20|Lightly used on Base.
+Base|coinbase|0x4a4e859565d9b563afc8e63641542455cff0dfd2|Coinbase 7|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0xe1a0ddeb9b5b55e489977b438764e60e314e917c|Coinbase 8|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0x19ab546e77d0cd3245b2aad46bd80dc4707d6307|Coinbase 9|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xc070a61d043189d99bbf4baa58226bf0991c7b11|Coinbase 10|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xc8373edfad6d5c5f600b6b2507f78431c5271ff5|Coinbase 11|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0x503828976d22510aad0201ac7ec88293211d23da|Coinbase 12|2026-09-20|Lightly used on Base.
+Base|coinbase|0xb624219480543c54603fb6b07d5eb347e51bffe0|Coinbase 13|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x333d17d3b42bf7930dbc6e852ca7bcf560a69003|Coinbase 15|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0x9810762578accf1f314320cca5b72506ae7d7630|Coinbase 16|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0x3dd1d15b3c78d6acfd75a254e857cbe5b9ff0af2|Coinbase 17|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xf491d040110384dbcf7f241ffe2a546513fd873d|Coinbase 18|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xc7bf35c9a3bdd1b1c19a6963de669cb45191a019|Coinbase 19|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x05e3a758fdd29d28435019ac453297ea37b61b62|Coinbase 20|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xa3682fe8fd73b90a7564585a436ec2d2aeb612ee|Coinbase 21|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0xddfabcdc4d8ffc6d5beaf154f18b778f892a0740|Coinbase 23|2026-09-20|Lightly used on Base; funded by Coinbase 36.
+Base|coinbase|0x8af8485e1f178be06386cd3877fde20626e0284f|Coinbase 24|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xa656f7d2a93a6f5878aa768f24eb38ec8c827fe2|Coinbase 26|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xe68ee8a12c611fd043fb05d65e1548dc1383f2b9|Coinbase 28|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0x28c5b0445d0728bc25f143f8eba5c5539fae151a|Coinbase 29|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0xc9aaa6ca0e05b87d53a3e51edbc44b406eeaf299|Coinbase 30|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x7ed53f6e3de6b2b4156fa8e618506e60d8e65843|Coinbase 31|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x5122e9aa635c13afd2fc31de3953e0896bac7ab4|Coinbase 32|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x3cd751e6b0078be393132286c442345e5dc49699|Coinbase 33|2026-09-20|Lightly used on Base.
+Base|coinbase|0xd839c179a4606f46abd7a757f7bb77d7593ae249|Coinbase 34|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x731307f3b12cc56191ade83ea630a377d9a941f6|Coinbase 37|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x28e71d0b7f7f29106a1be2a5b289cab331e7b56f|Coinbase 38|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x4d8336bda6c11bd2a805c291ec719baedd10acb9|Coinbase 39|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x563537412ad5d49faa7fa442b9193b8238d98c3c|Coinbase 40|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xe86f3aaa57f63b2afeca68178182a91bc3909962|Coinbase 41|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xa14d57f5ea867572b0d239798d2c1dde13153902|Coinbase 43|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0xb5d85cbf7cb3ee0d56b3bb207d5fc4b82f43f511|Coinbase 44|2026-09-20|Lightly used on Base.
+Base|coinbase|0x441cacfd43856409b163b90e094bb42aeb70a70e|Coinbase 45|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x760dce7ea6e8ba224bffbeb8a7ff4dd1ef122bff|Coinbase 46|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0x6321f9f02d9d56261c8c79131ae74d7b427ccaf5|Coinbase 47|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0xb0fa34c866e1e1e7030820b4f846bb58d6f75b04|Coinbase 48|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x2a410f11a6f520398447bf423dcedd25dfd3a568|Coinbase 49|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0x14af92363379f3548958f9de1fb2e6e5df74476e|Coinbase 50|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|coinbase|0x3dd87411a3754deea8cc52c4cf57e2fc254924cc|Coinbase 51|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0xe3aac971590635f601ea751096f11343c70ebadf|Coinbase 52|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0xe7ee701bdaa5b446c985bfecc8933f3e5eeed867|Coinbase 53|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|coinbase|0xeb2629a2734e272bcc07bda959863f316f4bd4cf|Coinbase 54|2026-09-20|Lightly used on Base.
+Base|coinbase|0xd688aea8f7d450909ade10c47faa95707b0682d9|Coinbase 55|2026-09-20|Dormant on Base.
+Base|coinbase|0x02466e547bfdab679fc49e96bbfc62b9747d997c|Coinbase 56|2026-09-20|Dormant on Base.
+Base|coinbase|0x6b76f8b1e9e59913bfe758821887311ba1805cab|Coinbase 57|2026-09-20|Dormant on Base.
+Base|binance|0x3304e22ddaa22bcdc5fca2269b418046ae7b566a|Binance 73|2026-09-20|Primary Base hot wallet; very active with a very large ETH balance. Basescan discloses the label as sourced from a public researcher compilation.
+Base|binance|0xf977814e90da44bfa03b6295a0616a897441acec|Binance: Hot Wallet 20|2026-09-20|Large reserve wallet on Base.
+Base|binance|0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055|Binance: Hot Wallet 34|2026-09-20|Upgradeable proxy wallet contract; very active.
+Base|binance|0x5a52e96bacdabb82fd05763e25335261b270efcb|Binance 28|2026-09-20|Large ETH reserve on Base.
+Base|binance|0x3f5ce5fbfe3e9af3971dd833d26ba9b5c936f0be|Binance|2026-09-20|Lightly used on Base.
+Base|binance|0xd551234ae421e3bcba99a0da6d736074f22192ff|Binance 2|2026-09-20|Lightly used on Base.
+Base|binance|0x564286362092d8e7936f0549571a803b203aaced|Binance 3|2026-09-20|Lightly used on Base.
+Base|binance|0x0681d8db095565fe8a346fa0277bffde9c0edbbf|Binance 4|2026-09-20|Lightly used on Base.
+Base|binance|0xfe9e8709d3215310075d67e3ed32a380ccf451c8|Binance 5|2026-09-20|Lightly used on Base.
+Base|binance|0xbe0eb53f46cd790cd13851d5eff43d12404d33e8|Binance 7|2026-09-20|Lightly used on Base.
+Base|binance|0x28c6c06298d514db089934071355e5743bf21d60|Binance 14|2026-09-20|Active on Base.
+Base|binance|0x21a31ee1afc51d94c2efccaa2092ad1028285549|Binance 15|2026-09-20|Active on Base.
+Base|binance|0xdfd5293d8e347dfe59e90efd55b2956a1343963d|Binance 16|2026-09-20|Active on Base.
+Base|binance|0x56eddb7aa87536c09ccc2793473599fd21a8b17f|Binance 17|2026-09-20|Lightly used on Base.
+Base|binance|0x9696f59e4d72e237be84ffd425dcad154bf96976|Binance 18|2026-09-20|Lightly used on Base.
+Base|binance|0x4976a4a02f38326660d17bf34b431dc6e2eb2327|Binance 20|2026-09-20|Lightly used on Base.
+Base|binance|0x8894e0a0c962cb723c1976a4421c95949be2d4e3|Binance 51|2026-09-20|Lightly used on Base.
+Base|binance|0xb38e8c17e38363af6ebdcb3dae12e0243582891d|Binance 54|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used on Base.
+Base|binance|0xf92402bb795fd7cd08fb83839689db79099c8c9c|Binance: Hot 1|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Inbound only.
+Base|binance|0x631fc1ea2270e98fbd9d92658ece0f5a269aa161|Binance: Hot Wallet|2026-09-20|Dormant on Base.
+Base|binance|0xb1256d6b31e4ae87da1d56e5890c66be7f1c038e|Binance: Hot Wallet 2|2026-09-20|Dormant on Base.
+Base|binance|0xeb2d2f1b8c558a40207669291fda468e50c8a0bb|Binance: Hot Wallet 10|2026-09-20|Lightly used on Base.
+Base|binance|0x161ba15a5f335c9f06bb5bbb0a9ce14076fbb645|Binance: Hot Wallet 11|2026-09-20|Dormant on Base.
+Base|binance|0x515b72ed8a97f42c568d6a143232775018f133c8|Binance: Hot Wallet 12|2026-09-20|Lightly used on Base.
+Base|binance|0xbd612a3f30dca67bf60a39fd0d35e39b7ab80774|Binance: Hot Wallet 13|2026-09-20|Lightly used on Base.
+Base|binance|0x7a8a34db9acd10c3b6277473b192fe47192569ca|Binance: Hot Wallet 14|2026-09-20|Dormant on Base.
+Base|binance|0x1d40b233cdf2cc0cdc347d5401d5b02c2831a0c1|Binance: Hot Wallet 15|2026-09-20|Dormant on Base.
+Base|binance|0xa180fe01b906a1be37be6c534a3300785b20d947|Binance: Hot Wallet 16|2026-09-20|Dormant on Base.
+Base|binance|0x29bdfbf7d27462a2d115748ace2bd71a2646946c|Binance: Hot Wallet 17|2026-09-20|Dormant on Base.
+Base|binance|0x73f5ebe90f27b46ea12e5795d16c4b408b19cc6f|Binance: Hot Wallet 18|2026-09-20|Dormant on Base.
+Base|binance|0x1fbe2acee135d991592f167ac371f3dd893a508b|Binance: Hot Wallet 19|2026-09-20|Dormant on Base.
+Base|binance|0x01c952174c24e1210d26961d456a77a39e1f0bb0|Binance: Hot Wallet 23|2026-09-20|Lightly used on Base.
+Base|binance|0x74d940fbd783dc77526add6299ec3f2eb3455810|Binance: 24|2026-09-20|Dormant on Base.
+Base|okx|0xfd92f4e91d54b9ef91cc3f97c011a6af0c2a7eda|OKX|2026-09-20|Primary Base hot wallet; very active.
+Base|okx|0x236f9f97e0e62388479bf9e5ba4889e46b0273c3|OKX 2|2026-09-20|Dormant on Base.
+Base|okx|0xa7efae728d2936e78bda97dc267687568dd593f3|OKX 3|2026-09-20|Lightly used on Base.
+Base|okx|0x2c8fbb630289363ac80705a1a61273f76fd5a161|OKX 4|2026-09-20|Lightly used on Base.
+Base|okx|0x98ec059dc3adfbdd63429454aeb0c990fba4a128|OKX 6|2026-09-20|Lightly used on Base.
+Base|okx|0x5041ed759dd4afc3a72b8192c143f72f4724081a|OKX 7|2026-09-20|Lightly used on Base.
+Base|okx|0x461249076b88189f8ac9418de28b365859e46bfd|OKX 9|2026-09-20|Dormant on Base.
+Base|okx|0xc5451b523d5fffe1351337a221688a62806ad91a|OKX 10|2026-09-20|Dormant on Base.
+Base|okx|0x42436286a9c8d63aafc2eebbca193064d68068f2|OKX 11|2026-09-20|Dormant on Base.
+Base|okx|0x69a722f0b5da3af02b4a205d6f0c285f4ed8f396|OKX 12|2026-09-20|Dormant on Base.
+Base|okx|0xf59869753f41db720127ceb8dbb8afaf89030de4|OKX 15|2026-09-20|Dormant on Base.
+Base|okx|0x06959153b974d0d5fdfd87d561db6d8d4fa0bb0b|OKX 33|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|okx|0x4b4e14a3773ee558b6597070797fd51eb48606e5|OKX: Hot Wallet|2026-09-20|Dormant on Base.
+Base|okx|0x4e7b110335511f662fdbb01bf958a7844118c0d4|OKX: Hot Wallet 2|2026-09-20|Dormant on Base.
+Base|okx|0xa9ac43f5b5e38155a288d1a01d2cbc4478e14573|OKX: Hot Wallet 3|2026-09-20|Lightly used on Base.
+Base|okx|0xd19d3341227967610b94e7aebe8c971d2d48f419|OKX: Hot Wallet 4|2026-09-20|Lightly used on Base.
+Base|okx|0x559432e18b281731c054cd703d4b49872be4ed53|OKX: Hot Wallet 5|2026-09-20|Lightly used on Base.
+Base|kraken|0x6ffe505bcbcf2adade3ed57006d6b12ebc3b9033|Kraken: Hot Wallet 2|2026-09-20|Active on Base.
+Base|kraken|0xd2dd7b597fd2435b6db61ddf48544fd931e6869f|Kraken 246|2026-09-20|Active on Base.
+Base|kraken|0x7dafba1d69f6c01ae7567ffd7b046ca03b706f83|Kraken 245|2026-09-20|Active on Base.
+Base|kraken|0x22af984f13dfb5c80145e3f9ee1050ae5a5fb651|Kraken: Cold Wallet|2026-09-20|Cold wallet.
+Base|kraken|0xc06f25517e906b7f9b4dec3c7889503bb00b3370|Kraken: Cold Wallet 2|2026-09-20|Cold wallet.
+Base|kraken|0x72e93123e8b5d168246739cdc45360ea11209364|Kraken|2026-09-20|Active on Base.
+Base|kraken|0x2910543af39aba0cd09dbb2d50200b3e800a63d2|Kraken 1|2026-09-20|Lightly used on Base.
+Base|kraken|0x0a869d79a7052c7f1b55a8ebabbea3420f0d1e13|Kraken 2|2026-09-20|Dormant on Base.
+Base|kraken|0xe853c56864a2ebe4576a807d26fdc4a0ada51919|Kraken 3|2026-09-20|Lightly used on Base.
+Base|kraken|0x267be1c1d684f78cb4f6a176c4911b741e4ffdc0|Kraken 4|2026-09-20|Lightly used on Base.
+Base|kraken|0x53d284357ec70ce289d6d64134dfac8e511c8a3d|Kraken 6|2026-09-20|Cold wallet; dormant on Base.
+Base|kraken|0x89e51fa8ca5d66cd220baed62ed01e8951aa7c40|Kraken 7|2026-09-20|Dormant on Base.
+Base|kraken|0xae2d4617c862309a3d75a0ffb358c7a5009c673f|Kraken 10|2026-09-20|Lightly used on Base.
+Base|kraken|0x43984d578803891dfa9706bdeee6078d80cfc79e|Kraken 11|2026-09-20|Dormant on Base.
+Base|kraken|0x66c57bf505a85a74609d2c83e94aabb26d691e1f|Kraken 12|2026-09-20|Dormant on Base.
+Base|kraken|0xe9f7ecae3a53d2a67105292894676b00d1fab785|Kraken: Hot Wallet|2026-09-20|Dormant on Base.
+Base|kraken|0xe6a02eefc2612b13f2b3b914009576ce5495ec0e|Kraken: Withdrawals 1|2026-09-20|Withdrawal wallet. Basescan discloses the label as sourced from a public researcher compilation.
+Base|gemini|0xd24400ae8bfebb18ca49be86258a3c749cf46853|Gemini|2026-09-20|Active on Base.
+Base|gemini|0x5f65f7b609678448494de4c87521cdf6cef1e932|Gemini 4|2026-09-20|Contract wallet; active USDC flows.
+Base|gemini|0xd69b0089d9ca950640f5dc9931a41a5965f00303|Gemini 7|2026-09-20|Contract wallet deployed on Base.
+Base|gemini|0x183b1ffb0aa9213b9335adfad82e47bfb02f8d24|Gemini 8|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|gemini|0xf51710015536957a01f32558402902a2d9c35d82|Gemini 9|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|gemini|0x3e6722f32cbe5b3c7bd3dca7017c7ffe1b9e5a2a|Gemini 10|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|gemini|0xb1cce076e720300c4e49b529a7ce0e58d3c0e8fe|Gemini 11|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|gemini|0xb068656a1ab9609ef628c65c71c379f9d625815d|Gemini 12|2026-09-20|Contract wallet. Basescan discloses the label as sourced from a public researcher compilation. Unused.
+Base|gemini|0x066a10831d783fe4e08b7676d9881c77298ed298|Gemini 13|2026-09-20|Contract wallet. Basescan discloses the label as sourced from a public researcher compilation. Unused.
+Base|bitfinex|0x742d35cc6634c0532925a3b844bc454e4438f44e|Bitfinex 2|2026-09-20|Active on Base.
+Base|bitfinex|0x8103683202aa8da10536036edef04cdd865c225e|Bitfinex 20|2026-09-20|Active on Base.
+Base|bitfinex|0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec|Bitfinex: Hot Wallet|2026-09-20|Active on Base.
+Base|bitfinex|0xc61b9bb3a7a0767e3179713f3a5c7a9aedce193c|Bitfinex: MultiSig 2|2026-09-20|Multisig proxy contract deployed on Base.
+Base|bitfinex|0xe92d1a43df510f82c66382592a047d288f85226f|Bitfinex 19|2026-09-20|Lightly used on Base.
+Base|bitfinex|0x4fdd5eb2fb260149a3903859043e962ab89d8ed4|Bitfinex 5|2026-09-20|Lightly used on Base.
+Base|bitfinex|0x1151314c646ce4e0efd76d1af4760ae66a9fe30f|Bitfinex 1|2026-09-20|Dormant on Base.
+Base|bitfinex|0x36a85757645e8e8aec062a1dee289c7d615901ca|Bitfinex 10|2026-09-20|Lightly used on Base.
+Base|bitfinex|0xc56fefd1028b0534bfadcdb580d3519b5586246e|Bitfinex 11|2026-09-20|Lightly used on Base.
+Base|bitfinex|0x0b73f67a49273fc4b9a65dbd25d7d0918e734e63|Bitfinex 12|2026-09-20|Lightly used on Base.
+Base|bitfinex|0x482f02e8bc15b5eabc52c6497b425b3ca3c821e8|Bitfinex 13|2026-09-20|Dormant on Base.
+Base|bitfinex|0x1b8766d041567eed306940c587e21c06ab968663|Bitfinex 14|2026-09-20|Lightly used on Base.
+Base|bitfinex|0x5a710a3cdf2af218740384c52a10852d8870626a|Bitfinex 15|2026-09-20|Lightly used on Base.
+Base|bitfinex|0x28140cb1ac771d4add91ee23788e50249c10263d|Bitfinex 16|2026-09-20|Lightly used on Base.
+Base|bitfinex|0x53b36141490c419fa27ecabfeb8be1ecadc82431|Bitfinex 17|2026-09-20|Lightly used on Base.
+Base|bitfinex|0x0cd76cd43992c665fdc2d8ac91b935ca3165e782|Bitfinex 18|2026-09-20|Lightly used on Base.
+Base|bitfinex|0x618f37d7ff7b140e604172466cd42d1ec35e0544|Bitfinex 21|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitfinex|0x88037f361891a0b5de3c0c30632fbca7db2d341f|Bitfinex 22|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|kucoin|0x18b0f4547a89fe4c5fe84f258bea3601fa281e9f|KuCoin 57|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|kucoin|0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23|KuCoin 15|2026-09-20|Upgradeable proxy wallet contract; large ETH balance.
+Base|kucoin|0xd6216fc19db775df9774a6e33526131da7d19a2c|KuCoin 6|2026-09-20|Active on Base.
+Base|kucoin|0x7491f26a0fcb459111b3a1db2fbfc4035d096933|KuCoin 19|2026-09-20|Active on Base.
+Base|kucoin|0x58edf78281334335effa23101bbe3371b6a36a51|KuCoin 20|2026-09-20|Active on Base.
+Base|kucoin|0x2b5634c42055806a59e9107ed44d43c426e58258|KuCoin 1|2026-09-20|Dormant on Base.
+Base|kucoin|0x689c56aef474df92d44a1b70850f808488f9769c|KuCoin 2|2026-09-20|Dormant on Base.
+Base|kucoin|0xa1d8d972560c2f8144af871db508f0b0b10a3fbf|KuCoin 3|2026-09-20|Dormant on Base.
+Base|kucoin|0x1692e170361cefd1eb7240ec13d048fd9af6d667|KuCoin 5|2026-09-20|Lightly used on Base.
+Base|kucoin|0xcad621da75a66c7a8f4ff86d30a2bf981bfc8fdd|KuCoin 10|2026-09-20|Lightly used on Base.
+Base|kucoin|0xec30d02f10353f8efc9601371f56e808751f396f|KuCoin 11|2026-09-20|Dormant on Base.
+Base|kucoin|0x738cf6903e6c4e699d1c2dd9ab8b67fcdb3121ea|KuCoin 12|2026-09-20|Dormant on Base.
+Base|kucoin|0xd89350284c7732163765b23338f2ff27449e0bf5|KuCoin 13|2026-09-20|Dormant on Base.
+Base|kucoin|0x88bd4d3e2997371bceefe8d9386c6b5b4de60346|KuCoin 14|2026-09-20|Dormant on Base.
+Base|kucoin|0x41e29c02713929f800419abe5770faa8a5b4dadc|KuCoin 16|2026-09-20|Lightly used on Base.
+Base|kucoin|0x45300136662dd4e58fc0df61e6290dffd992b785|KuCoin 17|2026-09-20|Lightly used on Base.
+Base|kucoin|0x83c41363cbee0081dab75cb841fa24f3db46627e|KuCoin 18|2026-09-20|Dormant on Base.
+Base|kucoin|0xf97deb1c0bb4536ff16617d29e5f4b340fe231df|KuCoin 21|2026-09-20|Lightly used on Base.
+Base|kucoin|0xa152f8bb749c55e9943a3a0a3111d18ee2b3f94e|KuCoin 22|2026-09-20|Dormant on Base.
+Base|kucoin|0x53f78a071d04224b8e254e243fffc6d9f2f3fa23|KuCoin: Hot Wallet 2|2026-09-20|Lightly used on Base.
+Base|bitget|0xb8cda8d72da558ef8f76a0d928f9652d2b003e2e|Bitget 20|2026-09-20|Active on Base. Basescan discloses the label as sourced from a public researcher compilation.
+Base|bitget|0x5bdf85216ec1e38d6458c870992a69e38e03f7ef|Bitget 5|2026-09-20|Active on Base.
+Base|bitget|0x0639556f03714a74a5feeaf5736a4a64ff70d206|Bitget 4|2026-09-20|Lightly used on Base.
+Base|bitget|0x51971c86b04516062c1e708cdc048cb04fbe959f|Bitget 2|2026-09-20|Lightly used on Base.
+Base|bitget|0x461f6dcdd5be42d41fe71611154279d87c06b406|Bitget 10|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitget|0x9e00816f61a709fa124d36664cd7b6f14c13ee05|Bitget 11|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitget|0xdfe4b89cf009bffa33d9bca1f19694fc2d4d943d|Bitget 12|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitget|0xbc942e2250ec7ab83bfc4516bca4e281dbfbb393|Bitget 17|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitget|0x1d5ba5414f2983212e03bf7725add9eb4cdb00dc|Bitget 19|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|bitget|0x7651fc1605a58fe9a99f1fe0d6db05d4182a9a93|Bitget 21|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitget|0x6a3f28c47542bd5811ae37ab358d5d7e3ab84127|Bitget 22|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitget|0xf646d9b7d20babe204a89235774248ba18086dae|Bitget: Hot Wallet 3|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitget|0x149ded7438caf5e5bfdc507a6c25436214d445e1|Bitget: Hot Wallet 4|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|mexc|0x4e3ae00e8323558fa5cac04b152238924aa31b60|MEXC 15|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|mexc|0x3cc936b795a188f0e246cbb2d74c5bd190aecf18|MEXC 3|2026-09-20|Active on Base.
+Base|mexc|0x75e89d5979e4f6fba9f97c104c2f0afb3f1dcb88|MEXC 1|2026-09-20|Active on Base.
+Base|mexc|0x9642b23ed1e01df1092b92641051881a322f5d4e|MEXC 16|2026-09-20|Active on Base.
+Base|mexc|0x0211f3cedbef3143223d3acf0e589747933e8527|MEXC 2|2026-09-20|Dormant on Base.
+Base|mexc|0x9b64203878f24eb0cdf55c8c6fa7d08ba0cf77e5|MEXC 10|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|mexc|0x576b81f0c21edbc920ad63feeeb2b0736b018a58|MEXC 11|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|mexc|0x8e1701cfd85258ddb8dfe89bc4c7350822b9601d|MEXC 12|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|mexc|0x4982085c9e2f89f2ecb8131eca71afad896e89cb|MEXC 13|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|mexc|0x7920891b9ec6adb878092b65a7069c1ff79c7c8e|MEXC 18|2026-09-20|Dormant on Base.
+Base|mexc|0xe8832a868c091263ed190a9f4be304a03895dd91|MEXC 19|2026-09-20|Dormant on Base.
+Base|mexc|0x9bb6a22da110c6c9bab745bcaf0ee142ee83af37|MEXC 29|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|mexc|0xb86f1061e0d79e8319339d5fdbb187d4e7ad3300|MEXC 30|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|robinhood|0x6081258689a75d253d87ce902a8de3887239fe80|Robinhood 3|2026-09-20|Primary Base hot wallet; very active.
+Base|robinhood|0x841ed663f2636863d40be4ee76243377dff13a34|Robinhood 5|2026-09-20|Active on Base. Basescan discloses the label as sourced from a public researcher compilation.
+Base|robinhood|0xa26e73c8e9507d50bf808b7a2ca9d5de4fcc4a04|Robinhood 4|2026-09-20|Active on Base.
+Base|robinhood|0x2efb50e952580f4ff32d8d2122853432bbf2e204|Robinhood 2|2026-09-20|Active on Base.
+Base|robinhood|0x73af3bcf944a6559933396c1577b257e2054d935|Robinhood 6|2026-09-20|Active on Base. Basescan discloses the label as sourced from a public researcher compilation.
+Base|robinhood|0x40b38765696e3d5d8d9d834d8aad4bb6e418e489|Robinhood|2026-09-20|Active on Base.
+Base|robinhood|0xe0f3e36dbdfa9696b7bcb0d3313522a0bb28d5f4|Robinhood 8|2026-09-20|Active on Base. Basescan discloses the label as sourced from a public researcher compilation.
+Base|robinhood|0x7c5830cb1a1efe898dcd5cf401165cb952508ccc|Robinhood 7|2026-09-20|Lightly used. Basescan discloses the label as sourced from a public researcher compilation.
+Base|wintermute|0xdbf5e9c5206d0db70a90108bf936da60221dc080|Wintermute: 0xdbf...080|2026-09-20|Market-maker trading wallet; active on Base.
+Base|wintermute|0xabc98a142783b7441232d7782e38446641a0ab2b|Wintermute: 0xAbc...B2B|2026-09-20|Trading wallet funded by the main Wintermute wallet.
+Base|falconx|0x1157a2076b9bb22a85cc2c162f20fab3898f4101|FalconX 1|2026-09-20|Active on Base.
+Base|falconx|0xe1ed4da4284924ddaf69983b4d813fb1be58c380|FalconX 2|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|falconx|0x9fc6bef0702cf47dcd2e5a42b48e19aed8732499|FalconX 3|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|falconx|0xf9ef3d2bbeacdd439653096c18a199305f8bee19|FalconX 4|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|falconx|0xf85856147bac1fd760e6b8e81fae4c2e4a02dc8d|FalconX 5|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|falconx|0xbb017c48a3184146ae05815365e9fa680832c330|FalconX 6|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|anchorage|0xd52055a39a3d2f7505c739f981f296ea31b50191|Anchorage Digital: Custodian 1|2026-09-20|Custody wallet. Basescan discloses the label as sourced from a public researcher compilation.
+Base|anchorage|0xa44d54ae6a00e095daa000365c99c4a27303b6f3|Anchorage Digital Custodian 2|2026-09-20|Custody wallet; dormant on Base. Basescan discloses the label as sourced from a public researcher compilation.
+Base|paxos|0x264bd8291fae1d75db2c5f573b07faa6715997b5|Paxos 4|2026-09-20|Very active operational wallet. Basescan discloses the label as sourced from a public researcher compilation.
+Base|paxos|0x2fb074fa59c9294c71246825c1c9a0c7782d41a4|Paxos 7|2026-09-20|Active on Base.
+Base|paxos|0x7bbfaa2f8b2d2a613b4439be3428dfbf0f405390|Paxos 9|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|paxos|0xf845a0a05cbd91ac15c3e59d126de5dfbc2aabb7|Paxos 8|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|paxos|0xc5a8859c44ac8aa2169afacf45b87c08593bec10|Paxos 1|2026-09-20|Dormant on Base.
+Base|paxos|0x286af5cf60ae834199949bbc815485f07cc9c644|Paxos 3|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|paxos|0x7d766b06e7164be4196ee62e6036c9fcff68107d|Paxos 5|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|paxos|0x41b309236c87b1bc6fa8eb865833e44158fa991a|Paxos 6|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|uphold|0x3d8fc1cffaa110f7a7f9f8bc237b73d54c4abf61|Uphold 2|2026-09-20|Active on Base.
+Base|uphold|0x1c727a55ea3c11b0ab7d3a361fe0f3c47ce6de5d|Uphold|2026-09-20|Lightly used on Base.
+Base|uphold|0xa95350d70b18fa29f6b5eb8d627ceeeee499340d|Uphold 5|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitpanda|0x0529ea5885702715e83923c59746ae8734c553b7|Bitpanda 18|2026-09-20|Active on Base. Basescan discloses the label as sourced from a public researcher compilation.
+Base|bitpanda|0x74dec05e5b894b0efec69cdf6316971802a2f9a1|Bitpanda 3|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used on Base.
+Base|bitvavo|0xab782bc7d4a2b306825de5a7730034f8f63ee1bc|Bitvavo: Hot 3|2026-09-20|Primary Base hot wallet; very active. Basescan discloses the label as sourced from a public researcher compilation.
+Base|bitvavo|0xd2674da94285660c9b2353131bef2d8211369a4b|Bitvavo 15|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|bitvavo|0xedc6bacdc1e29d7c5fa6f6eca6fdd447b9c487c9|Bitvavo: Cold 1|2026-09-20|Cold wallet. Basescan discloses the label as sourced from a public researcher compilation.
+Base|bitvavo|0x079a892628ebf28d0ed8f00151cff225a093dc63|Bitvavo: Hot 1|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|upbit|0x390de26d772d2e2005c6d1d24afc902bae37a4bb|Upbit 1|2026-09-20|Dormant on Base.
+Base|upbit|0xba826fec90cefdf6706858e5fbafcb27a290fbe0|Upbit 2|2026-09-20|Lightly used on Base.
+Base|bithumb|0x582717501dec047513ec258458da7834011076de|Bithumb 364|2026-09-20|Active on Base. Basescan discloses the label as sourced from a public researcher compilation.
+Base|bithumb|0x17e5545b11b468072283cee1f066a059fb0dbf24|Bithumb: Hot Wallet|2026-09-20|Active on Base.
+Base|bithumb|0x88d34944cf554e9cccf4a24292d891f620e9c94f|Bithumb 1|2026-09-20|Dormant on Base.
+Base|bitkub|0xda4231ef1768176536eee3ec187315e60572bbd4|Bitkub 1|2026-09-20|Dormant on Base.
+Base|indodax|0x51836a753e344257b361519e948ffcaf5fb8d521|Indodax 1|2026-09-20|Very active on Base.
+Base|indodax|0x91dca37856240e5e1906222ec79278b16420dc92|Indodax 3|2026-09-20|Very active on Base; large ETH balance.
+Base|indodax|0xf077b0289016cdc8a9ae8196705a37f1aefa5091|Indodax 9|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|indodax|0x9cbadd5ce7e14742f70414a6dcbd4e7bb8712719|Indodax 2|2026-09-20|Lightly used on Base.
+Base|coinspot|0x4207837d4cd914467eb76bf88c4d6e7ba11ccdf9|CoinSpot 17|2026-09-20|Very active on Base. Basescan discloses the label as sourced from a public researcher compilation.
+Base|coinspot|0xf35a6bd6e0459a4b53a27862c51a2a7292b383d1|CoinSpot 1|2026-09-20|Lightly used on Base.
+Base|coinspot|0x916ed5586bb328e0ec1a428af060dc3d10919d84|CoinSpot 7|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|bitso|0x58b704065b7aff3ed351052f8560019e05925023|Bitso 1|2026-09-20|Very active on Base. Basescan discloses the label as sourced from a public researcher compilation.
+Base|bitso|0xe3ecd65cf2ad2eba2aa2be1d0894753b2172abd1|Bitso 3|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|bitso|0xa01aa2196724a39290f465b3925e5dcafe7f2256|Bitso 4|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|bitso|0x29d5527caa78f1946a409fa6acaf14a0a4a0274b|Bitso 2|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitso|0x10f76b23ec27d4d7faa53de69c79d0788933601e|Bitso 5|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|bitso|0x6d3714d6571be317887d8c7d6e7187930d354975|Bitso 8|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|swissborg|0x6cf9aa65ebad7028536e353393630e2340ca6049|SwissBorg 4|2026-09-20|Lightly used on Base.
+Base|lcx|0x2957ea6d4f06bc2badfb2958c65fc7d1be5461b1|LCX 3|2026-09-20|Active on Base.
+Base|lcx|0xbc4e4069b1cb2fc1256a2bf454ae3affb4e05a4d|LCX 4|2026-09-20|Active on Base.
+Base|lcx|0x4631018f63d5e31680fb53c11c9e1b11f1503e6f|LCX 2|2026-09-20|Dormant on Base.
+Base|binanceus|0x34ea4138580435b5a521e460035edb19df1938c1|Binance US 2|2026-09-20|Active on Base.
+Base|binanceus|0xf60c2ea62edbfe808163751dd0d8693dcb30019c|Binance US 3|2026-09-20|Active on Base.
+Base|binanceus|0x61189da79177950a7272c88c6058b96d4bcd6be2|Binance US|2026-09-20|Dormant on Base.
+Base|binanceus|0x43c5b1c2be8ef194a509cf93eb1ab3dbd07b97ed|Binance US 4|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|binanceus|0x21d45650db732ce5df77685d6021d7d5d1da807f|Binance US 5|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|binanceus|0x211ee0129a67e7d44514152eb43d9f31103ac46b|Binance US 6|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|binanceus|0x9223c017a39d4806d1d92c15046ae28c32c6d8e7|Binance US 7|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
+Base|binanceus|0xd5c08681719445a5fdce2bda98b341a49050d821|Binance US 8|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+Base|binanceus|0xa74e8ae2f83d2564af25420ad4d6a7fe224b053f|Binance US 9|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.

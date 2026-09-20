@@ -65,10 +65,21 @@ for(const d of DERIVED){
   if(host(a.sourceUrl)!==host(EXPLORERS[d.chain].address('x')))errors.push(`DERIVED ${d.chain}:${addr}: sourceUrl must point at ${EXPLORERS[d.chain].name}`);
  }
 }
-// A derived lookup must never be produced for a contract or for a chain with no derivation list.
+// A contract address must never resolve on another chain BY DERIVATION. It may resolve there through a
+// first-party label of its own (a proxy wallet deployed on both chains), never by reusing the Ethereum one.
 {
- const contract=Object.entries(ADDRESSES).find(([k,r])=>k.startsWith('Ethereum:')&&r.kind==='contract');
- if(contract&&knownAttribution('Base',contract[0].slice(9)))errors.push(`${contract[0]}: a contract must not resolve on Base`);
+ let checked=0;
+ for(const [k,r] of Object.entries(ADDRESSES)){
+  if(!k.startsWith('Ethereum:')||r.kind!=='contract')continue;
+  const addr=k.slice(9);
+  for(const chain of ['Base','Arbitrum']){
+   const a=knownAttribution(chain,addr);
+   if(a&&isDerived(a))errors.push(`${k}: a contract must not resolve on ${chain} by derivation`);
+   if(a&&!ADDRESSES[`${chain}:${addr}`])errors.push(`${k}: resolves on ${chain} without a first-party row there`);
+   checked++;
+  }
+ }
+ if(!checked)errors.push('expected at least one Ethereum contract row to exercise the derivation guard');
  if(knownAttribution('Tron','0x'+'1'.repeat(40)))errors.push('derivation must never reach Tron');
 }
 // evidencedAddresses() drives the live client's log filter; it must agree with the registry exactly.
