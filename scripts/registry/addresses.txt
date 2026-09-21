@@ -1139,3 +1139,21 @@ Ethereum|lemoncash|0xda496f2e9e78e357c34323b1ce0dcb6a2860129f|Lemon Cash 3|2026-
 Ethereum|lemoncash|0xc1da33e8d60daf4f93a52357a57a076f44c45759|Lemon Cash 5|2026-09-21|Withdrawal wallet: about $0.8M moved in the 7 days to 2026-09-21 across 2,000+ transfers. Lemon Cash 1, 2, 4 and 6 were idle or below $100k and were left out.
 Ethereum|lemoncash|0x203a53957d04a8a7df0951d1af510b2062b5b125|Lemon Cash 7|2026-09-21|About $0.4M moved in the 7 days to 2026-09-21; about $14.6M over 90 days.
 Ethereum|brasilbitcoin|0x04c079bb31deed8391015eed8d6b625a40957058|Brasil Bitcoin 1|2026-09-21|Very active: about $262M moved in the 90 days to 2026-09-21. Found as a counterparty of registry market makers.
+# Base wave 2026-09-21: Basescan tags for entities measured as active on Base; 330 tagged candidates screened, 3 active. Coinbase Business: Payment Protocol (a payment routing contract) is left out under rule 3.
+Base|bitget|0x97b9d2102a9a65a26e1ee82d59e42d1b73b68689|Bitget 3|2026-09-21|Previously only DERIVED on Base; now a first-party Basescan label, so it can anchor deposit inference. About $79M moved on Base in the 7 days to 2026-09-21.
+Base|bitget|0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54|Bitget 35|2026-09-21|Previously only DERIVED on Base; now a first-party Basescan label. About $36M moved on Base in the 7 days to 2026-09-21.
+# Arbitrum wave 2026-09-21: Arbiscan tags (read from the /txs?a= page header) for entities measured as active on Arbitrum; 679 tagged candidates screened over 3 days, admitted if at least $100k moved. Six were previously only DERIVED on Arbitrum; a first-party label lets them anchor deposit inference.
+Arbitrum|coinbase|0xff16739c86855937e14facd309f98a44285b5ca0|Coinbase 91|2026-09-21|About $31M moved on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|coinbase|0x564220f3f6f2d0ed28bf6a75f344fad7c6134a68|Coinbase 83|2026-09-21|About $17M moved on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|coinbase|0xd55c1ae0e52918c864616dd5ffba6c50b8fbe39e|Coinbase 85|2026-09-21|About $12M moved on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|coinbase|0xbde5bdb3a09056c5431af07957dc3d793fa01fba|Coinbase 87|2026-09-21|About $3.4M moved on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|coinbase|0x69b90c1d460f9e263a43272564892c00eb040962|Coinbase 90|2026-09-21|About $3.1M moved on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|coinbase|0x36b5c208fb86d802af97573fe9c8c7590da55f93|Coinbase 88|2026-09-21|About $2.4M moved on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|binance|0x3931dab967c3e2dbb492fe12460a66d0fe4cc857|Binance 89|2026-09-21|About $23M moved on Arbitrum in the 3 days to 2026-09-21, mostly withdrawals.
+Arbitrum|kucoin|0x17a30350771d02409046a683b18fe1c13ccfc4a8|KuCoin 40|2026-09-21|About $1.7M sent on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|bitget|0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23|Bitget 6|2026-09-21|Previously DERIVED here. About $19M moved on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|robinhood|0x841ed663f2636863d40be4ee76243377dff13a34|Robinhood 5|2026-09-21|Previously DERIVED here. About $9.5M moved on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|robinhood|0x2efb50e952580f4ff32d8d2122853432bbf2e204|Robinhood 2|2026-09-21|Previously DERIVED here. About $0.5M received on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|maicoin|0x477b8d5ef7c2c42db84deb555419cd817c336b6f|MaiCoin 1|2026-09-21|Previously DERIVED here. About $1.0M moved on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|falconx|0x1157a2076b9bb22a85cc2c162f20fab3898f4101|FalconX 1|2026-09-21|Previously DERIVED here. About $0.5M received on Arbitrum in the 3 days to 2026-09-21.
+Arbitrum|bitso|0x58b704065b7aff3ed351052f8560019e05925023|Bitso 1|2026-09-21|Previously DERIVED here. About $154k moved on Arbitrum in the 3 days to 2026-09-21.
