@@ -104,7 +104,6 @@ export function makeTransfer(r:Rec,attributionFor:(chain:Chain,address:string)=>
   classificationRationale:known?`Transfer touches a publicly documented exchange wallet (${evidenced.join(', ')}). Classified as exchange flow; the cited evidence is attached to each endpoint.`:'Economic purpose is unverified.',
   classificationVersion:'1.0',
   flags:{mintBurn:ZERO.test(r.sender)||ZERO.test(r.receiver),bridge:false,internalTransfer:false,crossBorderCandidate:false,bot:false},
-  synthetic:false
  };
  return classify(tx);
 }
@@ -140,7 +139,7 @@ export function decodeTransferLog(
   asset:info.asset,tokenContract:log.address.toLowerCase(),amount,amountAtomic:amountAtomic.toString(),
   usdValue:p?Number(amount)*p.usd:null,usdPrice:p?.usd??null,priceTime:p?.at??null,
   sender:'0x'+log.topics[1].slice(-40).toLowerCase(),receiver:'0x'+log.topics[2].slice(-40).toLowerCase(),
-  economicClass:'unknown',adjustment:'unresolved',senderEntity:UNKNOWN,receiverEntity:UNKNOWN,synthetic:false,feed
+  economicClass:'unknown',adjustment:'unresolved',senderEntity:UNKNOWN,receiverEntity:UNKNOWN,feed
  };
 }
 
@@ -209,7 +208,7 @@ export function inferDeposits(records:Rec[],opts:InferOptions):Map<string,Attrib
    source:`INFERRED from an observed deposit sweep, not a published label: this address forwarded its balance to ${ent.name}'s labelled wallet (${wallet})`,
    sourceUrl:opts.explorerTx(firstOut.chain,firstOut.transactionId),
    evidenceNote:`INFERRED. Within this session the address received ${external.length} transfer(s) on ${f.chain} from outside ${ent.name} and then sent ${Math.round(totalOut/totalIn*100)}% of that value to ${ent.name}'s labelled wallet ${firstOut.receiver} in transaction ${firstOut.transactionId}. Exchange deposit addresses are exchange-controlled, so the jurisdiction is ${ent.name}'s (${ent.jurisdiction}); this is inference from on-chain behaviour and is not persisted.`,
-   lastVerified:new Date(earliest).toISOString(),association:'operating entity',synthetic:false
+   lastVerified:new Date(earliest).toISOString(),association:'operating entity'
   });
  }
  return out;

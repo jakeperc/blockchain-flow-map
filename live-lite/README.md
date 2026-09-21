@@ -43,7 +43,7 @@ app changes.
   unknown counterparty). Those can never be a route, but the app already sums them per jurisdiction as
   known-endpoint activity, so the map lights the jurisdiction's anchor in proportion. A glow is
   activity touching that jurisdiction; a line is a two-sided, cross-border, evidenced transfer.
-- Demo mode still works too (the "Demo simulation" tab in Data & coverage), computed client-side.
+- There is no fallback dataset: when a provider, price feed or evidence record is unavailable, the page shows its real delayed, partial or unpriced state.
 
 ## What this build deliberately cannot do
 

@@ -1,6 +1,6 @@
 # Ledger Atlas — handoff notes for the next agent
 
-Written 2026-09-21 at commit `7ab08d5`. Read this before touching anything under
+Written 2026-09-21 at commit `7ab08d5` plus uncommitted synthetic-path retirement. Read this before touching anything under
 `lib/atlas/`, `scripts/registry/` or `docs/`. It explains the direction the project has
 been taking, the rules that must not be broken, and the workflows that keep the build
 honest. The longer explanations live in `docs/METHODOLOGY.md` and `live-lite/README.md`.
@@ -61,10 +61,10 @@ number is a feature, not a bug to be "improved" by loosening rules.
    project shows must be real data, live where possible and otherwise recent. Do not add
    simulated, seeded, placeholder, sample-fixture or "illustrative" values to anything a
    visitor can see, and do not fall back to fake data when a feed fails: show the honest
-   health state (Delayed/Partial/Reconnecting) instead. The legacy demo engine
-   (`demoEvents`/`demoSnapshot` in `lib/atlas/engine.ts`, the `'demo'` mode and the
-   `DEMO DATA` health state) is a leftover from the project's start and is slated for
-   removal (see section 8, item 1). Unit tests may use recorded real chain data as fixtures.
+   health state (Delayed/Partial/Reconnecting) instead. The legacy demo engine, demo mode
+   and `DEMO DATA` health state were removed on 2026-09-21. `verify-live-build.cjs` walks
+   the static entry's local import graph and fails the build if a demo mode, demo generator
+   or synthetic record field reaches it. Unit tests may use recorded real chain data as fixtures.
 
 ## 3. Data model in one screen
 
@@ -251,14 +251,10 @@ integrity rules in section 2 (free does not relax the evidence standard).
 
 ## 8. Open to-dos, in rough priority
 
-1. **Remove synthetic data** (rule 8). Retire the demo engine and demo mode, and make sure
-   nothing visitor-facing can render simulated values. Keep the build gate green; add a
-   verifier assertion that fails if synthetic data can reach the live build. Files that
-   still reference demo/synthetic data (2026-09-21): `lib/atlas/engine.ts`, `model.ts`,
-   `connectors.ts`, `production.ts`, `store.ts`, `known-entities.ts`, `live-core.ts`,
-   `components/atlas.tsx`, `app/page.tsx`, `app/api/snapshot/route.ts`,
-   `app/api/evidence/route.ts`. Some hits are `synthetic:false` guards, which can stay.
-2. **Expand free real-data sources** (section 7b), and report to Jake when free sources
+1. **Done 2026-09-21 — remove synthetic data** (rule 8). The demo generator, UI/API demo
+   switches, seeded snapshot fields and synthetic model fields are gone. `verify-live-build.cjs`
+   is wired into `verify-all.mjs` and inspects the static live import graph before Vite runs.
+2. **In progress — expand free real-data sources** (section 7b), and report to Jake when free sources
    run out, with a recommended list of free/paid APIs for him to get.
 3. **Re-verify evidence before 2027-03-17.** The build gate starts failing around
    mid-January 2027. Re-read the explorer pages and update the `checked` and

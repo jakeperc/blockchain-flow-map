@@ -11,7 +11,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
 const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core'].map(m=>`lib/atlas/${m}.ts`);
-const CHECKS=[['verify-model.cjs',[]],['verify-registry.cjs',[]],['verify-live.cjs',[]]];
+const CHECKS=[['verify-model.cjs',[]],['verify-registry.cjs',[]],['verify-live.cjs',[]],['verify-live-build.cjs',[]]];
 
 const horizonArg=process.argv.indexOf('--horizon-days');
 const horizon=horizonArg>-1?process.argv[horizonArg+1]:undefined;

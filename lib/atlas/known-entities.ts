@@ -153,7 +153,7 @@ for(const [key,rec] of Object.entries(ADDRESSES)){
  INDEX.set(key,{entity:ent.name,addressCluster:ent.id,category:ent.category,jurisdiction:ent.jurisdiction,confidence:ent.confidence,score:ent.confidence==='VERIFIED'?.95:.85,
   source:`${ex.name} public name tag + ${ent.source}`,sourceUrl:ex.address(addr),
   evidenceNote:`${ex.name} labels this address '${rec.label}' (checked ${rec.checked}).${rec.note?` ${rec.note}`:''} ${ent.evidenceNote} Jurisdiction source: ${ent.sourceUrl}`,
-  lastVerified:verified,association:'operating entity',synthetic:false});
+  lastVerified:verified,association:'operating entity'});
  listOn(rec.chain,addr);
 }
 for(const d of DERIVED){
@@ -169,7 +169,7 @@ for(const d of DERIVED){
    source:`${DERIVED_MARK}, not a published ${ex.name} name tag: Etherscan labels this address '${src.label}', and it is a plain key-controlled account on both Ethereum and ${d.chain}, so the same key holder controls it here. ${ent.source}`,
    sourceUrl:ex.address(addr),
    evidenceNote:`${DERIVED_MARK} cross-chain. Etherscan labels this address '${src.label}' (checked ${src.checked}). eth_getCode returns no contract code for it on Ethereum or on ${d.chain} (probed ${CODE_PROBED_AT}), so it is a plain account whose control follows its private key across EVM chains. This is inference from key derivation, not a published ${ex.name} label; anyone can send to the address here without the owner's cooperation, so it is weaker evidence as a receiver than as a sender. ${ent.evidenceNote} Jurisdiction source: ${ent.sourceUrl}`,
-   lastVerified:verified,association:'operating entity',synthetic:false});
+   lastVerified:verified,association:'operating entity'});
   listOn(d.chain,addr);
  }
 }

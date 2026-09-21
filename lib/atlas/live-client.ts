@@ -374,7 +374,7 @@ export function createLiveSource():LiveSource{
   }
  }
  function build(window:WindowKey,chain:string,at:number):Snapshot{
-  const s=aggregate(events(chain),window,at,'production');
+  const s=aggregate(events(chain),window,at);
   const active=[...feeds.values()].filter(f=>chain==='All chains'||chain===f.chain);
   const worst=active.find(f=>f.state!=='LIVE');
   s.health=!active.length?'NOT CONNECTED':!worst?'LIVE':worst.state==='RECONNECTING'?'RECONNECTING':worst.state==='CONNECTING'?'NOT CONNECTED':'DELAYED';
@@ -384,7 +384,7 @@ export function createLiveSource():LiveSource{
   const reg=registryHealth(at);
   const sampleRecs:Rec[]=[];let sampledMs=0;
   for(const f of active){sampleRecs.push(...f.sampleBuffer);sampledMs+=f.sampledMs;}
-  if(sampleRecs.length){const t:Totals=aggregate(sampleRecs,'1H',at,'production').totals;s.sample={totals:t,sampledMs};}
+  if(sampleRecs.length){const t:Totals=aggregate(sampleRecs,'1H',at).totals;s.sample={totals:t,sampledMs};}
   const loading=active.map(f=>f.progress()).filter((p):p is {done:number;total:number}=>!!p);
   const gaps=active.map(f=>({chain:f.chain,...f.coverage()})).filter(c=>c.missingBlocks);
   const starts=active.filter(f=>f.progress()===null).map(f=>({chain:f.chain,start:f.coverage().start})).filter((c):c is {chain:Chain;start:number}=>c.start!==null);

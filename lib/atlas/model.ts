@@ -9,16 +9,16 @@ export const WINDOWS: Record<WindowKey,number> = {'5M':300_000,'1H':3_600_000,'2
 export interface Attribution {
   entity:string; addressCluster:string; category:string; jurisdiction:string|null;
   confidence:Confidence; score:number; source:string; sourceUrl:string|null; evidenceNote:string;
-  lastVerified:string; association:'operating entity'|'unknown'; synthetic:boolean;
+  lastVerified:string; association:'operating entity'|'unknown';
 }
 export interface Transfer {
   id:string; chain:Chain; transactionId:string; eventIndex:string; blockNumber:number; blockHash:string;
-  blockTime:number; finality:'finalized'|'confirmed'|'synthetic'; asset:Asset; tokenContract:string;
+  blockTime:number; finality:'finalized'|'confirmed'; asset:Asset; tokenContract:string;
   amount:string; amountAtomic:string; usdValue:number|null; usdPrice:number|null; usdPriceSource:string; priceTime:number|null;
   sender:string; receiver:string; senderEntity:Attribution; receiverEntity:Attribution;
   economicClass:EconomicClass; adjustment:'included'|'excluded'|'unresolved';
   classificationRationale:string; classificationVersion:string;
-  flags:{bridge:boolean;mintBurn:boolean;internalTransfer:boolean;crossBorderCandidate:boolean;bot:boolean}; synthetic:boolean;
+  flags:{bridge:boolean;mintBurn:boolean;internalTransfer:boolean;crossBorderCandidate:boolean;bot:boolean};
 }
 export interface Corridor {
   id:string; origin:string; destination:string; window:WindowKey; windowStart:number; windowEnd:number;
@@ -29,8 +29,8 @@ export interface Corridor {
 export interface CountrySummary {code:string;inbound:number;outbound:number;knownEndpointAdjusted:number;coverage:number|null;}
 export type Totals={observed:number;adjusted:number;attributed:number;domestic:number;unattributed:number;excluded:number;unresolved:number;unpricedCount:number;transactionCount:number;coverage:number|null};
 export interface Snapshot {
-  mode:'demo'|'production';window:WindowKey;at:number;seed:number;
-  health:'DEMO DATA'|'LIVE'|'DELAYED'|'RECONNECTING'|'NOT CONNECTED';lastReceived:number|null;message:string;corridors:Corridor[];
+  window:WindowKey;at:number;
+  health:'LIVE'|'DELAYED'|'RECONNECTING'|'NOT CONNECTED';lastReceived:number|null;message:string;corridors:Corridor[];
   totals:Totals;
   classifications:Record<string,number>;countries:CountrySummary[];history:{at:number;value:number}[];
   chainHealth:{chain:Chain;status:string;lastReceived:number|null}[];
@@ -42,10 +42,10 @@ export interface Snapshot {
    */
   sample?:{totals:Totals;sampledMs:number};
 }
-export const UNKNOWN:Attribution={entity:'Unattributed address',addressCluster:'unknown',category:'unknown',jurisdiction:null,confidence:'UNKNOWN',score:0,source:'No admissible evidence',sourceUrl:null,evidenceNote:'No verified entity-to-jurisdiction relationship is available.',lastVerified:'',association:'unknown',synthetic:false};
-export function admissible(a:Attribution,at:number,allowSynthetic=false):boolean {
+export const UNKNOWN:Attribution={entity:'Unattributed address',addressCluster:'unknown',category:'unknown',jurisdiction:null,confidence:'UNKNOWN',score:0,source:'No admissible evidence',sourceUrl:null,evidenceNote:'No verified entity-to-jurisdiction relationship is available.',lastVerified:'',association:'unknown'};
+export function admissible(a:Attribution,at:number):boolean {
   const age=at-Date.parse(a.lastVerified);
-  return !!a.jurisdiction&&['VERIFIED','HIGH'].includes(a.confidence)&&a.score>=.8&&!!a.source&&!!a.evidenceNote&&a.association==='operating entity'&&Number.isFinite(age)&&age>=0&&age<=180*86400000&&(allowSynthetic||!a.synthetic);
+  return !!a.jurisdiction&&['VERIFIED','HIGH'].includes(a.confidence)&&a.score>=.8&&!!a.source&&!!a.evidenceNote&&a.association==='operating entity'&&Number.isFinite(age)&&age>=0&&age<=180*86400000;
 }
 export function money(n:number,compact=true):string {
   if(!compact)return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n);

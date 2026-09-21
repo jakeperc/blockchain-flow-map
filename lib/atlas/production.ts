@@ -5,8 +5,8 @@ import {configured} from './connectors';
 type Row=Record<string,any>;
 export async function productionSnapshot(window:WindowKey,requestedAt=0,chainFilter='All chains'):Promise<Snapshot>{
  const enabled=configured().filter(c=>chainFilter==='All chains'||c===chainFilter),now=Date.now();
- const empty=aggregate([],window,requestedAt||now,'production');
- if(!enabled.length){empty.message='No provider is configured for this selection. Demo data is available separately. Production never uses synthetic values.';return empty;}
+ const empty=aggregate([],window,requestedAt||now);
+ if(!enabled.length){empty.message='No provider is configured for this selection. No values are shown until real provider data is available.';return empty;}
  const db=database(),feedRows=(await db.prepare('SELECT * FROM feeds').all<Row>()).results;
  const feeds:Row[]=enabled.map(chain=>({chain,...feedRows.find(f=>f.chain===chain)}));
  const allHaveCapture=feeds.every(f=>f.captured_to),asOf=allHaveCapture?Math.min(...feeds.map(f=>Number(f.captured_to))):now;

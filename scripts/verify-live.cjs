@@ -24,7 +24,7 @@ const ENTS={acme:{id:'acme',name:'Acme Exchange',jurisdiction:'KY'},zeta:{id:'ze
 const attr=(cluster,over={})=>({entity:ENTS[cluster].name,addressCluster:cluster,category:'exchange',jurisdiction:ENTS[cluster].jurisdiction,
  confidence:'VERIFIED',score:.95,source:'Etherscan public name tag + regulator document naming the operating entity',
  sourceUrl:'https://etherscan.io/address/'+HOT,evidenceNote:"Etherscan labels this address 'Acme 1' (checked 2026-09-18). Operating entity documented.",
- lastVerified:'2026-09-18',association:'operating entity',synthetic:false,...over});
+ lastVerified:'2026-09-18',association:'operating entity',...over});
 /** Registry: HOT belongs to acme on Ethereum and on Base; HOT2 belongs to zeta on Ethereum. */
 const REGISTRY={[addressKey('Ethereum',HOT)]:attr('acme'),[addressKey('Base',HOT)]:attr('acme'),[addressKey('Ethereum',HOT2)]:attr('zeta')};
 const known=(chain,address)=>REGISTRY[addressKey(chain,address)]??null;
@@ -34,7 +34,7 @@ let n=0;
 const rec=(over={})=>{n++;return {id:`${over.chain??'Ethereum'}:0x${String(n).padStart(4,'0')}:0`,chain:'Ethereum',transactionId:'0x'+String(n).padStart(64,'a'),eventIndex:'0',
  blockNumber:1000+n,blockHash:'0x'+String(n).padStart(64,'b'),blockTime:T0,asset:'USDC',tokenContract:'0xtoken',amount:'100.000000',amountAtomic:'100000000',
  usdValue:100,usdPrice:1,priceTime:T0,sender:OUTSIDE,receiver:DEP,economicClass:'unknown',adjustment:'unresolved',
- senderEntity:UNKNOWN,receiverEntity:UNKNOWN,synthetic:false,feed:'evidenced',...over};};
+ senderEntity:UNKNOWN,receiverEntity:UNKNOWN,feed:'evidenced',...over};};
 /** The canonical sweep: OUTSIDE funds DEP, DEP forwards to a labelled hot wallet. */
 const sweep=(over={})=>[rec({sender:OUTSIDE,receiver:DEP,blockTime:T0,...over.in}),rec({sender:DEP,receiver:HOT,blockTime:T0+60000,...over.out})];
 

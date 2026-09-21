@@ -8,7 +8,6 @@ export async function resolveAttribution(chain:string,address:string):Promise<At
 export async function persist(events:Transfer[]){
  const db=database();let inserted=0;
  for(let i=0;i<events.length;i+=40){const batch=events.slice(i,i+40).map(t=>{
-  if(t.synthetic||t.senderEntity.synthetic||t.receiverEntity.synthetic)throw Error('Synthetic data is forbidden in the production store');
   const a=admissible(t.senderEntity,t.blockTime)?t.senderEntity.jurisdiction:null,b=admissible(t.receiverEntity,t.blockTime)?t.receiverEntity.jurisdiction:null;
   const mapped=t.adjustment==='included'&&a&&b&&a!==b?1:0;const confidence=mapped?(t.senderEntity.confidence==='VERIFIED'&&t.receiverEntity.confidence==='VERIFIED'?'VERIFIED':'HIGH'):null;
   return db.prepare('INSERT OR IGNORE INTO transfers (id,chain,transaction_id,block_time,asset,usd_value,adjustment,economic_class,origin,destination,confidence,mapped,payload) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(t.id,t.chain,t.transactionId,t.blockTime,t.asset,t.usdValue,t.adjustment,t.economicClass,a,b,confidence,mapped,JSON.stringify(t));});
