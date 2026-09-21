@@ -7,7 +7,9 @@
  * Arbiscan address pages return 403 to bots, so for arbiscan.io the /txs?a= page header is read instead (the tag
  * is still shown there). Requests are paced and the script stops on any non-200 or challenge page; it never works
  * around one. "no name tag" means the page has none: do not add the address. Tags that look like deposit plumbing
- * (deposit, funder, forwarder, internal, deployer) are flagged, but HANDOFF rule 3 decides admissibility.
+ * (deposit, funder, forwarder, internal, deployer) are flagged, but HANDOFF rule 3 decides admissibility. When the
+ * page says the label was copied from a public researcher compilation, that is printed too: record it in the row's
+ * note, as existing rows do.
  */
 const [host,...addrs]=process.argv.slice(2);
 if(!host||!addrs.length){console.error('usage: node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io> <0xaddress>...');process.exit(1);}
@@ -22,6 +24,9 @@ for(const a of addrs){
  // The tag sits in a tooltip attribute ending at &#10; or a closing quote; Arbiscan's header uses a span.
  const m=arb?html.match(/Public Name Tag \(viewable by anyone\)">([^<]+)<\/span>/):html.match(/Name Tag \(viewable by anyone\) <br\/> (.*?)(?:&#10;|')/);
  const tag=m?m[1].trim():null;
- console.log(`${a.toLowerCase()} | ${tag?`TAG: ${tag}${/deposit|funder|forwarder|internal|deployer/i.test(tag)?'   [looks like plumbing: check rule 3]':''}   (checked ${today})`:'no name tag'}`);
+ // Etherscan-family pages disclose labels copied from a public researcher compilation in a banner; existing rows
+ // record that in their note, and it can lower an entity's confidence to HIGH.
+ const via=html.match(/This address has been tagged based on ([^<.]+)/);
+ console.log(`${a.toLowerCase()} | ${tag?`TAG: ${tag}${/deposit|funder|forwarder|internal|deployer/i.test(tag)?'   [looks like plumbing: check rule 3]':''}${via?`   [explorer discloses: tagged based on ${via[1].trim()}]`:''}   (checked ${today})`:'no name tag'}`);
  await sleep(2500);
 }

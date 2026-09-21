@@ -1119,3 +1119,14 @@ Base|binanceus|0x211ee0129a67e7d44514152eb43d9f31103ac46b|Binance US 6|2026-09-2
 Base|binanceus|0x9223c017a39d4806d1d92c15046ae28c32c6d8e7|Binance US 7|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
 Base|binanceus|0xd5c08681719445a5fdce2bda98b341a49050d821|Binance US 8|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
 Base|binanceus|0xa74e8ae2f83d2564af25420ad4d6a7fe224b053f|Binance US 9|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
+# Wave 2026-09-21 (Ethereum): wallets of existing entities that were tagged but missing, admitted only if they moved at least $100k of USDC/USDT in the 7 days to 2026-09-21 (scripts/registry/screen-activity.mjs); each tag read on its own Etherscan page. 588 other tagged tail wallets (all 151 Coinbase, 176 OKX, 180 Kraken, 65 Binance, 11 Bitpanda) were idle or dust-only and were left out.
+Ethereum|okx|0x445f16314284b43dfa1fd3cd77b9dea4a1bebd97|OKX 225|2026-09-21|Very active hot wallet: about $1.9B moved in the 7 days to 2026-09-21.
+Ethereum|okx|0x3b98b9e9cb75c1cb1729aab8f09ced2936505e4f|OKX 217|2026-09-21|Very active: about $1.4B moved in the 7 days to 2026-09-21.
+Ethereum|okx|0x05d9617595e69ff577076355abc5e7c51ed0bdf3|OKX 191|2026-09-21|Very active: about $490M moved in the 7 days to 2026-09-21.
+Ethereum|okx|0xff8a035ea6c80673f741c2265985ed976a40d390|OKX 166|2026-09-21|Active: about $72M moved in the 7 days to 2026-09-21.
+Ethereum|okx|0x85dcd76d4fbd3aa0c85c27b9441222c19a14134b|OKX 226|2026-09-21|About $42M moved in the 7 days to 2026-09-21.
+Ethereum|okx|0x9391466ad56f2705ce5fd12e763a65509aee4862|OKX 218|2026-09-21|Active: about $21M moved in the 7 days to 2026-09-21.
+Ethereum|kraken|0x7dafba1d69f6c01ae7567ffd7b046ca03b706f83|Kraken 245|2026-09-21|About $50M moved in the 7 days to 2026-09-21.
+Ethereum|bitpanda|0x0529ea5885702715e83923c59746ae8734c553b7|Bitpanda 18|2026-09-21|Active hot wallet: about $23M moved in the 7 days to 2026-09-21.
+Ethereum|binance|0xa7c0d36c4698981fab42a7d8c783674c6fe2592d|Binance 74|2026-09-21|About $2.6M moved in the 7 days to 2026-09-21.
+Ethereum|binance|0xe4b5b2667e049ac8c79ae6c5a7e3300815aa32be|Binance 104|2026-09-21|Lightly used: about $276k moved in the 7 days to 2026-09-21.
