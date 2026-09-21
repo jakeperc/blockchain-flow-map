@@ -28,3 +28,16 @@
 .sample-note h4{margin:0 0 6px;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted,#8a9691)}
 .sample-note p{margin:0 0 10px;font-size:12px;line-height:1.5;color:var(--muted,#8a9691)}
 .sample-note p:last-child{margin:10px 0 0;font-style:italic}
+
+/* Phones: three equal stat columns that may wrap, so long figures and captions never touch or run into the toolbar below. */
+@media(max-width:650px){
+.headline-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;justify-content:stretch}
+.headline-metrics>div{min-width:0;padding-left:10px;padding-right:6px}
+.headline-metrics>div:first-child{padding-left:0}
+.headline-metrics>div>span{white-space:normal;align-items:flex-start;line-height:1.25;min-height:2.5em}
+.headline-metrics strong{font-size:clamp(16px,5.4vw,20px);letter-spacing:-.4px;overflow-wrap:anywhere}
+.headline-metrics small,.primary-metric button{line-height:1.3}
+.primary-metric button{white-space:normal;text-align:left}
+.map-toolbar{top:318px}
+.map-area{top:356px}
+}
