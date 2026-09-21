@@ -1,0 +1,989 @@
+{
+ "window": "window-D.json",
+ "at": 1789985927000,
+ "missing": {
+  "Ethereum": 0,
+  "Base": 0,
+  "Arbitrum": 0
+ },
+ "results": {
+  "cc97055": {
+   "slots": {
+    "Ethereum": 805,
+    "Base": 815,
+    "Arbitrum": 773
+   },
+   "views": {
+    "All chains": {
+     "corridors": 32,
+     "attributed": 63645401.11325477,
+     "adjusted": 625693619.0519681,
+     "observed": 726682200.0381923,
+     "domestic": 1696254.969567052,
+     "coverage": 0.10171975416608586,
+     "unpriced": 0,
+     "transfers": 17622,
+     "inferred": 421,
+     "jurisdictionsLit": [
+      "AT",
+      "AU",
+      "CA",
+      "CH",
+      "GB",
+      "GE",
+      "GI",
+      "ID",
+      "KY",
+      "PH",
+      "SC",
+      "SG",
+      "TH",
+      "TW",
+      "US",
+      "VG",
+      "ZA"
+     ],
+     "top": [
+      {
+       "id": "KY-GB",
+       "usd": 17995706.63066929,
+       "n": 3,
+       "entities": [
+        "Binance",
+        "Wintermute"
+       ]
+      },
+      {
+       "id": "GB-VG",
+       "usd": 17495791.125396058,
+       "n": 5,
+       "entities": [
+        "Wintermute",
+        "Bitfinex"
+       ]
+      },
+      {
+       "id": "US-KY",
+       "usd": 9029812.209563373,
+       "n": 64,
+       "entities": [
+        "Coinbase",
+        "Binance",
+        "Kraken",
+        "Gemini",
+        "Robinhood Crypto",
+        "Binance.US"
+       ]
+      },
+      {
+       "id": "KY-US",
+       "usd": 6078902.828146145,
+       "n": 40,
+       "entities": [
+        "Binance",
+        "Coinbase",
+        "Kraken",
+        "Jump Trading",
+        "Uphold",
+        "Zero Hash"
+       ]
+      },
+      {
+       "id": "SC-KY",
+       "usd": 4318104.862456277,
+       "n": 116,
+       "entities": [
+        "OKX",
+        "Binance",
+        "Bitget",
+        "KuCoin",
+        "MEXC"
+       ]
+      },
+      {
+       "id": "US-GB",
+       "usd": 1697867.3842703213,
+       "n": 1,
+       "entities": [
+        "Coinbase",
+        "Wintermute"
+       ]
+      },
+      {
+       "id": "KY-SC",
+       "usd": 1337944.569008988,
+       "n": 60,
+       "entities": [
+        "Binance",
+        "OKX",
+        "Bitget",
+        "MEXC",
+        "KuCoin"
+       ]
+      },
+      {
+       "id": "ZA-VG",
+       "usd": 1499669.9046051519,
+       "n": 1,
+       "entities": [
+        "VALR",
+        "Bitfinex"
+       ]
+      },
+      {
+       "id": "US-VG",
+       "usd": 1164042.5404772412,
+       "n": 8,
+       "entities": [
+        "Kraken",
+        "Bitfinex",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "GI-US",
+       "usd": 979769.5358107623,
+       "n": 1,
+       "entities": [
+        "Bullish",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "AU-KY",
+       "usd": 517274.5328969152,
+       "n": 3,
+       "entities": [
+        "CoinSpot",
+        "Binance"
+       ]
+      },
+      {
+       "id": "VG-KY",
+       "usd": 499885.71027275326,
+       "n": 1,
+       "entities": [
+        "Bitfinex",
+        "Binance"
+       ]
+      }
+     ]
+    },
+    "Ethereum": {
+     "corridors": 31,
+     "attributed": 63073807.768153265,
+     "adjusted": 492641687.465862,
+     "observed": 593045631.6993833,
+     "domestic": 1683950.8372374268,
+     "coverage": 0.12803181170599578,
+     "unpriced": 0,
+     "transfers": 15271,
+     "inferred": 311,
+     "jurisdictionsLit": [
+      "AT",
+      "AU",
+      "CA",
+      "CH",
+      "GB",
+      "GE",
+      "GI",
+      "KY",
+      "PH",
+      "SC",
+      "SG",
+      "TH",
+      "TW",
+      "US",
+      "VG",
+      "ZA"
+     ],
+     "top": [
+      {
+       "id": "KY-GB",
+       "usd": 17995706.63066929,
+       "n": 3,
+       "entities": [
+        "Binance",
+        "Wintermute"
+       ]
+      },
+      {
+       "id": "GB-VG",
+       "usd": 17495791.125396058,
+       "n": 5,
+       "entities": [
+        "Wintermute",
+        "Bitfinex"
+       ]
+      },
+      {
+       "id": "US-KY",
+       "usd": 9029809.261631759,
+       "n": 63,
+       "entities": [
+        "Coinbase",
+        "Binance",
+        "Kraken",
+        "Gemini",
+        "Robinhood Crypto",
+        "Binance.US"
+       ]
+      },
+      {
+       "id": "KY-US",
+       "usd": 6030798.191852597,
+       "n": 32,
+       "entities": [
+        "Binance",
+        "Coinbase",
+        "Kraken",
+        "Jump Trading",
+        "Uphold",
+        "Zero Hash"
+       ]
+      },
+      {
+       "id": "SC-KY",
+       "usd": 4200257.038086323,
+       "n": 64,
+       "entities": [
+        "OKX",
+        "Binance",
+        "Bitget",
+        "KuCoin",
+        "MEXC"
+       ]
+      },
+      {
+       "id": "US-GB",
+       "usd": 1697867.3842703213,
+       "n": 1,
+       "entities": [
+        "Coinbase",
+        "Wintermute"
+       ]
+      },
+      {
+       "id": "ZA-VG",
+       "usd": 1499669.9046051519,
+       "n": 1,
+       "entities": [
+        "VALR",
+        "Bitfinex"
+       ]
+      },
+      {
+       "id": "US-VG",
+       "usd": 1164042.5404772412,
+       "n": 8,
+       "entities": [
+        "Kraken",
+        "Bitfinex",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "KY-SC",
+       "usd": 1043792.4012434685,
+       "n": 41,
+       "entities": [
+        "Binance",
+        "OKX",
+        "Bitget",
+        "MEXC"
+       ]
+      },
+      {
+       "id": "GI-US",
+       "usd": 979769.5358107623,
+       "n": 1,
+       "entities": [
+        "Bullish",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "AU-KY",
+       "usd": 517274.5328969152,
+       "n": 3,
+       "entities": [
+        "CoinSpot",
+        "Binance"
+       ]
+      },
+      {
+       "id": "VG-KY",
+       "usd": 499885.71027275326,
+       "n": 1,
+       "entities": [
+        "Bitfinex",
+        "Binance"
+       ]
+      }
+     ]
+    },
+    "Base": {
+     "corridors": 4,
+     "attributed": 148412.46002870984,
+     "adjusted": 26866133.628243998,
+     "observed": 27019006.981446207,
+     "domestic": 4462.715523786464,
+     "coverage": 0.005524146573613624,
+     "unpriced": 0,
+     "transfers": 736,
+     "inferred": 14,
+     "jurisdictionsLit": [
+      "AU",
+      "CA",
+      "GI",
+      "ID",
+      "KY",
+      "SC",
+      "US",
+      "ZA"
+     ],
+     "top": [
+      {
+       "id": "SC-US",
+       "usd": 73011.6064565581,
+       "n": 1,
+       "entities": [
+        "MEXC",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "KY-US",
+       "usd": 45140.402267357706,
+       "n": 7,
+       "entities": [
+        "Binance",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "KY-GI",
+       "usd": 29683.74698803108,
+       "n": 1,
+       "entities": [
+        "Binance",
+        "Bitso"
+       ]
+      },
+      {
+       "id": "SC-KY",
+       "usd": 576.7043167629456,
+       "n": 2,
+       "entities": [
+        "Bitget",
+        "Binance"
+       ]
+      }
+     ]
+    },
+    "Arbitrum": {
+     "corridors": 7,
+     "attributed": 423180.88507280947,
+     "adjusted": 106185797.95786206,
+     "observed": 106617561.35736154,
+     "domestic": 7841.4168058387895,
+     "coverage": 0.003985287046020422,
+     "unpriced": 0,
+     "transfers": 1615,
+     "inferred": 96,
+     "jurisdictionsLit": [
+      "CA",
+      "GB",
+      "GI",
+      "KY",
+      "SC",
+      "TW",
+      "US",
+      "VG",
+      "ZA"
+     ],
+     "top": [
+      {
+       "id": "KY-SC",
+       "usd": 294152.1677655199,
+       "n": 19,
+       "entities": [
+        "Binance",
+        "MEXC",
+        "OKX",
+        "KuCoin"
+       ]
+      },
+      {
+       "id": "SC-KY",
+       "usd": 117271.12005318979,
+       "n": 50,
+       "entities": [
+        "OKX",
+        "Binance",
+        "MEXC",
+        "Bitget"
+       ]
+      },
+      {
+       "id": "TW-KY",
+       "usd": 5683.186220376129,
+       "n": 9,
+       "entities": [
+        "MaiCoin",
+        "Binance"
+       ]
+      },
+      {
+       "id": "KY-US",
+       "usd": 2964.234026190473,
+       "n": 1,
+       "entities": [
+        "Binance",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "US-SC",
+       "usd": 2362.511105239307,
+       "n": 5,
+       "entities": [
+        "Coinbase",
+        "MEXC",
+        "KuCoin"
+       ]
+      },
+      {
+       "id": "TW-SC",
+       "usd": 744.7179706806351,
+       "n": 1,
+       "entities": [
+        "MaiCoin",
+        "OKX"
+       ]
+      },
+      {
+       "id": "US-KY",
+       "usd": 2.9479316132889184,
+       "n": 1,
+       "entities": [
+        "Coinbase",
+        "Binance"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "be03bf3": {
+   "slots": {
+    "Ethereum": 824,
+    "Base": 831,
+    "Arbitrum": 799
+   },
+   "views": {
+    "All chains": {
+     "corridors": 36,
+     "attributed": 72729543.2506964,
+     "adjusted": 629054249.2075133,
+     "observed": 744750475.231349,
+     "domestic": 1890973.6570693352,
+     "coverage": 0.11561728315534242,
+     "unpriced": 0,
+     "transfers": 17926,
+     "inferred": 485,
+     "jurisdictionsLit": [
+      "AR",
+      "AT",
+      "AU",
+      "CA",
+      "CH",
+      "GB",
+      "GE",
+      "GI",
+      "HK",
+      "ID",
+      "KY",
+      "PH",
+      "SC",
+      "SG",
+      "TH",
+      "TW",
+      "US",
+      "VG",
+      "ZA"
+     ],
+     "top": [
+      {
+       "id": "KY-GB",
+       "usd": 17995706.63066929,
+       "n": 3,
+       "entities": [
+        "Binance",
+        "Wintermute"
+       ]
+      },
+      {
+       "id": "GB-VG",
+       "usd": 17495791.125396058,
+       "n": 5,
+       "entities": [
+        "Wintermute",
+        "Bitfinex"
+       ]
+      },
+      {
+       "id": "US-KY",
+       "usd": 9058180.395415619,
+       "n": 70,
+       "entities": [
+        "Coinbase",
+        "Binance",
+        "Kraken",
+        "Gemini",
+        "Robinhood Crypto",
+        "Binance.US"
+       ]
+      },
+      {
+       "id": "SC-KY",
+       "usd": 6718524.898934551,
+       "n": 118,
+       "entities": [
+        "OKX",
+        "Binance",
+        "Bitget",
+        "KuCoin",
+        "MEXC"
+       ]
+      },
+      {
+       "id": "KY-US",
+       "usd": 6127173.601292092,
+       "n": 41,
+       "entities": [
+        "Binance",
+        "Coinbase",
+        "Kraken",
+        "Jump Trading",
+        "Uphold",
+        "Zero Hash"
+       ]
+      },
+      {
+       "id": "KY-SC",
+       "usd": 5256194.8139077155,
+       "n": 81,
+       "entities": [
+        "Binance",
+        "OKX",
+        "Bitget",
+        "MEXC",
+        "KuCoin"
+       ]
+      },
+      {
+       "id": "US-GB",
+       "usd": 1697867.3842703213,
+       "n": 1,
+       "entities": [
+        "Coinbase",
+        "Wintermute"
+       ]
+      },
+      {
+       "id": "ZA-VG",
+       "usd": 1499669.9046051519,
+       "n": 1,
+       "entities": [
+        "VALR",
+        "Bitfinex"
+       ]
+      },
+      {
+       "id": "US-VG",
+       "usd": 1164042.5404772412,
+       "n": 8,
+       "entities": [
+        "Kraken",
+        "Bitfinex",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "US-SC",
+       "usd": 1039571.6979657921,
+       "n": 28,
+       "entities": [
+        "Coinbase",
+        "MEXC",
+        "OKX",
+        "Kraken",
+        "Robinhood Crypto",
+        "KuCoin"
+       ]
+      },
+      {
+       "id": "SC-GB",
+       "usd": 1099746.926659665,
+       "n": 1,
+       "entities": [
+        "OKX",
+        "B2C2"
+       ]
+      },
+      {
+       "id": "GI-US",
+       "usd": 979769.5358107623,
+       "n": 1,
+       "entities": [
+        "Bullish",
+        "Coinbase"
+       ]
+      }
+     ]
+    },
+    "Ethereum": {
+     "corridors": 34,
+     "attributed": 71880862.00596344,
+     "adjusted": 495097164.32490623,
+     "observed": 609916841.4596714,
+     "domestic": 1863850.4961693678,
+     "coverage": 0.14518536397593224,
+     "unpriced": 0,
+     "transfers": 15435,
+     "inferred": 331,
+     "jurisdictionsLit": [
+      "AR",
+      "AT",
+      "AU",
+      "CA",
+      "CH",
+      "GB",
+      "GE",
+      "GI",
+      "HK",
+      "KY",
+      "PH",
+      "SC",
+      "SG",
+      "TH",
+      "TW",
+      "US",
+      "VG",
+      "ZA"
+     ],
+     "top": [
+      {
+       "id": "KY-GB",
+       "usd": 17995706.63066929,
+       "n": 3,
+       "entities": [
+        "Binance",
+        "Wintermute"
+       ]
+      },
+      {
+       "id": "GB-VG",
+       "usd": 17495791.125396058,
+       "n": 5,
+       "entities": [
+        "Wintermute",
+        "Bitfinex"
+       ]
+      },
+      {
+       "id": "US-KY",
+       "usd": 9029809.261631759,
+       "n": 63,
+       "entities": [
+        "Coinbase",
+        "Binance",
+        "Kraken",
+        "Gemini",
+        "Robinhood Crypto",
+        "Binance.US"
+       ]
+      },
+      {
+       "id": "SC-KY",
+       "usd": 6600677.074564597,
+       "n": 66,
+       "entities": [
+        "OKX",
+        "Binance",
+        "Bitget",
+        "KuCoin",
+        "MEXC"
+       ]
+      },
+      {
+       "id": "KY-US",
+       "usd": 6030798.191852597,
+       "n": 32,
+       "entities": [
+        "Binance",
+        "Coinbase",
+        "Kraken",
+        "Jump Trading",
+        "Uphold",
+        "Zero Hash"
+       ]
+      },
+      {
+       "id": "KY-SC",
+       "usd": 4811011.913916986,
+       "n": 48,
+       "entities": [
+        "Binance",
+        "OKX",
+        "Bitget",
+        "MEXC"
+       ]
+      },
+      {
+       "id": "US-GB",
+       "usd": 1697867.3842703213,
+       "n": 1,
+       "entities": [
+        "Coinbase",
+        "Wintermute"
+       ]
+      },
+      {
+       "id": "ZA-VG",
+       "usd": 1499669.9046051519,
+       "n": 1,
+       "entities": [
+        "VALR",
+        "Bitfinex"
+       ]
+      },
+      {
+       "id": "US-VG",
+       "usd": 1164042.5404772412,
+       "n": 8,
+       "entities": [
+        "Kraken",
+        "Bitfinex",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "US-SC",
+       "usd": 1030743.1706121467,
+       "n": 19,
+       "entities": [
+        "Coinbase",
+        "MEXC",
+        "OKX",
+        "Kraken",
+        "Robinhood Crypto"
+       ]
+      },
+      {
+       "id": "SC-GB",
+       "usd": 1099746.926659665,
+       "n": 1,
+       "entities": [
+        "OKX",
+        "B2C2"
+       ]
+      },
+      {
+       "id": "GI-US",
+       "usd": 979769.5358107623,
+       "n": 1,
+       "entities": [
+        "Bullish",
+        "Coinbase"
+       ]
+      }
+     ]
+    },
+    "Base": {
+     "corridors": 5,
+     "attributed": 148452.25074908056,
+     "adjusted": 26866053.867721464,
+     "observed": 27019006.981446207,
+     "domestic": 4482.710922453003,
+     "coverage": 0.005525644051783885,
+     "unpriced": 0,
+     "transfers": 736,
+     "inferred": 15,
+     "jurisdictionsLit": [
+      "AU",
+      "CA",
+      "GI",
+      "ID",
+      "KY",
+      "SC",
+      "US",
+      "ZA"
+     ],
+     "top": [
+      {
+       "id": "SC-US",
+       "usd": 73011.6064565581,
+       "n": 1,
+       "entities": [
+        "MEXC",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "KY-US",
+       "usd": 45140.402267357706,
+       "n": 7,
+       "entities": [
+        "Binance",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "KY-GI",
+       "usd": 29683.74698803108,
+       "n": 1,
+       "entities": [
+        "Binance",
+        "Bitso"
+       ]
+      },
+      {
+       "id": "SC-KY",
+       "usd": 576.7043167629456,
+       "n": 2,
+       "entities": [
+        "Bitget",
+        "Binance"
+       ]
+      },
+      {
+       "id": "KY-SC",
+       "usd": 39.7907203707277,
+       "n": 1,
+       "entities": [
+        "Binance",
+        "Bitget"
+       ]
+      }
+     ]
+    },
+    "Arbitrum": {
+     "corridors": 9,
+     "attributed": 700228.9939838692,
+     "adjusted": 107091031.01488587,
+     "observed": 107814626.79023083,
+     "domestic": 22640.449977514312,
+     "coverage": 0.006538633416336574,
+     "unpriced": 0,
+     "transfers": 1755,
+     "inferred": 139,
+     "jurisdictionsLit": [
+      "AR",
+      "AT",
+      "CA",
+      "GB",
+      "GI",
+      "KY",
+      "SC",
+      "TW",
+      "US",
+      "VG",
+      "ZA"
+     ],
+     "top": [
+      {
+       "id": "KY-SC",
+       "usd": 445143.1092703565,
+       "n": 32,
+       "entities": [
+        "Binance",
+        "MEXC",
+        "OKX",
+        "KuCoin",
+        "Bitget"
+       ]
+      },
+      {
+       "id": "SC-KY",
+       "usd": 117271.12005318979,
+       "n": 50,
+       "entities": [
+        "OKX",
+        "Binance",
+        "MEXC",
+        "Bitget"
+       ]
+      },
+      {
+       "id": "KY-US",
+       "usd": 51235.00717213833,
+       "n": 2,
+       "entities": [
+        "Binance",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "GI-TW",
+       "usd": 41095.253950318656,
+       "n": 1,
+       "entities": [
+        "Bitso",
+        "MaiCoin"
+       ]
+      },
+      {
+       "id": "US-KY",
+       "usd": 28371.133783859532,
+       "n": 7,
+       "entities": [
+        "Coinbase",
+        "Binance"
+       ]
+      },
+      {
+       "id": "US-SC",
+       "usd": 8828.527353645513,
+       "n": 9,
+       "entities": [
+        "Coinbase",
+        "MEXC",
+        "KuCoin"
+       ]
+      },
+      {
+       "id": "TW-KY",
+       "usd": 5683.186220376129,
+       "n": 9,
+       "entities": [
+        "MaiCoin",
+        "Binance"
+       ]
+      },
+      {
+       "id": "SC-US",
+       "usd": 1825.6056382946347,
+       "n": 1,
+       "entities": [
+        "Bitget",
+        "Coinbase"
+       ]
+      },
+      {
+       "id": "TW-SC",
+       "usd": 776.0505416904216,
+       "n": 2,
+       "entities": [
+        "MaiCoin",
+        "OKX",
+        "Bitget"
+       ]
+      }
+     ]
+    }
+   }
+  }
+ }
+}

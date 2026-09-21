@@ -11,7 +11,12 @@
  * logs are fetched once for the union of their filters, then each registry sees only the logs its own filter returns.
  *
  *   node scripts/measure-corridors.mjs --window w.json [--end-hours-ago N] [--refs cc97055,worktree]
- *        [--chains Ethereum,Base,Arbitrum] [--out result.json]
+ *        [--chains Ethereum,Base,Arbitrum] [--out result.json] [--explain]
+ *
+ * --explain lists deposit-address inferences the first registry drew and the last one no longer draws, with the
+ * reason under the last registry. More evidence can remove an inference: once a newly evidenced wallet shows an
+ * address also paying a second entity, it no longer looks like one exchange's deposit address, and inference
+ * refuses it (out-legs to two clusters). Attributed value can then fall even as corridors rise.
  *
  * Differences from the browser, stated: prices come from the stored 5-minute CoinGecko series only (the browser also
  * adds a spot sample every two minutes); the window is exactly the backfilled hour with no live polling after it.
@@ -31,6 +36,7 @@ const endAgo=Number(opt('--end-hours-ago',0));
 const refs=opt('--refs','worktree').split(',');
 const chains=opt('--chains','Ethereum,Base,Arbitrum').split(',');
 const outFile=opt('--out');
+const explain=args.includes('--explain');
 if(!windowFile){console.error('usage: node scripts/measure-corridors.mjs --window w.json [--end-hours-ago N] [--refs a,b] [--chains ...] [--out r.json]');process.exit(1);}
 // Mirrors CHAIN_CONFIG in lib/atlas/live-client.ts: blocks in the backfilled hour, and the header spacing it uses.
 const LIVE={Ethereum:{blocks:300,chunk:50,slotMs:12000},Base:{blocks:1800,chunk:1500,slotMs:2000},Arbitrum:{blocks:14400,chunk:1200,slotMs:250}};
@@ -103,7 +109,7 @@ for(const chain of chains){
 
 /* ---------- Evaluate each registry exactly as the browser would ---------- */
 const at=Math.max(...chains.map(c=>win.chains[c].times[win.chains[c].end]));
-const results={};
+const results={},detail={};
 for(const [ref,A] of Object.entries(atlases)){
  const core=A['live-core'],ke=A['known-entities'],geo=A.geography,eng=A.engine,model=A.model,evm=A.evm;
  const series={USDT:win.prices.USDT,USDC:win.prices.USDC};
@@ -134,6 +140,7 @@ for(const [ref,A] of Object.entries(atlases)){
    top:s.corridors.slice(0,12).map(c=>({id:c.id,usd:c.usdValue,n:c.transactionCount,entities:c.topEntities.map(e=>e.entity)}))};
  }
  results[ref]={slots,views};
+ detail[ref]={recs,inferred,known:ke.knownAttribution};
 }
 
 /* ---------- Report ---------- */
@@ -150,6 +157,22 @@ if(refs.length>1){
   const x=a.views[view],y=b.views[view];
   const added=y.top.map(c=>c.id).filter(id=>!x.top.some(c=>c.id===id));
   console.log(`${view.padEnd(11)} corridors ${x.corridors} -> ${y.corridors} | attributed ${fm(x.attributed)} -> ${fm(y.attributed)} | share ${pct(x.coverage)} -> ${pct(y.coverage)} | lit ${x.jurisdictionsLit.length} -> ${y.jurisdictionsLit.length}${added.length?` | new in top: ${added.join(', ')}`:''}`);
+ }
+}
+if(explain&&refs.length>1){
+ const first=detail[refs[0]],last=detail[refs[refs.length-1]];
+ // Value of attributed transfers that ran through an inferred address under the first registry.
+ const through=key=>first.recs.filter(r=>r.tx&&(`${r.chain}:${r.sender}`===key||`${r.chain}:${r.receiver}`===key)).reduce((s,r)=>s+(r.usdValue??0),0);
+ const lost=[...first.inferred.keys()].filter(k=>!last.inferred.has(k)).map(k=>({k,v:through(k)})).sort((a,b)=>b.v-a.v);
+ console.log(`\n== inferences lost ${refs[0]} -> ${refs[refs.length-1]}: ${lost.length}, gained: ${[...last.inferred.keys()].filter(k=>!first.inferred.has(k)).length} ==`);
+ for(const {k,v} of lost.slice(0,10)){
+  const [chain,address]=k.split(':');
+  const outs={};
+  for(const r of last.recs)if(r.chain===chain&&r.sender===address){const a=last.known(chain,r.receiver);const who=a?a.entity:'unlabelled';outs[who]=(outs[who]??0)+(r.usdValue??0);}
+  const was=first.inferred.get(k).entity;
+  // Inflows from outside the entity, as each registry's filtered feed sees them: the 80% forwarding test uses these.
+  const inflow=d=>d.recs.filter(r=>r.chain===chain&&r.receiver===address&&d.known(chain,r.sender)?.entity!==was).reduce((s,r)=>s+(r.usdValue??0),0);
+  console.log(`${k} was ${was}'s deposit, carrying ${fm(v)} attributed; now pays ${Object.entries(outs).map(([w,x])=>`${w} ${fm(x)}`).join(', ')}; visible inflow from outside ${was} ${fm(inflow(first))} -> ${fm(inflow(last))}`);
  }
 }
 if(Object.values(missing).some(Boolean))console.log('\nWARNING: some block queries failed, so this window is incomplete; re-run before trusting it.');

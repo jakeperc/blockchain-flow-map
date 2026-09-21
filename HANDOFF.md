@@ -1,10 +1,12 @@
 # Ledger Atlas — handoff notes for the next agent
 
-Written 2026-09-21 at commit `7ab08d5` plus uncommitted synthetic-path retirement. Read this before touching anything under
+Last updated 2026-09-21 after the "more flows and countries" run (commits `cc97055` to
+`be03bf3`). Read this before touching anything under
 `lib/atlas/`, `scripts/registry/` or `docs/`. It explains the direction the project has
 been taking, the rules that must not be broken, and the workflows that keep the build
 honest. The longer explanations live in `docs/METHODOLOGY.md` and `live-lite/README.md`.
-The approved plan that produced the last four commits is in `docs/PLAN-2026-09.md`.
+The approved plan behind the September phases is in `docs/PLAN-2026-09.md`; the decisions
+waiting for Jake are in `docs/DECISIONS-2026-09.md`.
 
 ## 1. What this project is and how it ships
 
@@ -92,8 +94,9 @@ components/atlas.tsx                the UI
 Registry keys are `${chain}:${address}` (lowercase on EVM). This matches the deferred
 backend's `store.ts addressKey`, so keep it.
 
-Current registry: **1,116 first-party rows** (Ethereum 805, Base 263, Arbitrum 48) across
-70 entities and 28 jurisdictions, plus **1,277 derived** (Base 552, Arbitrum 725).
+Current registry: **1,151 first-party rows** (Ethereum 824, Base 265, Arbitrum 62) across
+74 entities and 29 jurisdictions, plus **1,303 derived** (Base 566, Arbitrum 737). Live
+filter slots used: Ethereum 824/1000, Base 831/4800, Arbitrum 799/997 (section 5).
 
 ## 4. Cross-chain evidence: first-party vs DERIVED
 
@@ -174,6 +177,36 @@ that Jake chose explicitly:
   external in-leg, sweep-before-receipt, cross-chain matches, and derived anchors.
 
 ## 6. Workflows
+
+### Measuring first (before and after any research wave)
+
+Rank work by measured activity, not row counts. On 2026-09-21, 83% of the Ethereum
+registry had moved no USDC/USDT in 90 days, and filter slots are capped (section 5), so a
+dormant row is not free. The diagnostics are read-only and never shipped:
+
+- `node scripts/measure-activity.mjs <Chain> [hours] [--end-hours-ago N] [--out f.json]`:
+  which evidenced wallets moved money, idle entities, direct entity and jurisdiction edges,
+  and the largest unlabelled counterparties per entity (research leads, not evidence).
+- `node scripts/measure-corridors.mjs --window w.json [--end-hours-ago N] --refs <old>,<new>`:
+  replays the map's 1H view with the browser's own pure functions and compares two
+  registries on identical chain history and prices. Windows must end within about 22 hours
+  (CoinGecko's free 5-minute series) and after the newest row's `checked` date. The five
+  windows and results from 2026-09-21 are in `docs/measurements/2026-09-21/`.
+- `node scripts/registry/label-scan.mjs [--host basescan.org|arbiscan.io] [--expand] <term>...`:
+  enumerates explorer tags; `--expand` walks numbered families past the 15-row cap. Terms
+  for re-scanning the unlabelled and excluded lists are in `label-scan-terms.txt`.
+- `node scripts/registry/screen-activity.mjs <Chain> <days> <candidates.txt>`: RPC activity
+  screen for candidates before spending explorer requests or filter slots on them.
+- `node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io> <addr>...`:
+  the admissible read. It prints the tag verbatim and any "tagged based on ... compilation"
+  disclosure, which goes into the row's note.
+- `node scripts/probe-endpoint-caps.mjs <Chain>`: endpoint caps for `feeds.ts`.
+
+Working admission floor since 2026-09-21: a tagged wallet is added only if it moved at
+least $100k in the screening window (7 days on Ethereum and Base, 3 days on Arbitrum).
+Documented operators whose tagged wallets moved nothing in 90 days are recorded as such and
+left out. Yields that day: hub counterparties 2 of 184 admissible; numbered exchange tails
+10 of 598; country leads 11 of 58 active; Basescan 3 of 330; Arbiscan 14 of 679.
 
 ### Adding addresses (a "research wave")
 
@@ -270,6 +303,19 @@ integrity rules in section 2 (free does not relax the evidence standard).
   them properly probably means the phase-2 backend (Workers + D1) so keys stay
   server-side. Raise that trade-off with Jake at the same time; do not put keys in the
   client bundle.
+- **Limits reached on 2026-09-21** (reported to Jake):
+  - **Explorer labels are close to exhausted on the three chains.** Every tagged, unregistered
+    wallet of the hubs, the big exchanges and the country leads was enumerated and screened;
+    what was active has been added.
+  - **Coverage of India and South America is blocked by chain, not labels.** CoinSwitch,
+    Bitbns, GOPAX, Ripio, Hata and Bitcoin.de have documented operators, but their tagged
+    Ethereum wallets moved nothing in 90 days. Their stablecoin flow is most likely on Tron or
+    BNB Chain. Tron needs a TronGrid key.
+  - **BNB Chain is keyless but tight.** publicnode passed 100-block getLogs and returned
+    9,821 USDT logs in that span, so it needs the filtered feed. Its stablecoins use 18
+    decimals.
+  - **Filter slots:** about 176 left on Ethereum and 198 on Arbitrum before sharding or the
+    dormant tier (D2).
 
 ## 8. Open to-dos, in rough priority
 
@@ -278,11 +324,17 @@ integrity rules in section 2 (free does not relax the evidence standard).
    is wired into `verify-all.mjs` and inspects the static live import graph before Vite runs.
 2. **In progress — expand free real-data sources** (section 7b), and report to Jake when free sources
    run out, with a recommended list of free/paid APIs for him to get.
+2b. **Waiting for Jake: D1, D2 and D3** in `docs/DECISIONS-2026-09.md`: whether to admit
+   exchange-published address lists (recommended: no), what to do past 1,000 filter slots
+   (recommended: a 90-day dormant tier, staying under the caps until it is built), and the
+   memo on excluded high-volume brands (only WhiteBIT is now settleable, at HIGH, as Panama).
 3. **Re-verify evidence before 2027-03-17.** The build gate starts failing around
    mid-January 2027. Re-read the explorer pages and update the `checked` and
    `lastVerified` dates; do not just bump dates.
 4. GitHub plus Cloudflare Pages hosting to replace manual FTP (Jake's noted future to-do).
-5. More first-party L2 labels: market makers on Base and Arbitrum, Upbit and Bithumb on Base.
+5. More first-party L2 labels: done on 2026-09-21 for every entity measured as active on
+   Base or Arbitrum. The unregistered market-maker, Upbit and Bithumb wallets were idle, so
+   they were not pursued.
 6. Tron needs a keyed TronGrid account, so it is out of scope for the keyless static build. Candidate for the key list Jake is asked for (section 7b).
 7. Solana needs a paid indexer; same.
 8. Phase-2 backend (Workers + D1): the registry loader is trivial now that keys are
@@ -301,3 +353,16 @@ integrity rules in section 2 (free does not relax the evidence standard).
 - Phases 1 and 2 (`ab54955`) made the registry chain-qualified and brought Base and
   Arbitrum online with per-chain feeds and the derived tier.
 - Phase 3 (`7ab08d5`) added first-party Basescan and Arbiscan labels and the orphan rule.
+- 2026-09-21, "more flows and countries" (`679b514` to `be03bf3`):
+  - Measured endpoint caps became a build gate (`feeds.ts`), and 1rpc.io/eth was demoted.
+  - Diagnostics now measure activity and replay the 1H view against stored hours.
+  - Each research wave was ranked by measured activity:
+    - Ten newer OKX, Kraken, Bitpanda and Binance hot wallets. OKX 225, 217 and 191 alone moved about
+      $3.8B in the week.
+    - Four operators: HashKey (HK), Independent Reserve (AU), Lemon Cash (AR, a new country) and
+      Brasil Bitcoin (BR).
+    - Sixteen first-party L2 labels, six of them upgrades from derived.
+  - Over five stored hours, corridors rose 14% and attributed value 4%; Arbitrum's attributed value
+    more than doubled (`docs/measurements/2026-09-21/`).
+  - The market-maker hubs were already covered: of 186 unregistered hub tags only Coinbase Prime 1
+    was active, and its custodian is ambiguous (D3).
