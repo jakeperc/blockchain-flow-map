@@ -13,6 +13,11 @@
     "Base": 815,
     "Arbitrum": 773
    },
+   "active": {
+    "Ethereum": 59,
+    "Base": 14,
+    "Arbitrum": 18
+   },
    "views": {
     "All chains": {
      "corridors": 19,
@@ -432,6 +437,11 @@
     "Ethereum": 824,
     "Base": 831,
     "Arbitrum": 799
+   },
+   "active": {
+    "Ethereum": 70,
+    "Base": 16,
+    "Arbitrum": 27
    },
    "views": {
     "All chains": {

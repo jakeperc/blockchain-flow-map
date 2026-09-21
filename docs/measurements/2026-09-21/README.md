@@ -22,13 +22,15 @@ UI's "% attributed" numerator (routes between evidenced wallets in different jur
 | E 03:11–04:19 | 19 → 20 | $10.62M → $10.98M | 5.4% → 5.5% | 15 → 18 | AR, BR, HK |
 | **All five** | **139 → 159 (+14%)** | **$198.1M → $205.4M (+4%)** | **8.4% → 8.8%** | | |
 
-By chain over the five hours:
+By chain over the five hours (active wallets = evidenced wallets that moved money in the hour, averaged):
 
-| Chain | Corridor-hours | Attributed | Pooled share |
-|---|---|---|---|
-| Ethereum | 137 → 155 | $197.1M → $203.3M | 9.6% → 10.0% |
-| Base | 16 → 17 | $248k → $248k | 0.3% → 0.3% |
-| Arbitrum | 28 → 37 | $0.73M → $1.89M | 0.3% → 0.9% |
+| Chain | Filter slots | Active wallets / hour | Corridor-hours | Attributed | Pooled share |
+|---|---|---|---|---|---|
+| Ethereum | 805 → 824 of 1000 | 63 → 74 | 137 → 155 | $197.1M → $203.3M | 9.6% → 10.0% |
+| Base | 815 → 831 of 4800 | 16 → 17 | 16 → 17 | $248k → $248k | 0.3% → 0.3% |
+| Arbitrum | 773 → 799 of 997 | 19 → 28 | 28 → 37 | $0.73M → $1.89M | 0.3% → 0.9% |
+
+A re-run on 2026-09-21 reproduced every figure exactly, with no failed block queries.
 
 **Why hour C falls:** one address, 0x0b2fdf41…c8c2, was inferred as a Binance deposit address under the old
 registry, carrying $8.00M of US→KY value. The new wallets reveal more of its inflows ($8.00M → $11.60M visible),

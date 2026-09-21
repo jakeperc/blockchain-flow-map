@@ -127,6 +127,9 @@ for(const [ref,A] of Object.entries(atlases)){
    if(!r||ids.has(r.id))continue;ids.add(r.id);recs.push(r);
   }
  }
+ // Evidenced wallets that moved money in this hour, per chain (first-party or derived).
+ const active={};
+ for(const chain of chains){const s=new Set();for(const r of recs)if(r.chain===chain)for(const a of [r.sender,r.receiver])if(ke.knownAttribution(chain,a))s.add(a);active[chain]=s.size;}
  const inferred=core.inferDeposits(recs,{known:ke.knownAttribution,firstParty:a=>!ke.isDerived(a),entities:ke.ENTITIES,explorerTx:(c,h)=>geo.EXPLORERS[c].tx(h),forwardShare:FORWARD_SHARE});
  const attributionFor=(c,a)=>ke.knownAttribution(c,a)??inferred.get(core.addressKey(c,a))??model.UNKNOWN;
  for(const r of recs)core.classifyRec(r,attributionFor);
@@ -139,14 +142,14 @@ for(const [ref,A] of Object.entries(atlases)){
    jurisdictionsLit:s.countries.filter(c=>c.knownEndpointAdjusted>0).map(c=>c.code).sort(),
    top:s.corridors.slice(0,12).map(c=>({id:c.id,usd:c.usdValue,n:c.transactionCount,entities:c.topEntities.map(e=>e.entity)}))};
  }
- results[ref]={slots,views};
+ results[ref]={slots,active,views};
  detail[ref]={recs,inferred,known:ke.knownAttribution};
 }
 
 /* ---------- Report ---------- */
 console.log(`\nWindow ${windowFile}: the hour ending ${new Date(at).toISOString()}. Figures are what the map's 1H view would show right after backfill.`);
 for(const [ref,r] of Object.entries(results)){
- console.log(`\n== ${ref} == filter slots ${chains.map(c=>`${c} ${r.slots[c]}`).join(', ')}`);
+ console.log(`\n== ${ref} == filter slots ${chains.map(c=>`${c} ${r.slots[c]}`).join(', ')} | wallets active this hour ${chains.map(c=>`${c} ${r.active[c]}`).join(', ')}`);
  for(const [view,v] of Object.entries(r.views))console.log(`${view.padEnd(11)} corridors ${String(v.corridors).padStart(3)} | attributed ${fm(v.attributed).padStart(7)} of adjusted ${fm(v.adjusted).padStart(7)} = ${pct(v.coverage).padStart(6)} | domestic ${fm(v.domestic).padStart(7)} | inferred deposits ${v.inferred} | unpriced ${v.unpriced} | lit ${v.jurisdictionsLit.length}`);
  console.log('top corridors (All chains):',r.views['All chains'].top.map(c=>`${c.id} ${fm(c.usd)}`).join(', ')||'none');
 }
