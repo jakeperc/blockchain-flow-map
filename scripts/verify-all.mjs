@@ -10,7 +10,7 @@ import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
-const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core'].map(m=>`lib/atlas/${m}.ts`);
+const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds'].map(m=>`lib/atlas/${m}.ts`);
 const CHECKS=[['verify-model.cjs',[]],['verify-registry.cjs',[]],['verify-live.cjs',[]],['verify-live-build.cjs',[]]];
 
 const horizonArg=process.argv.indexOf('--horizon-days');

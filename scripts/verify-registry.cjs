@@ -1,6 +1,6 @@
 /**
  * Registry integrity check. Compile the pure modules first, then run:
- *   node node_modules/typescript/bin/tsc lib/atlas/model.ts lib/atlas/geography.ts lib/atlas/known-addresses.ts lib/atlas/known-entities.ts --module commonjs --outDir <scratch> --target ES2020 --skipLibCheck --esModuleInterop
+ *   node node_modules/typescript/bin/tsc lib/atlas/model.ts lib/atlas/geography.ts lib/atlas/known-addresses.ts lib/atlas/known-entities.ts lib/atlas/feeds.ts --module commonjs --outDir <scratch> --target ES2020 --skipLibCheck --esModuleInterop
  *   node scripts/verify-registry.cjs <scratch> [--horizon-days N]
  *
  * The horizon is the point of this check. admissible() refuses evidence older than 180 days, so a build
@@ -10,10 +10,12 @@
  * age, so a future date makes the evidence inadmissible immediately instead of eventually.
  */
 const root=process.argv[2]||'/tmp/ledger-atlas-check';
-const {ADDRESSES,DERIVED,CODE_PROBED_AT}=require(root+'/known-addresses.js');
-const {ENTITIES,knownAttribution,registryStats,registryHealth,evidencedAddresses,isDerived}=require(root+'/known-entities.js');
-const {COUNTRIES,EXPLORERS}=require(root+'/geography.js');
-const {admissible,CHAINS}=require(root+'/model.js');
+const load=m=>require(`${root}/${m}.js`);
+const {ADDRESSES,DERIVED,CODE_PROBED_AT}=load('known-addresses');
+const {ENTITIES,knownAttribution,registryStats,registryHealth,evidencedAddresses,isDerived}=load('known-entities');
+const {COUNTRIES,EXPLORERS}=load('geography');
+const {admissible,CHAINS}=load('model');
+const {FEEDS,ENDPOINTS_MEASURED}=load('feeds');
 const errors=[],warnings=[];const now=Date.now();
 const hIdx=process.argv.indexOf('--horizon-days');
 const HORIZON_DAYS=hIdx>-1?Number(process.argv[hIdx+1]):60;
@@ -88,6 +90,22 @@ for(const chain of ['Ethereum','Base','Arbitrum']){
  const listed=new Set(evidencedAddresses(chain));
  if(listed.size!==fromRegistry.size||[...fromRegistry].some(a=>!listed.has(a)))errors.push(`evidencedAddresses('${chain}') disagrees with the registry (${listed.size} vs ${fromRegistry.size})`);
 }
+// The filtered feed sends a chain's whole evidenced-address list in one indexed topic position. Public nodes cap that
+// list and the block span, and above the smallest cap among the endpoints serving the filter every filtered request to
+// that endpoint fails and the feed degrades to Partial. The caps in feeds.ts are measurements
+// (scripts/probe-endpoint-caps.mjs); never raise one without re-measuring. Past a cap, shard the query or trim the filter.
+const filterSlots={};
+for(const [chain,cfg] of Object.entries(FEEDS)){
+ const large=cfg.endpoints.filter(e=>e.largeBody);
+ if(!large.length){errors.push(`${chain}: no endpoint is marked largeBody, so the filtered feed has nowhere to go`);continue;}
+ for(const e of large)if(!(e.maxTopics>0)||!(e.maxRange>0))errors.push(`${chain}: ${e.url} serves the filter but has no measured maxTopics/maxRange; run scripts/probe-endpoint-caps.mjs`);
+ const cap=Math.min(...large.map(e=>e.maxTopics??0)),span=Math.min(...large.map(e=>e.maxRange??0));
+ const filter=evidencedAddresses(chain).length;
+ if(filter>cap)errors.push(`${chain}: the live filter has ${filter} addresses but ${large.find(e=>(e.maxTopics??0)===cap).url} accepts at most ${cap} (measured ${ENDPOINTS_MEASURED})`);
+ else if(filter>cap*.95)warnings.push(`${chain}: live filter ${filter} is within 5% of the ${cap}-address endpoint cap`);
+ if(cfg.chunk>span)errors.push(`${chain}: chunk of ${cfg.chunk} blocks exceeds the smallest measured range cap (${span}) among the filter endpoints`);
+ filterSlots[chain]=`${filter}/${cap}`;
+}
 
 /* ---------- Entities ---------- */
 for(const [id,ent] of Object.entries(ENTITIES)){
@@ -116,4 +134,4 @@ for(const w of warnings)console.warn('WARN',w);
 if(expiringSoon>5)errors.push(`…and ${expiringSoon-5} further address(es) expiring within ${HORIZON_DAYS} days`);
 if(errors.length){for(const e of errors)console.error('ERROR',e);console.error(`${errors.length} registry error(s)`);process.exit(1);}
 const earliest=registryHealth(now).earliestExpiry;
-console.log(`Registry OK: ${stats.addresses} first-party addresses (${Object.entries(stats.byChain).map(([c,n])=>`${c} ${n}`).join(', ')}) + ${stats.derived} derived, ${stats.entities} entities, ${Object.keys(stats.byJurisdiction).length} jurisdictions. Evidence valid through ${new Date(earliest).toISOString().slice(0,10)} (${Math.round((earliest-now)/86400000)} days); build horizon ${HORIZON_DAYS} days.`);
+console.log(`Registry OK: ${stats.addresses} first-party addresses (${Object.entries(stats.byChain).map(([c,n])=>`${c} ${n}`).join(', ')}) + ${stats.derived} derived, ${stats.entities} entities, ${Object.keys(stats.byJurisdiction).length} jurisdictions. Evidence valid through ${new Date(earliest).toISOString().slice(0,10)} (${Math.round((earliest-now)/86400000)} days); build horizon ${HORIZON_DAYS} days. Live filter slots used/cap: ${Object.entries(filterSlots).map(([c,s])=>`${c} ${s}`).join(', ')}.`);

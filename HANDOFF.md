@@ -83,6 +83,7 @@ lib/atlas/model.ts                  types, admissible(), CHAINS
 lib/atlas/engine.ts                 aggregate() -> corridors/totals; applies no chain filter itself
 lib/atlas/live-core.ts              PURE logic: log decoding, pricing, chunk planning,
                                     inferDeposits(). No fetch/DOM/timers. Fully unit-tested.
+lib/atlas/feeds.ts                  FEEDS: per-chain endpoints with measured caps, chunking (pure)
 lib/atlas/live-client.ts            transport + state machine: per-chain feeds, endpoint
                                     rotation, backfill, poll, sample, health, dispose()
 components/atlas.tsx                the UI
@@ -127,23 +128,39 @@ that Jake chose explicitly:
   back to unfiltered feeds; that was the 29 MB/hour problem.
 - A separate small **unfiltered sample** is fetched every ~10 minutes for the honest
   denominator (`Snapshot.sample`).
-- **Per-chain config** in `CHAIN_CONFIG` (`live-client.ts`): chain id, slot time, blocks
-  per hour, chunk size, pause. Ethereum 50-block chunks, Base 1500, Arbitrum 1200 with a
-  350 ms pause. These were measured against each endpoint's range cap; change them only
-  after re-measuring.
-- **Endpoint facts** (verified 2026-09-19–21, all CORS `*`):
-  - Ethereum: `eth.drpc.org`, `rpc.mevblocker.io`, `1rpc.io/eth` accept the ~55 KB filter
-    body. `eth-pokt.nodies.app` returns 403 to any large POST, so it is flagged
-    `largeBody:false` and used only for headers and the sample.
-  - Base: `mainnet.base.org` and `base-rpc.publicnode.com` are OK at 1500 blocks.
-    `base.drpc.org` rejects the filter. `1rpc.io/base` caps at 50 blocks.
-  - Arbitrum: `arbitrum.gateway.tenderly.co` and `arb1.arbitrum.io/rpc` accept the
-    1,200-block filtered feed; the latter rate-limits. On 2026-09-21,
-    `arbitrum.drpc.org` returned CORS `*`, chain id `42161`, and 118 two-token Transfer
-    logs over a 40-block unfiltered sample, so it is added for headers and samples only.
-    Its 48-address filtered query failed even at 1,000 blocks with code 35, so it remains
-    `largeBody:false`. publicnode needs a token; llamarpc, blockpi, meowrpc and
-    alchemy-demo are dead.
+- **Per-chain config** in `FEEDS` (`lib/atlas/feeds.ts`, pure, imported by `live-client.ts`,
+  the registry verifier and the diagnostic scripts): chain id, slot time, blocks per hour,
+  chunk size, pause, and each endpoint's measured caps. Ethereum 50-block chunks, Base 1500,
+  Arbitrum 1200 with a 350 ms pause. Change them only after re-measuring.
+- **Endpoint caps** (measured 2026-09-21 with `scripts/probe-endpoint-caps.mjs` in the live
+  request shape, three tries per size; "topics" = addresses in one indexed position, ~68
+  bytes each; 4,800 addresses and 5,000 blocks were the largest sizes tried, so those are
+  lower bounds):
+
+  | Chain | Endpoint | Filter? | Max topics | Largest body | Max filtered range | CORS |
+  |---|---|---|---|---|---|---|
+  | Ethereum | eth.drpc.org | yes | 1,000 (1,024 "exceed max topics") | ~67 KB | 100 | `*` |
+  | Ethereum | rpc.mevblocker.io | yes | 4,800+ | ~323 KB+ | 5,000+ | echoes origin |
+  | Ethereum | 1rpc.io/eth | no (demoted 2026-09-21) | refused 805 3/3 (503, "apply an OnFinality API key") | – | none (rate-limited) | `*` |
+  | Ethereum | eth-pokt.nodies.app | no | 403 on any large POST | – | 50 | `*` |
+  | Base | mainnet.base.org | yes | 4,800+ | ~323 KB+ | 2,000 | `*` |
+  | Base | base-rpc.publicnode.com | yes | 4,800+ | ~323 KB+ | 5,000+ | `*` |
+  | Base | 1rpc.io/base | no | 815 passed; rate-limited at 1,000 | ~55 KB | 50 | `*` |
+  | Arbitrum | arbitrum.gateway.tenderly.co | yes | 1,000 (1,024 "exceed max topics") | ~67 KB | 5,000+ | `*` |
+  | Arbitrum | arb1.arbitrum.io/rpc | yes | 997: 1,000 selectors incl. 2 contracts + event topic | ~67 KB | 5,000+ | `*` |
+  | Arbitrum | arbitrum.drpc.org | no | 1,000 over 100 blocks | ~67 KB | 100 | `*` |
+  | Arbitrum | 1rpc.io/arb | no | rate-limited at 773 | – | 50 | `*` |
+
+  **The binding caps are 1,000 addresses on Ethereum (drpc) and 997 on Arbitrum (arb1).**
+  Every Ethereum plain-account row also derives onto Base and Arbitrum, so it uses a slot on
+  all three chains. `verify-registry.cjs` fails the build when a chain's live filter exceeds
+  the smallest `maxTopics` among its `largeBody` endpoints, or its chunk exceeds the smallest
+  `maxRange`; it warns within 5%. Past a cap, shard the query or trim the filter (see the D2
+  decision in section 8); never raise a cap without re-measuring.
+- **Other endpoint facts** (verified 2026-09-19–21): `base.drpc.org` rejects the filter.
+  `arbitrum.drpc.org` returned chain id `42161` and real logs over a 40-block unfiltered
+  sample, so it serves headers and samples. publicnode's Arbitrum node needs a token;
+  llamarpc, blockpi, meowrpc and alchemy-demo are dead.
 - **Retry policy**: transient errors (429/5xx/code 12) retry the same endpoint with
   strikes; hard errors rotate immediately; attempts = max(4, pool size + 1). Failed chunks
   are counted in `missingBlocks` and surface as Partial/Delayed, never swallowed.
@@ -209,9 +226,10 @@ layout holds at 375x812.
 
 ### Lint
 
-`pnpm lint` has **44 pre-existing errors** in vendored shadcn components and the map
-renderers. That count is the baseline; do not add to it and do not spend time fixing it
-unless asked.
+`pnpm lint` has **45 pre-existing errors** (recounted 2026-09-21; the earlier "44" had
+drifted to 48 before `verify-registry.cjs` was moved onto a single `require`) in the map
+renderers, the deferred backend files and the CommonJS verifiers. That count is the
+baseline; do not add to it and do not spend time fixing it unless asked.
 
 ## 7. Things that look wrong but are intentional
 

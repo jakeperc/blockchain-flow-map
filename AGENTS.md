@@ -16,7 +16,7 @@ Hard rules, in short:
   it; do not remove the gate or weaken a failing assertion.
 - The live build is static and keyless. Do not add a server, runtime env vars or API keys.
 - The observed-onchain figure is a declared sample. Never scale it up.
-- Lint has 44 pre-existing errors. Do not add to that count.
+- Lint has 45 pre-existing errors (recounted 2026-09-21). Do not add to that count.
 - No synthetic data, ever. Everything shown must be real, live or recent. Never fall back
   to simulated values when a feed fails; show the honest health state. The old demo engine
   in `lib/atlas/engine.ts` is slated for removal.

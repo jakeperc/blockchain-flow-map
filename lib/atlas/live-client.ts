@@ -30,6 +30,7 @@ import {CHAINS,UNKNOWN,type Chain,type Snapshot,type Transfer,type WindowKey,typ
 import {aggregate,type TotalsInput} from './engine';
 import {CONTRACTS,ERC20_TRANSFER_TOPIC,type EvmLog} from './evm';
 import {EXPLORERS} from './geography';
+import {FEEDS,type FeedConfig} from './feeds';
 import {knownAttribution,isDerived,evidencedAddresses,registryHealth,ENTITIES} from './known-entities';
 import {addressKey,classifyRec,decodeTransferLog,inferDeposits,makeBlockTimeFn,planChunks,priceAt,pruneRecords,addSample,type Rec,type Sample} from './live-core';
 
@@ -59,17 +60,6 @@ export interface LiveSource {
  dispose():void;
 }
 
-type Endpoint={url:string;largeBody:boolean};
-/**
- * Endpoints, all keyless and browser-callable (CORS `*` confirmed 2026-09-20). `largeBody` marks the ones
- * that accept the ~55 KB request the address filter needs; the rest serve only small calls. Range caps
- * per endpoint set each chain's chunk size: 1rpc caps eth_getLogs at 50 blocks everywhere, drpc's free
- * tier rejects the filter on the L2s, publicnode's Arbitrum node refuses getLogs without a token, and the
- * official Arbitrum endpoint rate-limits above ~1,200 blocks.
- */
-const ETH_ENDPOINTS:Endpoint[]=[{url:'https://eth.drpc.org',largeBody:true},{url:'https://rpc.mevblocker.io',largeBody:true},{url:'https://1rpc.io/eth',largeBody:true},{url:'https://eth-pokt.nodies.app',largeBody:false}];
-const BASE_ENDPOINTS:Endpoint[]=[{url:'https://mainnet.base.org',largeBody:true},{url:'https://base-rpc.publicnode.com',largeBody:true},{url:'https://1rpc.io/base',largeBody:false}];
-const ARB_ENDPOINTS:Endpoint[]=[{url:'https://arbitrum.gateway.tenderly.co',largeBody:true},{url:'https://arb1.arbitrum.io/rpc',largeBody:true},{url:'https://arbitrum.drpc.org',largeBody:false},{url:'https://1rpc.io/arb',largeBody:false}];
 const COINGECKO='https://api.coingecko.com/api/v3';
 const COINGECKO_IDS:Record<Asset,string>={USDT:'tether',USDC:'usd-coin'};
 const PRICE_SOURCE='CoinGecko public API, 5-minute market sample nearest to block time';
@@ -81,27 +71,8 @@ const SAMPLE_CAP=20000;
 /** Report the feed as partial rather than LIVE once this share of a backfill failed to load. */
 const COVERAGE_ALARM=.1;
 
-interface FeedConfig{
- endpoints:Endpoint[];chainId:number;
- /** Nominal block interval, for interpolated timestamps and for sizing one hour in blocks. */
- slotMs:number;
- /** Blocks in the backfilled hour. */
- blocks:number;
- /** Blocks per filtered eth_getLogs request. */
- chunk:number;
- /** Blocks per live poll when caught up, and when catching up. */
- liveRange:number;catchupRange:number;
- /** Pause between backfill requests, for endpoints that rate-limit bursts. */
- pauseMs:number;
- /** Unfiltered blocks per denominator sample. Sized to a few hundred logs on each chain. */
- sampleBlocks:number;
-}
-/** Chains this build reads. One hour is 300 Ethereum blocks, 1,800 Base blocks or 14,400 Arbitrum blocks. */
-const CHAIN_CONFIG:Partial<Record<Chain,FeedConfig>>={
- Ethereum:{endpoints:ETH_ENDPOINTS,chainId:1,slotMs:12000,blocks:300,chunk:50,liveRange:6,catchupRange:50,pauseMs:0,sampleBlocks:2},
- Base:{endpoints:BASE_ENDPOINTS,chainId:8453,slotMs:2000,blocks:1800,chunk:1500,liveRange:30,catchupRange:1500,pauseMs:0,sampleBlocks:2},
- Arbitrum:{endpoints:ARB_ENDPOINTS,chainId:42161,slotMs:250,blocks:14400,chunk:1200,liveRange:200,catchupRange:1200,pauseMs:350,sampleBlocks:40}
-};
+/** Chains this build reads, their endpoints and chunking: measured limits live in feeds.ts. */
+const CHAIN_CONFIG=FEEDS;
 const LIVE_CHAINS=Object.keys(CHAIN_CONFIG) as Chain[];
 /** A chain's evidenced addresses as 32-byte topic values, for the indexed sender/receiver positions of Transfer. */
 const topicsFor=(chain:Chain)=>evidencedAddresses(chain).map(a=>'0x'+a.slice(2).padStart(64,'0'));
