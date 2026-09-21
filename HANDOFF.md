@@ -131,14 +131,18 @@ that Jake chose explicitly:
   per hour, chunk size, pause. Ethereum 50-block chunks, Base 1500, Arbitrum 1200 with a
   350 ms pause. These were measured against each endpoint's range cap; change them only
   after re-measuring.
-- **Endpoint facts** (verified 2026-09-19/20, all CORS `*`):
+- **Endpoint facts** (verified 2026-09-19–21, all CORS `*`):
   - Ethereum: `eth.drpc.org`, `rpc.mevblocker.io`, `1rpc.io/eth` accept the ~55 KB filter
     body. `eth-pokt.nodies.app` returns 403 to any large POST, so it is flagged
     `largeBody:false` and used only for headers and the sample.
   - Base: `mainnet.base.org` and `base-rpc.publicnode.com` are OK at 1500 blocks.
     `base.drpc.org` rejects the filter. `1rpc.io/base` caps at 50 blocks.
-  - Arbitrum: only `arbitrum.gateway.tenderly.co` and `arb1.arbitrum.io/rpc` are usable
-    free; the latter rate-limits. publicnode needs a token; llamarpc, blockpi, meowrpc and
+  - Arbitrum: `arbitrum.gateway.tenderly.co` and `arb1.arbitrum.io/rpc` accept the
+    1,200-block filtered feed; the latter rate-limits. On 2026-09-21,
+    `arbitrum.drpc.org` returned CORS `*`, chain id `42161`, and 118 two-token Transfer
+    logs over a 40-block unfiltered sample, so it is added for headers and samples only.
+    Its 48-address filtered query failed even at 1,000 blocks with code 35, so it remains
+    `largeBody:false`. publicnode needs a token; llamarpc, blockpi, meowrpc and
     alchemy-demo are dead.
 - **Retry policy**: transient errors (429/5xx/code 12) retry the same endpoint with
   strikes; hard errors rotate immediately; attempts = max(4, pool size + 1). Failed chunks

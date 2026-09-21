@@ -69,7 +69,7 @@ type Endpoint={url:string;largeBody:boolean};
  */
 const ETH_ENDPOINTS:Endpoint[]=[{url:'https://eth.drpc.org',largeBody:true},{url:'https://rpc.mevblocker.io',largeBody:true},{url:'https://1rpc.io/eth',largeBody:true},{url:'https://eth-pokt.nodies.app',largeBody:false}];
 const BASE_ENDPOINTS:Endpoint[]=[{url:'https://mainnet.base.org',largeBody:true},{url:'https://base-rpc.publicnode.com',largeBody:true},{url:'https://1rpc.io/base',largeBody:false}];
-const ARB_ENDPOINTS:Endpoint[]=[{url:'https://arbitrum.gateway.tenderly.co',largeBody:true},{url:'https://arb1.arbitrum.io/rpc',largeBody:true},{url:'https://1rpc.io/arb',largeBody:false}];
+const ARB_ENDPOINTS:Endpoint[]=[{url:'https://arbitrum.gateway.tenderly.co',largeBody:true},{url:'https://arb1.arbitrum.io/rpc',largeBody:true},{url:'https://arbitrum.drpc.org',largeBody:false},{url:'https://1rpc.io/arb',largeBody:false}];
 const COINGECKO='https://api.coingecko.com/api/v3';
 const COINGECKO_IDS:Record<Asset,string>={USDT:'tether',USDC:'usd-coin'};
 const PRICE_SOURCE='CoinGecko public API, 5-minute market sample nearest to block time';
