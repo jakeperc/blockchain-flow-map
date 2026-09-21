@@ -23,11 +23,15 @@
  * purpose: a transfer from an issuer treasury is issuance, not bilateral settlement, which is exactly
  * what the mint/burn and treasury exclusions in engine.ts exist to keep out.
  *
- * Not disputed, just unlabelled (checked 2026-09-19): Gopax, SBI VC Trade, Zaif, HashKey Exchange, OSL,
- * Independent Reserve, Pintu, PDAX, Lemon, Ripio, Buda, Foxbit, NovaDAX, Volabit, Yellow Card, Quidax,
- * Busha, Ovex, Rain, CoinMENA, BitOasis, M2, ZebPay, Bitbns, Giottus, Mudrex, Bit2Me, Young Platform,
- * Swissquote, BISON, Bitcoin.de, Flow Traders, QCP, Keyrock, Fireblocks are properly licensed but have no
- * public Etherscan wallet tag, so there is nothing to attribute. Add them when one appears.
+ * Labels appear over time, so this list is re-scanned with scripts/registry/label-scan.mjs (results and dates in
+ * scripts/registry/label-scan.json; last scan 2026-09-21). Not disputed, just unlabelled: SBI VC Trade, Zaif,
+ * PDAX, Buda, Foxbit, NovaDAX, Volabit, Yellow Card, Busha, Ovex, Rain, CoinMENA, BitOasis, ZebPay, Giottus,
+ * Mudrex, Swissquote, BISON, Flow Traders, Fireblocks, Coinmate, Bits of Gold, Coinmotion, Safello, Belo,
+ * Buenbit, SatoshiTango, Swyftx are properly licensed but have no public Etherscan wallet tag, so there is nothing
+ * to attribute. OSL, Pintu, Quidax, Bit2Me, Young Platform, QCP and Keyrock are tagged only on token contracts,
+ * deployers, funders, team or treasury wallets or deposit plumbing, none of which is admissible. Tagged since the
+ * 2026-09-19 scan, so candidates once an operator document is read: Gopax, HashKey Exchange, Independent Reserve,
+ * Lemon Cash, Ripio, M2, Bitbns, Bitcoin.de.
  * Labelled but left out on purpose: WhiteBIT and Revolut (operating entity ambiguous), zondacrypto
  * (Estonian licence revoked June 2026), Kuna and Genesis Trading (ceased operations), DWF Labs
  * (entity document unreadable), Abraxas Capital (fund vehicle, not a venue), BitMEX (winding up Sept 2026),

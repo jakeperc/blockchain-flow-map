@@ -1,0 +1,115 @@
+# Terms for scripts/registry/label-scan.mjs. Re-run periodically: labels appear over time.
+#   node scripts/registry/label-scan.mjs --file scripts/registry/label-scan-terms.txt --out scripts/registry/label-scan.json
+# A hit is a lead only. Admission needs the address's own explorer page (read-tag.mjs) and an operator document.
+
+# "Licensed but unlabelled" list from the known-entities.ts header (2026-09-19)
+gopax
+sbi vc
+zaif
+hashkey exchange
+osl
+independent reserve
+pintu
+pdax
+lemon cash
+ripio
+buda
+foxbit
+novadax
+volabit
+yellow card
+quidax
+busha
+ovex
+rain
+coinmena
+bitoasis
+m2 exchange
+zebpay
+bitbns
+giottus
+mudrex
+bit2me
+young platform
+swissquote
+bison
+bitcoin.de
+flow traders
+qcp
+keyrock
+fireblocks
+
+# Labelled but excluded on purpose (known-entities.ts header)
+whitebit
+revolut
+zondacrypto
+zonda
+kuna
+genesis trading
+dwf labs
+abraxas
+bitmex
+exmo
+blockchain.com
+deribit
+bitmart
+phemex
+ascendex
+bitrue
+lbank
+coinex
+bingx
+woo x
+xt.com
+hitbtc
+wirex
+okcoin
+bakkt
+moonpay
+coinstore
+
+# Disputed operator, and other high-volume entities outside the registry
+bybit
+crypto.com
+bitstamp
+luno
+wazirx
+htx
+huobi
+ceffu
+cobo
+matrixport
+nexo
+etoro
+remitano
+probit
+
+# Country leads
+orionx
+kanga exchange
+tokenize xchange
+hata
+coinswitch
+mercado bitcoin
+anycoin direct
+coinmate
+bits of gold
+coinmotion
+safello
+belo
+buenbit
+satoshitango
+swyftx
+
+# Hubs: market makers, OTC desks, prime brokers, custodians
+wintermute
+jump trading
+b2c2
+galaxy digital
+falconx
+cumberland
+gsr
+amber group
+bullish
+anchorage
+coinbase prime
