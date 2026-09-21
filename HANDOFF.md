@@ -253,7 +253,11 @@ integrity rules in section 2 (free does not relax the evidence standard).
 
 1. **Remove synthetic data** (rule 8). Retire the demo engine and demo mode, and make sure
    nothing visitor-facing can render simulated values. Keep the build gate green; add a
-   verifier assertion that fails if synthetic data can reach the live build.
+   verifier assertion that fails if synthetic data can reach the live build. Files that
+   still reference demo/synthetic data (2026-09-21): `lib/atlas/engine.ts`, `model.ts`,
+   `connectors.ts`, `production.ts`, `store.ts`, `known-entities.ts`, `live-core.ts`,
+   `components/atlas.tsx`, `app/page.tsx`, `app/api/snapshot/route.ts`,
+   `app/api/evidence/route.ts`. Some hits are `synthetic:false` guards, which can stay.
 2. **Expand free real-data sources** (section 7b), and report to Jake when free sources
    run out, with a recommended list of free/paid APIs for him to get.
 3. **Re-verify evidence before 2027-03-17.** The build gate starts failing around
