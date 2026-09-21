@@ -1130,3 +1130,12 @@ Ethereum|kraken|0x7dafba1d69f6c01ae7567ffd7b046ca03b706f83|Kraken 245|2026-09-21
 Ethereum|bitpanda|0x0529ea5885702715e83923c59746ae8734c553b7|Bitpanda 18|2026-09-21|Active hot wallet: about $23M moved in the 7 days to 2026-09-21.
 Ethereum|binance|0xa7c0d36c4698981fab42a7d8c783674c6fe2592d|Binance 74|2026-09-21|About $2.6M moved in the 7 days to 2026-09-21.
 Ethereum|binance|0xe4b5b2667e049ac8c79ae6c5a7e3300815aa32be|Binance 104|2026-09-21|Lightly used: about $276k moved in the 7 days to 2026-09-21.
+Ethereum|hashkey|0xee1bf4d7c53af2beafc7dc1dcea222a8c6d87ad9|HashKey Exchange 7|2026-09-21|Main active hot wallet: about $192M moved in the 7 days to 2026-09-21.
+Ethereum|hashkey|0xdf899a960ad64c2ddcb59ebf0a30c2104841cd53|HashKey Exchange|2026-09-21|About $2.4M moved in the 7 days to 2026-09-21. HashKey Exchange 2 and 11 moved under $100k and were left out; the rest were idle.
+Ethereum|independentreserve|0x02c6b2a3a11e95b609d0bdb4e74b04ff48dba819|Independent Reserve: Hot Wallet 4|2026-09-21|Very active: about $257M moved in the 7 days to 2026-09-21.
+Ethereum|independentreserve|0x051acf8d69a18d6a6e4dd063b39501e69704ac50|Independent Reserve: Hot Wallet 2|2026-09-21|Active: about $37M moved in the 7 days to 2026-09-21. Hot Wallets 1, 3 and 5-7 were idle and were left out.
+Ethereum|lemoncash|0x02a78632215262a94ce8651846e7d22adc98ce3c|Lemon Cash 8|2026-09-21|Main active wallet: about $2.7M moved in the 7 days to 2026-09-21, many small deposits.
+Ethereum|lemoncash|0xda496f2e9e78e357c34323b1ce0dcb6a2860129f|Lemon Cash 3|2026-09-21|About $1.2M moved in the 7 days to 2026-09-21.
+Ethereum|lemoncash|0xc1da33e8d60daf4f93a52357a57a076f44c45759|Lemon Cash 5|2026-09-21|Withdrawal wallet: about $0.8M moved in the 7 days to 2026-09-21 across 2,000+ transfers. Lemon Cash 1, 2, 4 and 6 were idle or below $100k and were left out.
+Ethereum|lemoncash|0x203a53957d04a8a7df0951d1af510b2062b5b125|Lemon Cash 7|2026-09-21|About $0.4M moved in the 7 days to 2026-09-21; about $14.6M over 90 days.
+Ethereum|brasilbitcoin|0x04c079bb31deed8391015eed8d6b625a40957058|Brasil Bitcoin 1|2026-09-21|Very active: about $262M moved in the 90 days to 2026-09-21. Found as a counterparty of registry market makers.
