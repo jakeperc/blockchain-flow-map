@@ -57,6 +57,14 @@ number is a feature, not a bug to be "improved" by loosening rules.
 7. **The observed total is a declared sample, never an estimate.** The "observed
    onchain" figure is an exact sum over a small unfiltered slice of chain time, and the
    UI states the sampling window. Do not scale it up to a projected hourly figure.
+8. **No synthetic data, ever (Jake's standing rule, 2026-09-21).** Everything the
+   project shows must be real data, live where possible and otherwise recent. Do not add
+   simulated, seeded, placeholder, sample-fixture or "illustrative" values to anything a
+   visitor can see, and do not fall back to fake data when a feed fails: show the honest
+   health state (Delayed/Partial/Reconnecting) instead. The legacy demo engine
+   (`demoEvents`/`demoSnapshot` in `lib/atlas/engine.ts`, the `'demo'` mode and the
+   `DEMO DATA` health state) is a leftover from the project's start and is slated for
+   removal (see section 8, item 1). Unit tests may use recorded real chain data as fixtures.
 
 ## 3. Data model in one screen
 
@@ -215,18 +223,49 @@ unless asked.
   `10n` literals do not compile.
 - Line endings in some files are CRLF (OneDrive on Windows). Match regexes with `\r?\n`.
 
+## 7b. Growing data and sources, and when to ask Jake for API keys
+
+Jake's direction (2026-09-21): **add as much real data and as many sources as possible
+using free APIs and free public endpoints that the agent can reach itself**, within the
+integrity rules in section 2 (free does not relax the evidence standard).
+
+- Keep going as far as free sources allow: more chains with keyless CORS-friendly RPCs,
+  more first-party explorer labels, more regulator/company documents for jurisdictions,
+  free price feeds, and any other free public dataset that makes the flows richer.
+  Re-check that each endpoint really works (CORS, range caps, rate limits) and record the
+  verified facts in section 5, as has been done so far.
+- **Tell Jake when you are approaching the limit of what free sources can give.** Signs:
+  free endpoints rate-limit or cap ranges so the feed goes Partial/Delayed; a chain or
+  dataset only exists behind a key (Tron/TronGrid and Solana indexers already are); the
+  explorer labels that are freely readable are exhausted; or the keyless static build
+  cannot carry more filter bytes without hurting visitors.
+- When that happens, **stop and report to Jake** rather than working around it. Give him a
+  short list: which source, free tier or paid, what it costs, what it unlocks (chains,
+  flows, wallets, history), and roughly how much more coverage it would add. Jake will
+  sign up for the free/paid APIs himself and hand over the keys. Never create accounts or
+  handle credentials on his behalf.
+- Note that API keys conflict with the current keyless static build (section 1). Using
+  them properly probably means the phase-2 backend (Workers + D1) so keys stay
+  server-side. Raise that trade-off with Jake at the same time; do not put keys in the
+  client bundle.
+
 ## 8. Open to-dos, in rough priority
 
-1. **Re-verify evidence before 2027-03-17.** The build gate starts failing around
+1. **Remove synthetic data** (rule 8). Retire the demo engine and demo mode, and make sure
+   nothing visitor-facing can render simulated values. Keep the build gate green; add a
+   verifier assertion that fails if synthetic data can reach the live build.
+2. **Expand free real-data sources** (section 7b), and report to Jake when free sources
+   run out, with a recommended list of free/paid APIs for him to get.
+3. **Re-verify evidence before 2027-03-17.** The build gate starts failing around
    mid-January 2027. Re-read the explorer pages and update the `checked` and
    `lastVerified` dates; do not just bump dates.
-2. GitHub plus Cloudflare Pages hosting to replace manual FTP (Jake's noted future to-do).
-3. More first-party L2 labels: market makers on Base and Arbitrum, Upbit and Bithumb on Base.
-4. Tron needs a keyed TronGrid account, so it is out of scope for the keyless static build.
-5. Solana needs a paid indexer; same.
-6. Phase-2 backend (Workers + D1): the registry loader is trivial now that keys are
+4. GitHub plus Cloudflare Pages hosting to replace manual FTP (Jake's noted future to-do).
+5. More first-party L2 labels: market makers on Base and Arbitrum, Upbit and Bithumb on Base.
+6. Tron needs a keyed TronGrid account, so it is out of scope for the keyless static build. Candidate for the key list Jake is asked for (section 7b).
+7. Solana needs a paid indexer; same.
+8. Phase-2 backend (Workers + D1): the registry loader is trivial now that keys are
    `chain:address`, but nothing has been started.
-7. Pre-existing lint failures.
+9. Pre-existing lint failures.
 
 ## 9. History of the direction (why it is like this)
 

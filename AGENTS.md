@@ -17,6 +17,12 @@ Hard rules, in short:
 - The live build is static and keyless. Do not add a server, runtime env vars or API keys.
 - The observed-onchain figure is a declared sample. Never scale it up.
 - Lint has 44 pre-existing errors. Do not add to that count.
+- No synthetic data, ever. Everything shown must be real, live or recent. Never fall back
+  to simulated values when a feed fails; show the honest health state. The old demo engine
+  in `lib/atlas/engine.ts` is slated for removal.
+- Add as much real data and as many sources as free APIs and public endpoints allow. When
+  free sources are running out (rate limits, key-only chains, exhausted labels), stop and
+  tell Jake which free/paid APIs to get and what each unlocks. He signs up himself.
 - Commit as `git -c user.email="223131039+jakeperc@users.noreply.github.com" -c user.name="Jake Percy"`.
 
 Deliverable for Jake is a zip of `dist-live/` that he FTPs into a folder under
