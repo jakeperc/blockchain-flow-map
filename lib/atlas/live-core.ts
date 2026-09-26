@@ -10,12 +10,12 @@ import {classify,type TotalsInput} from './engine';
 import {ERC20_TRANSFER_TOPIC,type EvmLog} from './evm';
 
 export const ZERO=/^0x0{40}$/;
-export type Sample={at:number;usd:number};
+export type Sample={at:number;usd:number;source:string};
 /** Compact per-event record: enough to rebuild a Transfer when evidence changes, plus the TotalsInput fields aggregate() reads. */
 export interface Rec extends TotalsInput {
  chain:Chain;transactionId:string;eventIndex:string;blockNumber:number;blockHash:string;
  asset:Asset;tokenContract:string;amount:string;amountAtomic:string;
- usdPrice:number|null;priceTime:number|null;sender:string;receiver:string;
+ usdPrice:number|null;priceTime:number|null;priceSource:string|null;sender:string;receiver:string;
  /** Which feed produced this record: the registry-filtered settlement feed, or the unfiltered denominator sample. */
  feed:'evidenced'|'sample';
  tx?:Transfer;
@@ -98,7 +98,7 @@ export function makeTransfer(r:Rec,attributionFor:(chain:Chain,address:string)=>
   id:r.id,chain:r.chain,transactionId:r.transactionId,eventIndex:r.eventIndex,blockNumber:r.blockNumber,blockHash:r.blockHash,blockTime:r.blockTime,
   finality:'confirmed',asset:r.asset,tokenContract:r.tokenContract,amount:r.amount,amountAtomic:r.amountAtomic,
   usdValue:r.usdValue,usdPrice:r.usdPrice,priceTime:r.priceTime,
-  usdPriceSource:priced?'CoinGecko public API, 5-minute market sample nearest to block time':'Price unavailable for this block time',
+  usdPriceSource:priced?(r.priceSource??'unknown price source'):'Price unavailable for this block time',
   sender:r.sender,receiver:r.receiver,senderEntity,receiverEntity,
   economicClass:known?'exchange flow':'unknown',adjustment:'unresolved',
   classificationRationale:known?`Transfer touches a publicly documented exchange wallet (${evidenced.join(', ')}). Classified as exchange flow; the cited evidence is attached to each endpoint.`:'Economic purpose is unverified.',
@@ -137,7 +137,7 @@ export function decodeTransferLog(
   id:`${chain}:${log.transactionHash}:${eventIndex}`,chain,transactionId:log.transactionHash,eventIndex:String(eventIndex),
   blockNumber:parseInt(log.blockNumber,16),blockHash:log.blockHash,blockTime,
   asset:info.asset,tokenContract:log.address.toLowerCase(),amount,amountAtomic:amountAtomic.toString(),
-  usdValue:p?Number(amount)*p.usd:null,usdPrice:p?.usd??null,priceTime:p?.at??null,
+  usdValue:p?Number(amount)*p.usd:null,usdPrice:p?.usd??null,priceTime:p?.at??null,priceSource:p?.source??null,
   sender:'0x'+log.topics[1].slice(-40).toLowerCase(),receiver:'0x'+log.topics[2].slice(-40).toLowerCase(),
   economicClass:'unknown',adjustment:'unresolved',senderEntity:UNKNOWN,receiverEntity:UNKNOWN,feed
  };

@@ -29,9 +29,12 @@ const visit=file=>{
  ];
  for(const [pattern,label] of forbidden)assert.ok(!pattern.test(source),`${relative(project,absolute)} exposes ${label} to the static live build`);
  const imports=/\b(?:import|export)\s+(?:[\s\S]*?\s+from\s+)?['"]([^'"]+)['"]/g;
- for(const match of source.matchAll(imports)){const target=resolve(absolute,match[1]);if(target)visit(target);}
+ // Dynamic imports are code-split chunks of the same build (the globe renderer is one), so they are walked too.
+ const dynamic=/\bimport\(\s*['"]([^'"]+)['"]\s*\)/g;
+ for(const match of [...source.matchAll(imports),...source.matchAll(dynamic)]){const target=resolve(absolute,match[1]);if(target)visit(target);}
 };
 
 visit(entry);
 assert.ok(seen.has(join(project,'lib','atlas','engine.ts')),'The static build must use the shared real-data aggregation engine');
+assert.ok(seen.has(join(project,'components','map','engine.ts')),'The globe renderer chunk must be inside the checked graph');
 console.log(`PASS: static live import graph (${seen.size} local modules) has no demo or synthetic data path`);

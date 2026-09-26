@@ -1,6 +1,21 @@
 /** Geography is an evidenced entity jurisdiction, never a wallet's physical location. */
-export const CHAINS = ['Ethereum','Tron','Solana','Base','Arbitrum'] as const;
+/**
+ * Polygon is PARKED (2026-09-26, Jake's decision): measured and wired, but not live. Its only fast endpoint
+ * prunes history older than ~37 hours and its only full-history endpoint caps requests at 100 blocks, so the
+ * 90-day dormancy scan decision D2 requires takes ~8 hours and would recur monthly. Everything it needs is kept
+ * (CONTRACTS, EXPLORERS, CHAIN_COLORS, PARKED in feeds.ts, the script pools); to switch it on, add it back here
+ * and to EVM_CHAINS, move PARKED.Polygon into FEEDS, and follow HANDOFF section 12's add-a-chain order.
+ */
+export const CHAINS = ['Ethereum','Tron','Solana','Base','Arbitrum','Avalanche'] as const;
 export type Chain = typeof CHAINS[number];
+/**
+ * Chains whose accounts are 20-byte EVM addresses. The single source of truth for three rules that used to be
+ * repeated as literal arrays in the verifiers and the registry generator: addresses are stored lowercase, only
+ * these chains may be the target of cross-chain key derivation, and Tron and Solana never derive.
+ */
+export const EVM_CHAINS = ['Ethereum','Base','Arbitrum','Avalanche'] as const;
+export type EvmChain = typeof EVM_CHAINS[number];
+export const isEvmChain = (c:string):c is EvmChain => (EVM_CHAINS as readonly string[]).includes(c);
 export type Asset = 'USDT'|'USDC';
 export type Confidence = 'VERIFIED'|'HIGH'|'MEDIUM'|'UNKNOWN';
 export type EconomicClass = 'payment'|'exchange flow'|'institutional settlement'|'treasury movement'|'DeFi'|'bridge'|'mint/burn'|'infrastructure'|'unknown';
@@ -26,7 +41,41 @@ export interface Corridor {
   topEntities:{entity:string;usdValue:number;attribution:Attribution}[]; topTransactions:Transfer[];
   baseline:number|null; baselineSamples:number; anomalyRatio:number|null; anomalyScore:number|null; lastActivity:number; rankScore:number;
 }
-export interface CountrySummary {code:string;inbound:number;outbound:number;knownEndpointAdjusted:number;coverage:number|null;}
+export interface CountrySummary {
+  code:string; inbound:number; outbound:number; knownEndpointAdjusted:number; coverage:number|null;
+  /**
+   * Adjusted value moving between an evidenced wallet associated with this jurisdiction and a
+   * counterparty that has no admissible jurisdiction. Direction is the evidenced side's: `unplacedIn`
+   * was received here. This is not cross-border settlement and never draws a route — the other end is
+   * genuinely unplaced — but the direction and the evidenced end are both known, so it is reported
+   * rather than discarded. Includes transfers whose economic purpose is unresolved, like `adjusted`.
+   */
+  unplacedIn:number; unplacedOut:number;
+  /** The evidenced entities behind this jurisdiction's unplaced flow, largest first. */
+  entities:UnattributedEntity[];
+}
+/** An adjusted, non-domestic transfer with at least one endpoint that has no admissible jurisdiction evidence, so no route can be drawn for it. A single evidenced end still lights that jurisdiction. */
+export interface UnattributedTransfer {
+  id:string; chain:Chain; transactionId:string; blockTime:number; asset:Asset; amount:string;
+  usdValue:number|null; sender:string; receiver:string; senderEntity:Attribution; receiverEntity:Attribution;
+  economicClass:EconomicClass; adjustment:'included'|'unresolved';
+}
+/** The evidenced side of unplaced flow, per operating entity. Directions are the entity's own. */
+export interface UnattributedEntity {entity:string; jurisdiction:string|null; unplacedIn:number; unplacedOut:number; transactionCount:number;}
+/** An address with no admissible evidence, seen opposite evidenced wallets. Directions are the unplaced address's own. A research lead, never evidence. */
+export interface UnplacedCounterparty {
+  address:string; chain:Chain; usdValue:number; transactionCount:number;
+  /** Evidenced entities seen on the other side of its transfers, largest first. */
+  entities:string[]; receivedUsd:number; sentUsd:number;
+}
+/** How the unmapped view narrows what it lists. Filters affect `items`, `shown`, `counterparties` and `entities`; `count`, `usdValue` and `reasons` always describe the whole window. */
+export interface UnattributedFilter {minUsd?:number; search?:string; sort?:'recent'|'value'; limit?:number;}
+export interface UnattributedSummary {
+  items:UnattributedTransfer[];
+  count:number; usdValue:number; reasons:Record<string,number>;
+  shown:number; shownUsd:number;
+  counterparties:UnplacedCounterparty[]; entities:UnattributedEntity[];
+}
 export type Totals={observed:number;adjusted:number;attributed:number;domestic:number;unattributed:number;excluded:number;unresolved:number;unpricedCount:number;transactionCount:number;coverage:number|null};
 export interface Snapshot {
   window:WindowKey;at:number;

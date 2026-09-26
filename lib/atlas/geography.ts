@@ -7,18 +7,27 @@ export const COUNTRIES:Record<string,{name:string;numeric:string;anchor:[number,
  KY:{name:'Cayman Islands',numeric:'136',anchor:[-81.2,19.3]},SC:{name:'Seychelles',numeric:'690',anchor:[55.5,-4.6]},VG:{name:'British Virgin Islands',numeric:'092',anchor:[-64.6,18.4]},GI:{name:'Gibraltar',numeric:'292',anchor:[-5.35,36.14]},LI:{name:'Liechtenstein',numeric:'438',anchor:[9.55,47.15]}
 };
 export const nameOf=(code:string)=>COUNTRIES[code]?.name??code;
-export const CHAIN_COLORS:Record<string,string>={Ethereum:'#92a9e7',Tron:'#de967d',Solana:'#b7a0d9',Base:'#5c9ddd',Arbitrum:'#81bfb3'};
-/** The public block explorer for each chain, so evidence links and "checked on" wording name the right one. */
+export const CHAIN_COLORS:Record<string,string>={Ethereum:'#92a9e7',Tron:'#de967d',Solana:'#b7a0d9',Base:'#5c9ddd',Arbitrum:'#81bfb3',Polygon:'#c49ad2',Avalanche:'#d98fae'};
+/**
+ * The public block explorer for each chain, so evidence links and "checked on" wording name the right one.
+ * Every CHAINS member needs an entry here and in CHAIN_COLORS: both are keyed by plain string, so a missing
+ * entry is not a type error but throws when knownAttribution() builds evidence for that chain.
+ * scripts/verify-registry.cjs asserts the pairing.
+ */
 export const EXPLORERS:Record<string,{name:string;address:(a:string)=>string;tx:(h:string)=>string}>={
  Ethereum:{name:'Etherscan',address:a=>`https://etherscan.io/address/${a}`,tx:h=>`https://etherscan.io/tx/${h}`},
  Base:{name:'Basescan',address:a=>`https://basescan.org/address/${a}`,tx:h=>`https://basescan.org/tx/${h}`},
  Arbitrum:{name:'Arbiscan',address:a=>`https://arbiscan.io/address/${a}`,tx:h=>`https://arbiscan.io/tx/${h}`},
+ Polygon:{name:'Polygonscan',address:a=>`https://polygonscan.com/address/${a}`,tx:h=>`https://polygonscan.com/tx/${h}`},
+ Avalanche:{name:'Snowscan',address:a=>`https://snowscan.xyz/address/${a}`,tx:h=>`https://snowscan.xyz/tx/${h}`},
  Tron:{name:'Tronscan',address:a=>`https://tronscan.org/#/address/${a}`,tx:h=>`https://tronscan.org/#/transaction/${h}`},
  Solana:{name:'Solscan',address:a=>`https://solscan.io/account/${a}`,tx:h=>`https://solscan.io/tx/${h}`}
 };
 export const ASSET_COLORS:Record<string,string>={USDC:'#81b9d1',USDT:'#9bc9a7'};
 export const CONFIDENCE_COLORS:Record<string,string>={VERIFIED:'#b2d4c6',HIGH:'#d3bd80',MEDIUM:'#cd947a',UNKNOWN:'#697579'};
 export type ColorMode='CHAIN'|'ASSET'|'CONFIDENCE';
+/** Ocean names, anchored in open water so they ride the globe and the map like the jurisdiction labels. */
+export const OCEAN_LABELS:Record<string,{text:string;anchor:[number,number]}>={ATLANTIC:{text:'ATLANTIC OCEAN',anchor:[-38,-18]},PACIFIC:{text:'PACIFIC OCEAN',anchor:[-160,-8]},INDIAN:{text:'INDIAN OCEAN',anchor:[72,-30]}};
 /** Map label placement. Entries without `auto` are always shown; `auto` entries (and any jurisdiction not listed) appear only while active. `mobile` keeps a label on narrow screens. Offsets are pixels from the anchor. */
 export const MAP_LABELS:Record<string,{text?:string;dx?:number;dy?:number;mobile?:boolean;auto?:boolean}>={
  US:{text:'UNITED STATES',mobile:true},GB:{text:'UNITED KINGDOM',dy:-10,mobile:true},BR:{mobile:true},SG:{mobile:true},HK:{},AE:{text:'U.A.E.',dx:-40,dy:-12},JP:{},AU:{mobile:true},NG:{},IN:{dy:23},

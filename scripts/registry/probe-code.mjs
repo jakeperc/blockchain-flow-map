@@ -15,13 +15,26 @@
  * Re-runnable and cached: addresses already in the output file are skipped unless --refresh.
  */
 import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+import {EVM_CHAINS} from '../chains.mjs';
 const [,,src='scripts/registry/addresses.txt',dst='scripts/registry/code-probe.json']=process.argv;
 const refresh=process.argv.includes('--refresh');
+/**
+ * eth_getCode pools, deliberately separate from POOLS in scripts/rpc-pool.mjs: getCode has none of the
+ * request-size and range limits that decide which endpoints can serve a filtered eth_getLogs, so endpoints
+ * that are useless to the feed (base.drpc.org rejects the filter; the 1rpc hosts cap ranges at 50 blocks)
+ * are perfectly good extra fallbacks here.
+ */
 const CHAINS={
  Ethereum:['https://eth.drpc.org','https://rpc.mevblocker.io','https://1rpc.io/eth','https://eth-pokt.nodies.app'],
  Base:['https://mainnet.base.org','https://base.drpc.org','https://base-rpc.publicnode.com','https://1rpc.io/base'],
- Arbitrum:['https://arb1.arbitrum.io/rpc','https://arbitrum.drpc.org','https://arbitrum-one-rpc.publicnode.com','https://1rpc.io/arb']
+ Arbitrum:['https://arb1.arbitrum.io/rpc','https://arbitrum.drpc.org','https://arbitrum-one-rpc.publicnode.com','https://1rpc.io/arb'],
+ Polygon:['https://polygon-bor-rpc.publicnode.com','https://polygon.drpc.org'],
+ Avalanche:['https://api.avax.network/ext/bc/C/rpc','https://avalanche-c-chain-rpc.publicnode.com','https://avalanche.drpc.org']
 };
+// A missing chain here would silently leave every address unprobed on it, and the only symptom would be a
+// generator error ("no code-probe entry") or, worse, a chain that quietly derives nothing.
+const missing=EVM_CHAINS.filter(c=>!CHAINS[c]);
+if(missing.length)throw Error(`no eth_getCode endpoints for ${missing.join(', ')}; add them to scripts/registry/probe-code.mjs`);
 const BATCH=3,PAUSE_MS=150;
 const rows=readFileSync(src,'utf8').split(/\r?\n/).filter(l=>l.trim()&&!l.startsWith('#'));
 // Accept both the legacy 4-column and the chain-qualified 6-column format.

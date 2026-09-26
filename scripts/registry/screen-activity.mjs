@@ -21,8 +21,11 @@ const opt=n=>{const i=args.indexOf(n);return i>-1?args[i+1]:undefined;};
 const [chain,daysArg]=args;const days=Number(daysArg);
 const pool=POOLS[chain];
 const rest=args.slice(2).filter((a,i,arr)=>!a.startsWith('--')&&!['--chunk','--out'].includes(arr[i-1]));
-if(!pool||!(days>0)||!rest.length){console.error('usage: node scripts/registry/screen-activity.mjs <Ethereum|Base|Arbitrum> <days> <candidates.txt | 0xaddr ...> [--chunk N] [--out f.json]');process.exit(1);}
-const chunk=Number(opt('--chunk')??(chain==='Ethereum'?2000:chain==='Base'?2000:4000));
+if(!pool||!(days>0)||!rest.length){console.error(`usage: node scripts/registry/screen-activity.mjs <${Object.keys(POOLS).join('|')}> <days> <candidates.txt | 0xaddr ...> [--chunk N] [--out f.json]`);process.exit(1);}
+// Per-chain screening range from rpc-pool.mjs, so a new chain needs no edit here. These are larger than the
+// feed's chunk because a candidate filter matches little and the reply stays small; logsFor() halves the
+// range on failure, so an optimistic value degrades rather than fails.
+const chunk=Number(opt('--chunk')??pool.screenChunk??pool.chunk);
 const outFile=opt('--out');
 const TRANSFER='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const hex=n=>'0x'+n.toString(16);

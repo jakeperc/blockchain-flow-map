@@ -16,9 +16,9 @@ import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
-export const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds'];
+export const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds','rollup','encoding','geo3d','quality-policy','tween'];
 /** Modules added after the diagnostics were written; absent at older refs, and nothing in the registry needs them. */
-const OPTIONAL=new Set(['feeds']);
+const OPTIONAL=new Set(['feeds','rollup','encoding','geo3d','quality-policy','tween']);
 
 export function loadAtlas(ref){
  const tmp=mkdtempSync(join(tmpdir(),'ledger-atlas-diag-'));
@@ -44,7 +44,7 @@ export function loadAtlas(ref){
  }
 }
 
-/** Every evidenced address on a chain (first-party and derived, exactly the live filter), mapped to its attribution. */
+/** Every evidenced address on a chain (first-party and derived, the WHOLE registry including the dormant tier), mapped to its attribution. The live filter is the smaller watchedAddresses(). */
 export function evidenceMap(atlas,chain){
  const {evidencedAddresses,knownAttribution,isDerived}=atlas['known-entities'];
  return new Map(evidencedAddresses(chain).map(a=>{const at=knownAttribution(chain,a);return [a.toLowerCase(),{entity:at.addressCluster,name:at.entity,jurisdiction:at.jurisdiction,derived:isDerived(at)}];}));

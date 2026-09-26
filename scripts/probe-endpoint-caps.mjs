@@ -26,7 +26,7 @@ const pad=a=>'0x'+'0'.repeat(24)+a.slice(2).toLowerCase();
 const randomAddr=()=>'0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
 const hex=n=>'0x'+n.toString(16);
 const tokens=Object.keys(atlas.evm.CONTRACTS[chain]);
-const registry=atlas['known-entities'].evidencedAddresses(chain);
+const registry=atlas['known-entities'].watchedAddresses(chain); // the live filter (evidenced minus the dormant tier)
 async function post(url,method,params){
  try{
   const res=await fetch(url,{method:'POST',headers:{'content-type':'application/json',origin:'https://jakepercy.com'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params}),signal:AbortSignal.timeout(60000)});
@@ -53,7 +53,10 @@ for(const ep of feed.endpoints){
   if(x.ok){maxRange=r;break;}
   rangeNote=x.err;await sleep(800);
  }
- const sizes=[...new Set([registry.length,1000,1024,1200,1600,2400,4800])].sort((a,b)=>a-b);
+ // Sizes below one are dropped: an empty list in a topic position is not a filter but a match-everything
+ // query, so it measures the endpoint's unfiltered result cap and then breaks the ascending loop before any
+ // real size is tried. That reads as "maxTopics 0" on a chain whose registry is still empty.
+ const sizes=[...new Set([registry.length,1000,1024,1200,1600,2400,4800])].filter(n=>n>0).sort((a,b)=>a-b);
  let maxTopics=0,kb=0,fail='';
  const span=Math.min(feed.chunk,maxRange||feed.chunk);
  for(const n of sizes){

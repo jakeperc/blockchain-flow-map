@@ -80,7 +80,11 @@ if(!win){
 
 /* ---------- Registries ---------- */
 const atlases=Object.fromEntries(refs.map(ref=>[ref,loadAtlas(ref==='worktree'?undefined:ref)]));
-const evidenced=(atlas,chain)=>new Set(atlas['known-entities'].evidencedAddresses(chain).map(a=>a.toLowerCase()));
+// The addresses a browser built from this registry would filter on: the live filter (evidenced minus the dormant tier,
+// decision D2) where the registry has one, the whole evidenced list for older refs that predate the tier.
+// --full-filter ignores the dormant tier (the whole registry is the filter), to separate its effect from other registry changes.
+const FULL_FILTER=args.includes('--full-filter');
+const evidenced=(atlas,chain)=>{const ke=atlas['known-entities'];return new Set((FULL_FILTER?ke.evidencedAddresses:(ke.watchedAddresses??ke.evidencedAddresses))(chain).map(a=>a.toLowerCase()));};
 
 /* ---------- Logs: one fetch per chain for the union of every registry's filter ---------- */
 const logsByChain={},missing={};

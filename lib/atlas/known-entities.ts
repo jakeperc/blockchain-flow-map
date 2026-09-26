@@ -3,14 +3,22 @@
  * known-addresses.ts. Pure data; safe to ship to the browser.
  *
  * RULES (these are the whole point of the project — do not relax them):
- *  - Only add an address you can cite a real, working https:// source for: an exchange's own published
- *    disclosure, a regulator or court filing, or a blockchain explorer's own public label feature.
+ *  - Only add an address whose own explorer page (Etherscan, Basescan or Arbiscan) shows a public name tag.
+ *    An exchange's own published address list is NOT admissible (decision D1, 2026-09-21): such lists mix in
+ *    customer deposit addresses, go stale or vanish, and never say which legal entity controls a wallet. A
+ *    regulator or court filing supports an entity's jurisdiction, never an address.
  *    Never guess or infer an address-to-entity mapping. Reject "(reported)" or user-submitted tags.
  *  - An entity's `jurisdiction` is the ISO-2 code of the SPECIFIC operating legal entity the source
  *    documents, not "where the brand is famous for being based". It must exist in geography.ts.
- *  - `confidence` is VERIFIED (explorer tag + primary jurisdiction document, or tag + the company's
- *    own published address list) or HIGH (tag + corroborated jurisdiction, but the brand runs several
- *    separately regulated affiliates). Anything weaker is left out entirely. MEDIUM never draws a route.
+ *  - `confidence` is VERIFIED (explorer tag + primary jurisdiction document naming the operating entity)
+ *    or HIGH (tag + corroborated jurisdiction, but the brand runs several separately regulated
+ *    affiliates). Anything weaker is left out entirely. MEDIUM never draws a route.
+ *  - The operator test (decision D3, 2026-09-21): a brand is admitted only if its own documents name ONE
+ *    legal entity, in one jurisdiction, that holds the brand's customer crypto whatever the client's
+ *    residence. If the contracting or custodying entity is chosen by the client's residence or contract
+ *    (Coinbase Prime, Bitstamp, Crypto.com, Luno, Ceffu, Cobo, Nexo, eToro, FalconX, Copper, BitGo, Cumberland,
+ *    Galaxy Digital, Jump Trading, B2C2, GSR, Zero Hash, Amber Group), a brand-level wallet tag cannot be tied
+ *    to one jurisdiction and the brand stays out.
  *  - Hot/cold/exchange wallets only. Deposit sweepers, routers, bridges and issuer treasuries are out.
  *  - Re-verify periodically and bump the dates: the model refuses evidence older than 180 days, and
  *    exchanges rotate hot wallets. `scripts/verify-registry.cjs` checks every entry.
@@ -32,14 +40,30 @@
  * deployers, funders, team or treasury wallets or deposit plumbing, none of which is admissible. Tagged since the
  * 2026-09-19 scan, so candidates once an operator document is read: Gopax, HashKey Exchange, Independent Reserve,
  * Lemon Cash, Ripio, M2, Bitbns, Bitcoin.de.
- * Labelled but left out on purpose: WhiteBIT and Revolut (operating entity ambiguous), zondacrypto
+ * Removed 2026-09-21 after re-testing against the operator test above (docs/DECISIONS-2026-09.md has the full
+ * evidence for each): FalconX (its disclosures page says services depend on "each FalconX entity", US client
+ * assets sit with Fireblocks Trust, the only custody-licensed entity is Maltese); Copper (its US terms assign
+ * custody to Copper Markets (US), Inc., with further entities in Liechtenstein and ADGM); BitGo (at least three
+ * differently-chartered US custody entities plus SG/DE/CH/AE affiliates, none tied to the tagged wallets);
+ * Cumberland DRW (Chicago / New York BitLicense / UK FCA / Singapore MAS entities, split by counterparty
+ * jurisdiction); Galaxy Digital (its own 10-K bundles the Delaware LLC and the Cayman trading subsidiary
+ * together, and its Prime business splits NY from non-NY clients); Jump Trading (the SEC named the Cayman
+ * subsidiary Tai Mo Shan for the same UST-buying conduct a 2025 lawsuit attributes to the US parent); B2C2 (its
+ * own disclaimer: "products and services may be provided by different members of the B2C2 group... depending
+ * on the jurisdiction of the client"); GSR (its own terms define "GSR" as GSR Markets Limited "or any of its
+ * affiliates", with US/UK/Singapore clients routed to separate licensed entities); Zero Hash (US, Louisiana,
+ * EEA, Bermuda, Australia and Brazil entities, chosen by client residence); Amber Group (separate HK, Singapore
+ * and Dubai licensed entities plus a Cayman holding company, none tied to the tagged wallets). None can be tied
+ * to one jurisdiction.
+ * Labelled but left out on purpose: WhiteBIT (Panama operator named only in a user agreement, no registration number or
+ * licence cited; decision D3, 2026-09-21) and Revolut (operating entity ambiguous), zondacrypto
  * (Estonian licence revoked June 2026), Kuna and Genesis Trading (ceased operations), DWF Labs
  * (entity document unreadable), Abraxas Capital (fund vehicle, not a venue), BitMEX (winding up Sept 2026),
  * EXMO (UK-sanctioned May 2026), Blockchain.com, Deribit, BitMart, Phemex, AscendEX, Bitrue, LBank, CoinEx,
  * BingX, WOO X, XT.com, HitBTC, Wirex, Okcoin, Bakkt, MoonPay, Coinstore (multi-entity or contradicted operator).
  */
 import type {Attribution,Chain} from './model';
-import {ADDRESSES,DERIVED,CODE_PROBED_AT} from './known-addresses';
+import {ADDRESSES,DERIVED,WATCHED,DORMANCY,CODE_PROBED_AT} from './known-addresses';
 import {EXPLORERS} from './geography';
 export type EntityCategory='exchange'|'market maker'|'custodian'|'broker';
 export interface EntityRecord {id:string;name:string;category:EntityCategory;jurisdiction:string;confidence:'VERIFIED'|'HIGH';source:string;sourceUrl:string;evidenceNote:string;lastVerified:string;}
@@ -48,7 +72,7 @@ const e=(id:string,name:string,jurisdiction:string,confidence:'VERIFIED'|'HIGH',
 export const ENTITIES:Record<string,EntityRecord>={
  binance:e('binance','Binance','KY','VERIFIED','DOJ November 2023 plea agreement naming Binance Holdings Limited as a Cayman Islands company','https://www.justice.gov/opa/pr/binance-and-ceo-plead-guilty-federal-charges-4b-resolution','Binance Holdings Limited, d/b/a Binance.com. Distinct from the separate US entity Binance.US (BAM Trading), which is not included.'),
  okx:e('okx','OKX','SC','VERIFIED','OKX Terms of Service naming Aux Cayes FinTech Co. Ltd (Seychelles) + DOJ February 2025 guilty plea','https://www.justice.gov/opa/pr/okx-pleads-guilty-violating-us-anti-money-laundering-laws','Aux Cayes FinTech Co. Ltd, the Seychelles operator named in OKX\'s own terms and in the DOJ case.'),
- coinbase:e('coinbase','Coinbase','US','VERIFIED','Coinbase Global, Inc. SEC Form 10-K (Delaware corporation)','https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001679788&type=10-K','Coinbase, Inc., the retail/exchange platform. Coinbase Custody Trust Company wallets are not separately identifiable from public labels and are not included.'),
+ coinbase:e('coinbase','Coinbase','US','VERIFIED','Coinbase Global, Inc. SEC Form 10-K (Delaware corporation)','https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001679788&type=10-K','Coinbase, Inc., the retail/exchange platform. Coinbase Custody Trust Company wallets are not separately identifiable from public labels and are not included, except an explicitly "Coinbase Prime"-tagged wallet, which is its own admissible evidence.'),
  kraken:e('kraken','Kraken','US','VERIFIED','Payward, Inc. regulatory filings (Delaware corporation, San Francisco)','https://www.sec.gov/newsroom/press-releases/2023-237','Payward, Inc. / Payward Ventures, Inc.'),
  gemini:e('gemini','Gemini','US','VERIFIED','NYDFS limited-purpose trust charter for Gemini Trust Company, LLC','https://www.dfs.ny.gov/virtual_currency_businesses','Gemini Trust Company, LLC, a NYDFS-chartered limited-purpose trust company.'),
  bitfinex:e('bitfinex','Bitfinex','VG','VERIFIED','2021 New York Attorney General settlement naming iFinex Inc. as a British Virgin Islands company','https://ag.ny.gov/press-release/2021/attorney-general-james-ends-virtual-currency-trading-platform-bitfinexs-illegal','iFinex Inc., the BVI-incorporated operator of Bitfinex named in the NY AG settlement.'),
@@ -65,7 +89,6 @@ export const ENTITIES:Record<string,EntityRecord>={
  paribu:e('paribu','Paribu','TR','VERIFIED','Capital Markets Board of Türkiye (SPK) list of crypto-asset service providers in operation','https://spk.gov.tr/kurumlar/kripto-varlik-hizmet-saglayicilar/faaliyette-bulunanlar-listesi','Paribu Kripto Varlık Alım Satım Platformu AŞ. The SPK list is marked provisional.'),
  btcturk:e('btcturk','BtcTurk','TR','VERIFIED','Capital Markets Board of Türkiye (SPK) list of crypto-asset service providers in operation','https://spk.gov.tr/kurumlar/kripto-varlik-hizmet-saglayicilar/faaliyette-bulunanlar-listesi','Btcturk Kripto Varlık Alım Satım Platformu AŞ. The SPK list is marked provisional.'),
  coinmetro:e('coinmetro','Coinmetro','EE','HIGH','Coinmetro Terms of Use (Coinmetro OÜ, Tallinn, company 14448371, Estonian FIU licence FVT000126)','https://www.coinmetro.com/terms-of-use','Coinmetro OÜ, Tallinn. Rated HIGH: an Estonian registry mirror shows the company\'s registration as lapsed with overdue filings, so re-check periodically. Several wallets are the exchange\'s own multisig custody contracts.'),
- copper:e('copper','Copper','CH','HIGH','Copper Terms and Conditions (Copper Markets (Switzerland) AG, Zug, VQF member)','https://copper.co/en/terms','Copper Markets (Switzerland) AG is the contracting entity in Copper\'s terms, but the group has separately regulated affiliates (UK, ADGM, Liechtenstein, US), so the wallet-controlling entity is not documented.','2026-09-18','custodian'),
  // Australia
  coinjar:e('coinjar','CoinJar','AU','HIGH','CoinJar legal page (CoinJar Australia Pty Ltd, AUSTRAC-registered; CoinJar UK Limited, FCA-registered)','https://www.coinjar.com/au/legal','Brand-level tags cannot distinguish the Australian from the UK affiliate.'),
  digitalsurge:e('digitalsurge','Digital Surge','AU','VERIFIED','Digital Surge terms (Digital Surge Pty Ltd, AUSTRAC 100576214)','https://digitalsurge.com.au/terms','Digital Surge Pty Ltd, Brisbane. The tagged wallet has been inactive for over a year.'),
@@ -81,11 +104,6 @@ export const ENTITIES:Record<string,EntityRecord>={
  mexc:e('mexc','MEXC','SC','VERIFIED','Seychelles FSA press release (May 2026) identifying MX Global Ltd (IBC 238047) as the entity operating the MEXC platform','https://fsaseychelles.sc/news/press-releases/fsa-takes-enforcement-action-against-mx-global-ltd-for-unlicensed-virtual-asset-services-operations','MX Global Ltd, a Seychelles IBC, identified by the regulator in an enforcement action for operating without a Seychelles VASP licence.'),
  // US institutions and market makers
  robinhood:e('robinhood','Robinhood Crypto','US','VERIFIED','NYDFS register of regulated virtual currency entities (Robinhood Crypto, LLC, BitLicence 2019)','https://www.dfs.ny.gov/apps_and_licensing/virtual_currency_businesses','Robinhood Crypto, LLC.'),
- cumberland:e('cumberland','Cumberland DRW','US','HIGH','NYDFS register (Cumberland New York LLC) + cumberland.io policy page (Cumberland DRW LLC, FinCEN-registered MSB)','https://www.dfs.ny.gov/apps_and_licensing/virtual_currency_businesses','Two US affiliates (Cumberland DRW LLC, Chicago; Cumberland New York LLC) plus non-US affiliates; the brand-level tag does not say which controls the wallet.','2026-09-18','market maker'),
- jump:e('jump','Jump Trading','US','HIGH','federal court filing describing Jump Trading, LLC as a Delaware LLC based in Chicago; SEC order on Jump Crypto subsidiary Tai Mo Shan Limited (Cayman Islands)','https://business.cch.com/srd/20251218_Snyder-v-JumpTrading_complaint.pdf','Jump Trading, LLC (Chicago) is the documented parent; the crypto trading affiliate Tai Mo Shan Limited is Cayman-incorporated, and the tag does not identify which controls the wallet.','2026-09-18','market maker'),
- galaxy:e('galaxy','Galaxy Digital','US','HIGH','Galaxy Digital Inc. Form 10-K subsidiaries exhibit (Galaxy Digital LLC, Delaware; Galaxy Digital Trading Cayman LLC) + NYDFS register (GalaxyOne Prime NY LLC)','https://www.sec.gov/Archives/edgar/data/1859392/000185939226000016/exhibit211-subsidiariesofg.htm','Galaxy Digital Inc. (Delaware); the tags do not identify whether the Delaware or Cayman trading subsidiary controls a given wallet.','2026-09-18','market maker'),
- falconx:e('falconx','FalconX','US','HIGH','FalconX disclosures page (FalconX Bravo, Inc. CFTC swap dealer; Solios, Inc. and FalconX Delta, Inc. FinCEN MSBs; FalconX Limited, Malta)','https://www.falconx.io/disclaimers','Prime broker with US, Maltese and Singaporean entities; the generic tag does not identify which controls the wallet.','2026-09-18','broker'),
- bitgo:e('bitgo','BitGo','US','HIGH','NYDFS register (BitGo New York Trust Company, LLC) + bitgo.com legal page listing US, Singapore, EU and MENA entities','https://www.dfs.ny.gov/apps_and_licensing/virtual_currency_businesses','Multi-entity custodian; only BitGo\'s own omnibus wallet is included, never client multisig contracts.','2026-09-18','custodian'),
  paxos:e('paxos','Paxos / itBit','US','HIGH','NYDFS press release: Paxos Trust Company, LLC holds the limited-purpose trust charter and operates the itBit exchange','https://www.dfs.ny.gov/reports_and_publications/press_releases/pr1809101','Paxos Trust Company, LLC (New York). Issuer treasury addresses for USDP/PYUSD are deliberately excluded; the brand also has non-US affiliates, so HIGH.'),
  // Latin America and Africa
  bitso:e('bitso','Bitso','GI','HIGH','Bitso trust page and Gibraltar Government press release 729/2019 (The Badger Technology Company Limited, GFSC DLT licence)','https://bitso.com/mx/trust','The exchange and custody operator is Gibraltar-licensed The Badger Technology Company Limited; Mexico\'s CNBV licenses only the fiat affiliate. Multi-affiliate group, so HIGH.'),
@@ -113,13 +131,9 @@ export const ENTITIES:Record<string,EntityRecord>={
  ndax:e('ndax','NDAX','CA','VERIFIED','Ndax Canada Inc. relationship disclosure document (CIRO investment dealer, Alberta Securities Commission principal regulator, FINTRAC MSB)','https://ndax.io/en/legal/account-agreements/relationship-disclosure-document','Ndax Canada Inc., Calgary, Alberta; CIRO member since December 2024. The tag is disclosed by Etherscan as sourced from a public researcher compilation.','2026-09-19'),
  netcoins:e('netcoins','Netcoins','CA','VERIFIED','Netcoins legal page (Netcoins Inc., BCSC-registered restricted dealer, FINTRAC MSB M15560893)','https://www.netcoins.com/legal','Netcoins Inc., Vancouver, British Columbia; registered restricted dealer in all provinces, subsidiary of Surge Digital Inc. Tags are disclosed by Etherscan as sourced from a public researcher compilation.','2026-09-19'),
  // wave-mm (2026-09-19)
- b2c2:e('b2c2','B2C2','GB','HIGH','B2C2 regulatory permissions page (B2C2 Ltd, Companies House 07995888, London; B2C2 OTC Ltd, FCA FRN 810834) + Companies House record','https://find-and-update.company-information.service.gov.uk/company/07995888','B2C2 Ltd, London. Rated HIGH: the tag is group-level and the firm runs separately regulated affiliates in the UK, Cayman Islands, US, Luxembourg, Singapore and France.','2026-09-19','market maker'),
- gsr:e('gsr','GSR','HK','HIGH','GSR general trading terms of business naming GSR Markets Limited (Hong Kong company 67897929) as the trading entity','https://www.gsr.io/general-trading-terms-of-business','GSR Markets Limited, Hong Kong, the contracting entity in GSR\'s own trading terms. Rated HIGH: the tag is brand-level and GSR also operates MAS-, FCA- and NMLS-regulated affiliates.','2026-09-19','market maker'),
- ambergroup:e('ambergroup','Amber Group','KY','HIGH','SEC merger-agreement exhibit (November 2024) describing Amber Global Limited as a Cayman Islands exempted company, the entity Amber International\'s Form 20-F defines as Amber Group','https://www.sec.gov/Archives/edgar/data/1697818/000110465924124155/tm2429824d1_ex99-2.htm','Amber Global Limited, Cayman Islands. Rated HIGH: the tag is brand-level; the separately licensed Singapore and Hong Kong affiliates sit under Nasdaq-listed Amber International, a different legal entity.','2026-09-19','market maker'),
  anchorage:e('anchorage','Anchorage Digital','US','HIGH','OCC news release NR 2021-6 conditionally approving Anchorage Digital Bank, National Association','https://www.occ.gov/news-issuances/news-releases/2021/nr-occ-2021-6.html','Anchorage Digital Bank, National Association, Sioux Falls, South Dakota; OCC-chartered national trust bank. Rated HIGH: the tag is brand-level, the group has non-US affiliates, and the tag is disclosed by Etherscan as sourced from a public researcher compilation.','2026-09-19','custodian'),
  // wave-usaff (2026-09-19)
  binanceus:e('binanceus','Binance.US','US','VERIFIED','SEC press release 2023-101 (June 2023) naming BAM Trading Services Inc. as the US affiliate operating Binance.US + Binance.US terms of use','https://www.sec.gov/newsroom/press-releases/2023-101-sec-files-13-charges-against-binance-entities-founder-changpeng-zhao','BAM Trading Services Inc., doing business as Binance.US, Miami, Florida; a separate US legal entity from Binance Holdings Limited (Cayman Islands), which has its own record.','2026-09-19'),
- zerohash:e('zerohash','Zero Hash','US','HIGH','NYDFS register of virtual currency businesses listing Zero Hash LLC and Zero Hash Liquidity Services LLC (licensed July 2019)','https://www.dfs.ny.gov/virtual_currency_businesses','Zero Hash LLC, Chicago, Illinois. Rated HIGH: the group runs several separately licensed affiliates and the only tag is disclosed by Etherscan as sourced from a public researcher compilation.','2026-09-19','broker'),
  fidelity:e('fidelity','Fidelity Digital Assets','US','HIGH','OCC news release NR 2025-125 (December 2025) conditionally approving Fidelity Digital Assets, National Association, and the company page describing the NYDFS charter of Fidelity Digital Asset Services, LLC','https://www.occ.gov/news-issuances/news-releases/2025/nr-occ-2025-125.html','Fidelity Digital Asset Services, LLC and Fidelity Digital Assets, National Association, Boston, Massachusetts. Rated HIGH: the tag says only Fidelity and the brand also has a UK affiliate.','2026-09-19','custodian'),
  // wave-apac2 (2026-09-19)
  bullish:e('bullish','Bullish','GI','HIGH','Bullish announcement of its Gibraltar Financial Services Commission DLT licence (Bullish (GI) Limited, November 2021) + SEC prospectus (August 2025) confirming the GFSC licence','https://www.bullish.com/us/news-insights/bullish-obtains-regulatory-license-from-gibraltar-financial-services-commission','Bullish (GI) Limited, Gibraltar. Rated HIGH: the tag is brand-level, the group also runs SFC-licensed Bullish HK Markets Limited (licensed 2025, after these wallets were created) and a German affiliate, and every tag is disclosed by Etherscan as sourced from a public researcher compilation.','2026-09-19'),
@@ -188,10 +202,23 @@ export function knownAttribution(chain:Chain|string,address:string):Attribution|
 }
 /** True when the attribution rests on a cross-chain derivation rather than a label read on that chain's explorer. */
 export const isDerived=(a:Attribution)=>a.category.includes(DERIVED_MARK);
-/** Every address with evidence on a chain, first-party or derived. Drives the live client's log filter. */
+/** Every address with evidence on a chain, first-party or derived: the whole registry, dormant wallets included. */
 export function evidencedAddresses(chain:Chain|string):string[]{
  return evidencedByChain.get(chain)??[];
 }
+const watchedByChain=new Map<string,string[]>(WATCHED.map(w=>[w.chain,w.addresses]));
+/**
+ * The addresses the live client actually asks the public RPCs about: the evidenced list minus the dormant tier (wallets
+ * with no USDC/USDT transfer in the measured window, decision D2). A dormant wallet is still evidence, so a transfer that
+ * touches one (an active hub paying it, or it waking up next to an active wallet) still resolves through
+ * knownAttribution(); it is only not requested by itself. A wallet that wakes after the window, with only unwatched
+ * counterparties, is missed until the next measurement. Falls back to the whole list for a chain with no dormancy data.
+ */
+export function watchedAddresses(chain:Chain|string):string[]{
+ return watchedByChain.get(chain)??evidencedByChain.get(chain)??[];
+}
+/** What the dormancy measurement found, for the UI and the verifier. Counts are per chain; `dormant` = evidenced - watched. */
+export const dormancyInfo=()=>DORMANCY;
 /**
  * Whether the registry is still usable, and until when. `admissible()` refuses evidence older than 180
  * days, so evidence does not decay gradually — the whole registry stops drawing routes on one day. The

@@ -1,0 +1,200 @@
+/**
+ * Dormancy measurement for the live filter (decision D2, 2026-09-21). For every EVM chain the live build reads, finds
+ * which evidenced wallets (first-party and derived rows, the whole registry) sent or received no non-zero USDC/USDT
+ * transfer in the last N days. Those are the DORMANT tier: they stay in the registry as evidence, and any transfer that
+ * touches one still resolves to its entity, but the live feed stops asking the public RPCs about them.
+ *
+ * The result is scripts/registry/dormancy.json. gen-addresses.mjs reads it and emits the live filter (WATCHED) into
+ * lib/atlas/known-addresses.ts; verify-registry.cjs fails the build when the file is older than 45 days, the same way
+ * it fails on evidence about to expire. Re-run monthly, and after any research wave, then regenerate:
+ *
+ *   node scripts/registry/measure-dormancy.mjs                         # 90 days, all chains, writes dormancy.json
+ *   node scripts/registry/measure-dormancy.mjs --days 90 --end-days-ago 30 --out scratch.json   # as of a past date
+ *   node scripts/registry/gen-addresses.mjs scripts/registry/addresses.txt lib/atlas/known-addresses.ts
+ *
+ * Method. Scan newest to oldest with filtered eth_getLogs (Transfer, sender or receiver in the still-unseen addresses,
+ * USDC and USDT contracts). An address is removed from the query the first time it shows a non-zero transfer, so the
+ * busy hubs drop out of the first few requests and the long tail is scanned cheaply. Block spans start small and grow
+ * while responses stay small; a refused request halves the span. Zero-value transfers (spam, address poisoning) do not
+ * count as activity. A query that still fails at the smallest span aborts the run and writes nothing: an unfinished
+ * scan cannot tell dormant from unread, and a falsely dormant wallet would silently leave the filter.
+ *
+ * Endpoint spans are measured caps for keyless nodes (2026-09-21, filtered request with 60 topics): mevblocker 10,000
+ * (20,000 refused), publicnode Base 5,000 (20,000 refused), mainnet.base.org 2,000, Tenderly and arb1 2,000,000+
+ * with empty results, eth.drpc.org about 100. Run from the repo root.
+ */
+import {readFileSync,writeFileSync} from 'node:fs';
+import {POOLS,rpc,sleep} from '../rpc-pool.mjs';
+import {loadAtlas,evidenceMap} from '../atlas-modules.mjs';
+
+const args=process.argv.slice(2);
+const opt=(n,d)=>{const i=args.indexOf(n);return i>-1?args[i+1]:d;};
+const days=Number(opt('--days',90));
+const endDaysAgo=Number(opt('--end-days-ago',0));
+const outFile=opt('--out','scripts/registry/dormancy.json');
+if(!(days>0)||!(endDaysAgo>=0)){console.error('usage: node scripts/registry/measure-dormancy.mjs [--days 90] [--end-days-ago 0] [--out file.json]');process.exit(1);}
+
+const ENDPOINTS={
+ Ethereum:[{url:'https://rpc.mevblocker.io',maxSpan:10000},{url:'https://eth.drpc.org',maxSpan:100}],
+ Base:[{url:'https://base-rpc.publicnode.com',maxSpan:5000},{url:'https://mainnet.base.org',maxSpan:2000}],
+ Arbitrum:[{url:'https://arbitrum.gateway.tenderly.co',maxSpan:1000000},{url:'https://arb1.arbitrum.io/rpc',maxSpan:1000000}],
+ // Measured 2026-09-25 with the real 864-address filter: publicnode answers "exceed maximum block range: 10000"
+ // above 10,000, and polygon.drpc.org refuses anything useful on its free plan, so it is a fallback only.
+ Polygon:[{url:'https://polygon-bor-rpc.publicnode.com',maxSpan:10000},{url:'https://polygon.drpc.org',maxSpan:100}],
+ // api.avax.network took 500,000 blocks in one filtered request (11,263 logs in 26 s); publicnode caps at 50,000.
+ Avalanche:[{url:'https://api.avax.network/ext/bc/C/rpc',maxSpan:500000},{url:'https://avalanche-c-chain-rpc.publicnode.com',maxSpan:50000}]
+};
+const FIRST_SPAN={Ethereum:100,Base:500,Arbitrum:5000,Polygon:2000,Avalanche:5000},MIN_SPAN=50;
+const SLICE=900; // addresses per topic position; eth.drpc.org and Tenderly refuse 1,024 or more
+const TRANSFER='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+const hex=n=>'0x'+n.toString(16);
+const pad=a=>'0x'+'0'.repeat(24)+a.slice(2).toLowerCase();
+const today=new Date().toISOString().slice(0,10);
+
+/** Transient: back off and try the same endpoint again. */
+const TRANSIENT=/HTTP 429|rate.?limit|too many requests|fetch failed|timeout|aborted|HTTP 5\d\d|capacity|overloaded|busy|try again/i;
+/**
+ * A genuine statement that the REQUEST was too big. Only these may shrink an endpoint's span, because that
+ * shrink is permanent for the run: a node that refuses 10,000 blocks will refuse them again, so learning the
+ * cap saves thousands of doomed requests.
+ *
+ * Getting this wrong is expensive, and it was: Polygon's publicnode answers sustained load with errors that
+ * name no range at all, those were read as "too big", and the span ratcheted 10,000 → 100 with no way back.
+ * Halving the range is also the worst possible answer to a load error, since it doubles the request count.
+ * So anything not clearly about size is now treated as transient.
+ */
+const TOO_BIG=/range|too large|too many results|exceed|limit.*block|block.*limit|response.*(large|big)|max.*results|payload|413|entity too/i;
+/**
+ * A statement that the endpoint refuses to serve blocks this old at all, regardless of span. Found 2026-09-25:
+ * base-rpc.publicnode.com answers instantly and correctly for roughly the most recent 5% of a 90-day range,
+ * then permanently refuses every request past that depth with "Archive requests require a personal token" —
+ * fast (about 50ms), not a size problem, and unrecoverable by retrying or shrinking. Misclassified as
+ * "unclassified, back off and retry", every one of the scan's remaining queries (it only moves further back in
+ * time) burned 20+ seconds retrying a request that could never succeed before falling through to the next
+ * endpoint, turning what should be a fast scan into one that had not finished Base in over twelve hours.
+ * Disables the endpoint outright — not a span shrink, since no span at this depth would have worked either.
+ */
+// The last alternative is Avalanche's publicnode, which answers a bare "-32000 not found" for blocks it has
+// pruned (measured 2026-09-26: fine 1M blocks back, "not found" by 3.5M). Anchored, because "not found" alone
+// is too generic to trust.
+const ARCHIVE_LIMIT=/archive|personal token|full node|pruned|historical.*(not available|unavailable)|^RPC -32000 not found$/i;
+/**
+ * Per-request timeout. Used to be a literal 90000 that ignored ATLAS_RPC_TIMEOUT_MS entirely — ordinary
+ * requests resolve in well under a second, and rpc()'s own watchdog (rpc-pool.mjs) is now the real backstop
+ * against a hung connection, so this just bounds a genuinely slow response.
+ */
+const RPC_TIMEOUT_MS=Number(process.env.ATLAS_RPC_TIMEOUT_MS)||45000;
+/** One request, trying each endpoint whose measured span covers it and which has not refused this depth outright. */
+async function call(chain,method,params,span=0){
+ let last;
+ for(const ep of ENDPOINTS[chain]){
+  if(ep.archiveLimited||span>ep.maxSpan)continue;
+  for(let attempt=0;attempt<4;attempt++){
+   try{return await rpc(ep.url,method,params,RPC_TIMEOUT_MS);}
+   catch(e){
+    last=e;
+    if(ARCHIVE_LIMIT.test(e.message)){
+     // Permanent for the rest of the run: a scan only moves further back in time, so an endpoint that refuses
+     // this depth will refuse every remaining query. No retry, no backoff — straight to the next endpoint.
+     console.warn(`  ${chain}: ${ep.url} refuses blocks this old (${e.message.slice(0,80)}); not using it again this run`);
+     ep.archiveLimited=true;
+     break;
+    }
+    if(TRANSIENT.test(e.message)){await sleep(1500*(attempt+1));continue;}
+    if(span>0&&TOO_BIG.test(e.message)){
+     // Remember the cap, so later requests of this size go straight to another endpoint.
+     ep.maxSpan=Math.min(ep.maxSpan,Math.max(MIN_SPAN-1,Math.floor(span/2)));
+     break;
+    }
+    // Unclassified: back off rather than permanently crippling an endpoint on one bad reply.
+    await sleep(2000*(attempt+1));
+   }
+  }
+ }
+ throw last??Error(`no endpoint serves a span of ${span} blocks`);
+}
+const timestamp=async(chain,n)=>parseInt((await call(chain,'eth_getBlockByNumber',[hex(n),false])).timestamp,16);
+/** Smallest block whose header time is at or after `ts`, by bisection between block 1 and the head. */
+async function blockAt(chain,ts,head){
+ let lo=1,hi=head;
+ while(lo<hi){const mid=Math.floor((lo+hi)/2);if(await timestamp(chain,mid)<ts)lo=mid+1;else hi=mid;}
+ return lo;
+}
+
+const atlas=loadAtlas();
+const {CONTRACTS}=atlas.evm;
+const only=opt('--chains');
+if(only&&outFile==='scripts/registry/dormancy.json'){console.error('--chains measures a subset, so it needs its own --out; dormancy.json must cover every chain');process.exit(1);}
+const chains=Object.keys(atlas.feeds.FEEDS).filter(c=>!only||only.split(',').includes(c));
+const result={
+ measuredAt:today,asOf:new Date().toISOString(),windowDays:days,endDaysAgo,
+ rule:'Dormant: no non-zero USDC or USDT Transfer sent or received on that chain in the window. Dormant wallets stay in the registry as evidence and still attribute any transfer that touches them; they are only left out of the live filter.',
+ script:'scripts/registry/measure-dormancy.mjs',chains:{}
+};
+
+for(const chain of chains){
+ if(!ENDPOINTS[chain])throw Error(`${chain}: no endpoints configured for the dormancy scan`);
+ const tokens=Object.keys(CONTRACTS[chain]).map(a=>a.toLowerCase());
+ const all=[...evidenceMap(atlas,chain).keys()];
+ const pending=new Set(all),lastBlock=new Map();
+ const head=parseInt(await call(chain,'eth_blockNumber',[]),16)-10;
+ const headTs=await timestamp(chain,head);
+ const endTs=headTs-Math.round(endDaysAgo*86400),startTs=endTs-Math.round(days*86400);
+ const end=endDaysAgo>0?await blockAt(chain,endTs,head):head,start=await blockAt(chain,startTs,head);
+ const [endTime,startTime]=[new Date(endTs*1000).toISOString(),new Date(startTs*1000).toISOString()];
+ console.log(`${chain}: ${all.length} evidenced addresses, ${days} days = blocks ${start}..${end} (${startTime.slice(0,16)} to ${endTime.slice(0,16)}), ${end-start+1} blocks`);
+ const pauseMs=POOLS[chain].pauseMs;
+ let span=FIRST_SPAN[chain],cursor=end,queries=0,halvings=0,logsSeen=0,iter=0;
+
+ async function scan(from,to){
+  const found=new Map();let n=0;
+  const list=[...pending];
+  for(let i=0;i<list.length;i+=SLICE){
+   const topics=list.slice(i,i+SLICE).map(pad);
+   for(const t of [[TRANSFER,topics,null],[TRANSFER,null,topics]]){
+    const logs=await call(chain,'eth_getLogs',[{fromBlock:hex(from),toBlock:hex(to),address:tokens,topics:t}],to-from+1);
+    queries++;n+=logs.length;
+    for(const l of logs){
+     if(l.removed||l.topics.length!==3||!/^0x[0-9a-fA-F]{64}$/.test(l.data)||BigInt(l.data)===0n)continue;
+     const bn=parseInt(l.blockNumber,16);
+     for(const a of ['0x'+l.topics[1].slice(26).toLowerCase(),'0x'+l.topics[2].slice(26).toLowerCase()])
+      if(pending.has(a))found.set(a,Math.max(found.get(a)??0,bn));
+    }
+    await sleep(pauseMs);
+   }
+  }
+  return {found,n};
+ }
+
+ while(pending.size&&cursor>=start){
+  const from=Math.max(start,cursor-span+1);
+  let r;
+  try{r=await scan(from,cursor);}
+  catch(e){
+   if(span<=MIN_SPAN)throw Error(`${chain}: blocks ${from}..${cursor} still fail at ${span} blocks (${e.message}); nothing written, an unread range cannot be called dormant`);
+   span=Math.max(MIN_SPAN,Math.floor(span/2));halvings++;continue;
+  }
+  logsSeen+=r.n;
+  for(const [a,b] of r.found){pending.delete(a);lastBlock.set(a,b);}
+  cursor=from-1;
+  if(++iter%25===0)console.log(`  ${chain}: ${(100*(end-cursor)/(end-start+1)).toFixed(0)}% of the window scanned, ${pending.size} addresses still unseen, ${queries} queries, span ${span}`);
+  // Nodes refuse responses of about 10,000 logs, so grow while a response is well under that and back off well before it.
+  // The growth ceiling counts only endpoints still in use. Once the fast endpoint refuses this depth (Base's
+  // publicnode does, about 5% of the way back), growing towards ITS cap would overshoot the remaining endpoint's
+  // cap on every other iteration: fail, halve, grow, fail.
+  const usable=ENDPOINTS[chain].filter(e=>!e.archiveLimited).map(e=>e.maxSpan);
+  if(r.n<1500)span=Math.min(usable.length?Math.max(...usable):span,span*2);else if(r.n>6000)span=Math.max(MIN_SPAN,Math.floor(span/2));
+ }
+
+ const dormant=[...pending].sort();
+ result.chains[chain]={
+  window:{startBlock:start,endBlock:end,startTime,endTime},
+  checked:all.length,active:lastBlock.size,dormant:dormant.length,queries,failedQueries:0,
+  dormantAddresses:dormant,
+  activeLastBlock:Object.fromEntries([...lastBlock].sort((a,b)=>b[1]-a[1]))
+ };
+ console.log(`  active ${lastBlock.size}, dormant ${dormant.length} (${(100*dormant.length/all.length).toFixed(0)}%), ${queries} queries, ${logsSeen} logs read, ${halvings} span halvings`);
+}
+
+writeFileSync(outFile,JSON.stringify(result,null,1)+'\n');
+console.log('wrote',outFile);

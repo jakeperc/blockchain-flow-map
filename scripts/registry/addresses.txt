@@ -30,6 +30,7 @@ Ethereum|bitvavo|0x2f1752e8b49c6e7391dc6e55934ceedc7abf18f7|Bitvavo 3|2026-09-18
 Ethereum|bitvavo|0x2586db422ec15d5999b50c43be219756c46bb0bd|Bitvavo 5|2026-09-18|Etherscan-applied tag sourced from a public compilation.
 Ethereum|bitvavo|0x87eab4f119113e0e5920288936ad94c307b4849a|Bitvavo 9|2026-09-18|Etherscan-applied tag sourced from a public compilation.
 Ethereum|bitvavo|0x079a892628ebf28d0ed8f00151cff225a093dc63|Bitvavo: Hot 1|2026-09-18|Etherscan-applied tag sourced from a public compilation.
+Ethereum|bitvavo|0xab782bc7d4a2b306825de5a7730034f8f63ee1bc|Bitvavo: Hot 3|2026-09-24|About $75M moved in the 7 days to 2026-09-24; the active Bitvavo hot wallet (Hot 1 is idle).
 Ethereum|bitcoinsuisse|0x7b4576d06d0ce1f83f9a9b76bf8077bffd34fcb1|Bitcoin Suisse 1|2026-09-18|Etherscan-applied tag sourced from a public compilation.
 Ethereum|bitcoinsuisse|0x3f262579e4332e1be2722684eaa1c1b111f7a8d8|Bitcoin Suisse 2|2026-09-18|Etherscan-applied tag sourced from a public compilation.
 Ethereum|bitcoinsuisse|0x31dff0cf605f9719b9171f6049150595cc1240f1|Bitcoin Suisse 3|2026-09-18|Inactive for about three years.
@@ -45,6 +46,8 @@ Ethereum|btcturk|0x628a6fe299589b4b5a67d4b43ccdcb4821b3d80c|BtcTurk 5|2026-09-18
 Ethereum|btcturk|0x8c54ebdd960056d2cff5998df5695daca1fc0190|BtcTurk 7|2026-09-18|
 Ethereum|btcturk|0x16769e533352798deb664ba570230a758346ca1a|BtcTurk 9|2026-09-18|
 Ethereum|btcturk|0x46f80018211d5cbbc988e853a8683501fca4ee9b|BtcTurk: Cold 1|2026-09-18|
+Ethereum|btcturk|0xb334a61a6209f14b5fa5f1684a4ed7621f66e1ef|BtcTurk 17|2026-09-24|Hot wallet; about $39M and 3,000 transfers in the 7 days to 2026-09-24.
+Ethereum|btcturk|0x76ec5a0d3632b2133d9f1980903305b62678fbd3|BtcTurk 13|2026-09-24|About $16.5M moved in the 7 days to 2026-09-24.
 Ethereum|coinmetro|0xa270f3ad1a7a82e6a3157f12a900f1e25bc4fbfd|CoinMetro 1|2026-09-18|
 Ethereum|coinmetro|0x4cf2220105995f006813923019f02be1ccca8132|Coinmetro 2|2026-09-18|Verified multisig hot-wallet contract operated by the exchange.
 Ethereum|coinmetro|0x706ee6cf36a4bf95ec7fe5d468571b9e9e63fbb6|Coinmetro 3|2026-09-18|
@@ -52,12 +55,6 @@ Ethereum|coinmetro|0x46a189c7f37953b91e5bd75d0e608efdafefaf1c|Coinmetro 4|2026-0
 Ethereum|coinmetro|0x1e7b450322e42b53d55abc795913537fd680fe0c|Coinmetro 5|2026-09-18|Verified multisig hot-wallet contract operated by the exchange.
 Ethereum|coinmetro|0x0bc7b31bf8ffac8213e496102167fe73fc30937a|Coinmetro 6|2026-09-18|Verified multisig hot-wallet contract operated by the exchange.
 Ethereum|coinmetro|0x7c1c73bf60feb40cbcf0f12324200238ee23bb54|CoinMetro: MultiSig Cold Wallet|2026-09-18|Multisig cold-wallet contract.
-Ethereum|copper|0x7c6782476e29fb26e1556fba058eb7eced93d327|Copper 1|2026-09-18|
-Ethereum|copper|0xcfbba243c567738c2d3d958026b1bf6ad894a19e|Copper 2|2026-09-18|
-Ethereum|copper|0xaf64555ddd61fcf7d094824dd9b4ebea165afc5b|Copper 3|2026-09-18|
-Ethereum|copper|0x0349923ae2b35ff4f0099869aeea99d1f3fd12a9|Copper 4|2026-09-18|
-Ethereum|copper|0xa205fd7344656c72fdc645b72faf5a3de0b3e825|Copper 5|2026-09-18|
-Ethereum|copper|0xa5995359b9941e060e366b4ee3ebb6a9f47649be|Copper 6|2026-09-18|
 Ethereum|coinspot|0xf35a6bd6e0459a4b53a27862c51a2a7292b383d1|CoinSpot 1|2026-09-18|
 Ethereum|coinspot|0xe4b3dd9839ed1780351dc5412925cf05f07a1939|CoinSpot 2|2026-09-18|
 Ethereum|coinspot|0x32143a02fb6484d18c79fa0401c9bf760dd3de68|CoinSpot 3|2026-09-18|
@@ -76,11 +73,13 @@ Ethereum|coinspot|0x4207837d4cd914467eb76bf88c4d6e7ba11ccdf9|CoinSpot 17|2026-09
 Ethereum|coinspot|0x91a0a3043f68986043d7083c4d85b558b21f0a7b|CoinSpot 18|2026-09-18|
 Ethereum|coinspot|0xdf1553a2130cbafa70a35e68efc6ccf67f0a278c|CoinSpot 20|2026-09-18|
 Ethereum|coinspot|0xa9bd318a4ca1747e6068d100e18711b529386e29|CoinSpot 21|2026-09-18|
+Ethereum|coinspot|0xf1088841ab08fc1cb3835fd75207bcb3137f6ee3|CoinSpot 8|2026-09-24|Hot wallet; about $2M and 2,300 outbound transfers in the 7 days to 2026-09-24.
 Ethereum|coinjar|0x0363bfc09b48616190d15ddee5987ae2d05da6f4|Coinjar 1|2026-09-18|
 Ethereum|coinjar|0xc1c88785e9b5c9c85b3f6c99255c3bef9e3b14a7|Coinjar 2|2026-09-18|
 Ethereum|coinjar|0xd6a062cae6123c158768a5c444ca0896cc60d6b1|Coinjar 3|2026-09-18|Exchange wallet contract (proxy) deployed by the exchange.
 Ethereum|digitalsurge|0xfb75b231c307738ce506c242babad2fd2e77b0bf|Digital Surge 1|2026-09-18|Inactive for over a year.
 Ethereum|btcmarkets|0xc55eddadeeb47fcde0b3b6f25bd47d745ba7e7fa|BTC Markets 2|2026-09-18|
+Ethereum|btcmarkets|0x122f90062549ff778806a15fa3b2a66973b9ea1c|BTC Markets 5|2026-09-24|Hot wallet; about $2.7M and 400 transfers in the 7 days to 2026-09-24.
 Ethereum|coinsquare|0x02fdc44bf226e49dceca4775afaef3360e9c4ee9|Coinsquare 1|2026-09-18|
 Ethereum|coinsquare|0x0fcff154753e337983613889b69dd85fe8a1a145|Coinsquare 2|2026-09-18|
 Ethereum|coinsquare|0x14aa1ad09664c33679ae5689d93085b8f7c84bd3|Coinsquare 3|2026-09-18|
@@ -89,6 +88,7 @@ Ethereum|coinsquare|0x476b067cbff8acb805038e9daef5d51c7612d593|Coinsquare 5|2026
 Ethereum|coinsquare|0x48a0b5f7de8789a3962918c6df4a766c0c8857b0|Coinsquare 6|2026-09-18|
 Ethereum|coinsquare|0x4b36c488fcb66962159133b703870ad6cf44d3bf|Coinsquare 7|2026-09-18|
 Ethereum|coinsquare|0xe9bdb4219706914441178bc8357e8551b53d8cbf|Bitbuy MultiSig 1|2026-09-18|Bitbuy is a trade name of Coinsquare Capital Markets Ltd.; multisig exchange wallet contract, largely dormant.
+Ethereum|coinsquare|0x2f671a39613861ec17ad35de44f4f84e3d4c69f4|Coinsquare 27|2026-09-24|About $2.4M moved in the 7 days to 2026-09-24.
 Ethereum|shakepay|0x912fd21d7a69678227fe6d08c64222db41477ba0|Shakepay 1|2026-09-18|
 Ethereum|shakepay|0x4d846da8257bb0ebd164eff513dff0f0c2c3c0ba|Shakepay 3|2026-09-18|
 Ethereum|shakepay|0x3b794929566e3ba0f25e4263e1987828b5c87161|Shakepay 4|2026-09-18|
@@ -100,6 +100,7 @@ Ethereum|shakepay|0x94b18793b93b524b110fead408b955422b982fa4|Shakepay 10|2026-09
 Ethereum|newton|0x2db1d8cdf1abe8c70b531a790cdf2ff38aecf652|Newton|2026-09-18|
 Ethereum|wealthsimple|0xa21a16ec22a940990922220e4ab5bf4c2310f556|Wealthsimple 1|2026-09-18|Possibly retired; last activity April 2025.
 Ethereum|bitso|0x58b704065b7aff3ed351052f8560019e05925023|Bitso 1|2026-09-18|
+Ethereum|bitso|0xa01aa2196724a39290f465b3925e5dcafe7f2256|Bitso 4|2026-09-24|Hot wallet; about $275M moved in the 7 days to 2026-09-24, far more than Bitso 1.
 Ethereum|mercadobitcoin|0xb8ba36e591facee901ffd3d5d82df491551ad7ef|Mercado Bitcoin 1|2026-09-18|
 Ethereum|valr|0x05cdb1526f6e224e02919a4c018d9784ea25eb3d|VALR: Hot Wallet|2026-09-18|
 Ethereum|binance|0x564286362092d8e7936f0549571a803b203aaced|Binance 3|2026-09-18|
@@ -222,25 +223,6 @@ Ethereum|robinhood|0x841ed663f2636863d40be4ee76243377dff13a34|Robinhood 5|2026-0
 Ethereum|robinhood|0x73af3bcf944a6559933396c1577b257e2054d935|Robinhood 6|2026-09-18|Etherscan-applied tag sourced from a public compilation.
 Ethereum|robinhood|0x7c5830cb1a1efe898dcd5cf401165cb952508ccc|Robinhood 7|2026-09-18|Etherscan-applied tag sourced from a public compilation.
 Ethereum|robinhood|0xe0f3e36dbdfa9696b7bcb0d3313522a0bb28d5f4|Robinhood 8|2026-09-18|Very active. Etherscan-applied tag sourced from a public compilation.
-Ethereum|cumberland|0xad6eaa735d9df3d7696fd03984379dae02ed8862|Cumberland: 0xad6...862|2026-09-18|
-Ethereum|cumberland|0x87b49a99cbce4a9030e67919b776aa97d538adda|Cumberland: 0x87b...Dda|2026-09-18|
-Ethereum|jump|0xf584f8728b874a6a5c7a8d4d387c9aae9172d621|Jump Trading|2026-09-18|
-Ethereum|galaxy|0x15abb66ba754f05cbc0165a64a11cded1543de48|Galaxy Digital: 0x15a...E48|2026-09-18|
-Ethereum|galaxy|0x33566c9d8be6cf0b23795e0d380e112be9d75836|Galaxy Digital: OTC|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|galaxy|0x4adf44961a7cbe8ee46b2bf04e7198e879677825|Galaxy Digital: 0x4AD...825|2026-09-18|
-Ethereum|galaxy|0x46f34c24a7ba7a2ac6dd76c3f09b32d41c144d08|Galaxy Digital: 0x46f...d08|2026-09-18|
-Ethereum|galaxy|0x5797f722b1fee36e3d2c3481d938d1372bcd99a7|Galaxy Digital: 0x5799a7|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|galaxy|0x6ae55181f90c954993789546956a8453e63b0015|Galaxy Digital: 0x6ae015|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|galaxy|0xb9c3832e688736ed8c8954d158cb6b00fca6c8f2|Galaxy Digital: 0xb9c8f2|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|galaxy|0xcaf66b3c3c343064f19c697e53b126cbb9e7ad99|Galaxy Digital: 0xcafd99|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|galaxy|0xf4561c710ba450aab302ffc3557ee59bbce94ca6|Galaxy Digital: 0xf45ca6|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|falconx|0x1157a2076b9bb22a85cc2c162f20fab3898f4101|FalconX 1|2026-09-18|Very active.
-Ethereum|falconx|0xe1ed4da4284924ddaf69983b4d813fb1be58c380|FalconX 2|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|falconx|0x9fc6bef0702cf47dcd2e5a42b48e19aed8732499|FalconX 3|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|falconx|0xf9ef3d2bbeacdd439653096c18a199305f8bee19|FalconX 4|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|falconx|0xf85856147bac1fd760e6b8e81fae4c2e4a02dc8d|FalconX 5|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|falconx|0xbb017c48a3184146ae05815365e9fa680832c330|FalconX 6|2026-09-18|Etherscan-applied tag sourced from a public compilation.
-Ethereum|bitgo|0xbd02c51150a4ab6ce97b9de2025644594f3e75b8|BitGo 1|2026-09-18|Etherscan-applied tag sourced from a public compilation.
 Ethereum|paxos|0xc5a8859c44ac8aa2169afacf45b87c08593bec10|Paxos|2026-09-18|
 Ethereum|paxos|0x0c23fc0ef06716d2f8ba19bc4bed56d045581f2d|Paxos 2|2026-09-18|Etherscan-applied tag sourced from a public compilation.
 Ethereum|paxos|0x286af5cf60ae834199949bbc815485f07cc9c644|Paxos 3|2026-09-18|Etherscan-applied tag sourced from a public compilation.
@@ -258,6 +240,7 @@ Ethereum|korbit|0x8550e644d74536f1df38b17d5f69aa1bfe28ae86|Korbit 3|2026-09-18|
 Ethereum|korbit|0xd03be958e6b8da2d28ac8231a2291d6e4f0a7ea7|Korbit 4|2026-09-18|
 Ethereum|korbit|0xd6e0f7da4480b3ad7a2c8b31bc5a19325355ca15|Korbit 5|2026-09-18|
 Ethereum|korbit|0xe83a48cae4d7120e8ba1c2e0409568ffba532e87|Korbit 7|2026-09-18|
+Ethereum|korbit|0xf0bc8fddb1f358cef470d63f96ae65b1d7914953|Korbit 8|2026-09-24|About $2.2M moved in the 7 days to 2026-09-24.
 Ethereum|gmocoin|0x9c4fa4ee466dff080adccb12d39b99e83cdb1077|GMO Coin 1|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
 Ethereum|gmocoin|0xc39bdf685f289b1f261ee9b0b1b2bf9eae4c1980|GMO Coin 2|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
 Ethereum|gmocoin|0x86e284421664840cb65c5b918da59c01ed8fa666|GMO Coin 3|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
@@ -276,18 +259,23 @@ Ethereum|coinhako|0xf2d4766ad705e3a5c9ba5b0436b473085f82f82f|Coinhako: Old Warm 
 Ethereum|coinhako|0xa193c943980a9340f306b3d59deb183dc501b35f|Coinhako: Old Address|2026-09-18|Historical exchange address.
 Ethereum|coinhako|0x1d1bd550197c7c0787b9ad0aea9c1cca66ee0e90|Coinhako: Old Address 2|2026-09-18|Historical exchange address.
 Ethereum|coinhako|0x1562bd4f90eb997611b5d7579ab38e5a23acb33e|Coinhako 2|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation. Lightly used.
+Ethereum|coinhako|0xf4e6deea1b4da85c2d68db8d771d37ec1148b853|Coinhako 7|2026-09-24|About $50M moved in the 7 days to 2026-09-24 in a few dozen large transfers.
+Ethereum|coinhako|0xbb44e3349c23cc430cae6ebbaf0256c9f2a1872f|Coinhako 4|2026-09-24|About $650k moved in the 7 days to 2026-09-24.
 Ethereum|indodax|0x51836a753e344257b361519e948ffcaf5fb8d521|Indodax 1|2026-09-18|Very active.
 Ethereum|indodax|0x9cbadd5ce7e14742f70414a6dcbd4e7bb8712719|Indodax 2|2026-09-18|
 Ethereum|indodax|0x3c02290922a3618a4646e3bbca65853ea45fe7c6|Indodax 6|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation. Very active since 2018.
+Ethereum|indodax|0x91dca37856240e5e1906222ec79278b16420dc92|Indodax 3|2026-09-24|Hot wallet; about $36M and 1,500 transfers in the 7 days to 2026-09-24.
 Ethereum|tokocrypto|0x0068eb681ec52dbd9944517d785727310b494575|Tokocrypto|2026-09-18|Small, lightly used exchange wallet.
 Ethereum|bitkub|0xdb044b8298e04d442fdbe5ce01b8cc8f77130e33|Bitkub: Hot Wallet 1|2026-09-18|Funded by Bitkub: Multisig 1. Etherscan also shows a Deposit Address badge on this wallet despite the Hot Wallet tag.
 Ethereum|bitkub|0x3d1d8a1d418220fd53c18744d44c182c46f47468|Bitkub: Hot Wallet 2|2026-09-18|Funded by Bitkub: Multisig 1.
 Ethereum|bitkub|0x59e0cda5922efba00a57794faf09bf6252d64126|Bitkub: Hot Wallet 3|2026-09-18|Funded by Bitkub: Multisig 1.
 Ethereum|bitkub|0x1579b5f6582c7a04f5ffeec683c13008c4b0a520|Bitkub: Hot Wallet 4|2026-09-18|Funded by Bitkub: Multisig 1.
 Ethereum|bitkub|0x79169e7818968cd0c6dbd8929f24d797cc1af9a1|Bitkub: Multisig 1|2026-09-18|Multisig reserve wallet contract that funds Hot Wallets 1-4. Etherscan discloses the label as sourced from a public researcher compilation.
+Ethereum|bitkub|0x326d9f47ba49bbaac279172634827483af70a601|Bitkub 1|2026-09-24|About $8.3M moved in the 7 days to 2026-09-24.
 Ethereum|coinsph|0xd84b4436b6aba0fa348c5cf35b4682448e94724a|Coins.ph: Hot Wallet|2026-09-18|Very active.
 Ethereum|bitopro|0x16905697103cd4ad6a22193b242941b62f660bbc|BitoPro 2|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
 Ethereum|bitopro|0xaa65cc699f9b0258064d952ad987269f7c9dbfad|BitoPro 3|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
+Ethereum|bitopro|0x5b1686a90262c7aa3b8e5d42cec455c47607799b|BitoPro 7|2026-09-24|About $2M moved in the 7 days to 2026-09-24.
 Ethereum|maicoin|0x477b8d5ef7c2c42db84deb555419cd817c336b6f|MaiCoin 1|2026-09-18|Very active.
 Ethereum|altcointrader|0xc58bb74606b73c5043b75d7aa25ebe1d5d4e7c72|AltCoinTrader 1|2026-09-18|Main hot wallet, very active.
 Ethereum|altcointrader|0x1bc972db7b169c2d79719485803af1a23645108d|AltCoinTrader 3|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
@@ -309,10 +297,6 @@ Ethereum|ndax|0x14c4017f81675f7ac1321218d4a385a2d3117328|NDAX 1|2026-09-18|Ether
 Ethereum|netcoins|0x404460039499c774c48248552f802ce5dd482e32|Netcoins 1|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation. Active.
 Ethereum|netcoins|0xe3743d1bf4bdc86bf1faac0ffe325a23cf495ad7|Netcoins 2|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation. Legacy hot wallet, inactive since 2022.
 Ethereum|netcoins|0xba20996529d2722c4d9d800a7b20e96a0a235336|Netcoins: MultiSig 1|2026-09-18|Multisig custody wallet contract. Etherscan discloses the label as sourced from a public researcher compilation.
-Ethereum|b2c2|0xc333e80ef2dec2805f239e3f1e810612d294f771|B2C2 Group 1|2026-09-18|
-Ethereum|gsr|0xd8d6ffe342210057bf4dcc31da28d006f253cef0|GSR: 0xD8D...EF0|2026-09-18|Low native balance; token activity only.
-Ethereum|ambergroup|0xe11970f2f3de9d637fb786f2d869f8fea44195ac|Amber Group|2026-09-18|
-Ethereum|ambergroup|0x5b990c664ae7e759763acfec76e11c289c53be77|Amber Group: 0x5b9...e77|2026-09-18|
 Ethereum|anchorage|0xd52055a39a3d2f7505c739f981f296ea31b50191|Anchorage Digital: Custodian 1|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
 Ethereum|coinbase|0x95a9bd206ae52c4ba8eecfc93d18eacdd41c88cc|Coinbase 5|2026-09-18|Very active. Etherscan has renumbered Coinbase tags over time; identified by address.
 Ethereum|coinbase|0x7c195d981abfdc3ddecd2ca0fed0958430488e34|Coinbase 4|2026-09-18|Very active.
@@ -412,7 +396,6 @@ Ethereum|binanceus|0x34ea4138580435b5a521e460035edb19df1938c1|Binance US 2|2026-
 Ethereum|binanceus|0xf60c2ea62edbfe808163751dd0d8693dcb30019c|Binance US 3|2026-09-18|Main hot wallet, very active.
 Ethereum|binanceus|0x21d45650db732ce5df77685d6021d7d5d1da807f|Binance US 5|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
 Ethereum|binanceus|0xa74e8ae2f83d2564af25420ad4d6a7fe224b053f|Binance US 9|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation. Large balance, cold-wallet profile.
-Ethereum|zerohash|0xcfc0f98f30742b6d880f90155d4ebb885e55ab33|Zero Hash 1|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation. Very active.
 Ethereum|fidelity|0xe3f8250bdc233d93875c15c25d725fd509192d60|Fidelity: Cold Wallet|2026-09-18|Cold wallet.
 Ethereum|bullish|0x367c42a6f261ec54ffbecf5f41c226be12a3dca0|Bullish 1|2026-09-18|Proxy wallet contract deployed by the exchange's tagged deployer; very active. Etherscan discloses the label as sourced from a public researcher compilation.
 Ethereum|bullish|0x100ae042ef0ea159ecc3513e9a378ff21f3829ba|Bullish 2|2026-09-18|Multisig proxy wallet deployed by the exchange's tagged deployer; large ETH reserve. Etherscan discloses the label as sourced from a public researcher compilation.
@@ -421,6 +404,7 @@ Ethereum|bullish|0x756d64dc5edb56740fc617628dc832ddbcfd373c|Bullish: MultiSig 2|
 Ethereum|bullish|0x8d501afb7dd7dada424b8c1f331b5909e44a043f|Bullish: MultiSig 3|2026-09-18|Verified multisig proxy; active. Etherscan discloses the label as sourced from a public researcher compilation.
 Ethereum|firi|0x66a0be112efe2cc3bc2f09fa2acaaf9f593b0265|Firi|2026-09-18|Inactive since 2023.
 Ethereum|nbx|0x29af949c3d218c1133bd16257ed029e92defb168|NBX 1|2026-09-18|Active.
+Ethereum|nbx|0xfaccb74832546a745aab8dbd2d155dc67a222048|NBX 5|2026-09-24|About $500k moved in the 7 days to 2026-09-24.
 Ethereum|lcx|0xbc4e4069b1cb2fc1256a2bf454ae3affb4e05a4d|LCX Exchange|2026-09-18|Active.
 Ethereum|lcx|0x4631018f63d5e31680fb53c11c9e1b11f1503e6f|LCX 2|2026-09-18|Dormant since 2022.
 Ethereum|lcx|0x2957ea6d4f06bc2badfb2958c65fc7d1be5461b1|LCX 3|2026-09-18|Active.
@@ -494,6 +478,7 @@ Ethereum|coinbase|0xbcc7052d5f62f2992bfe9d62467ddeac54eb3e2d|Coinbase: Cold Wall
 Ethereum|coinbase|0x70dd2d584d090a5f765f901a7af72d4112b64fa4|Coinbase: Cold Wallet 23|2026-09-18|Cold wallet, swept to the main hot wallets in 2025 and 2026.
 Ethereum|coinbase|0x94a10586cd1b325b42459397b8f030a92b9b5c67|Coinbase: Cold Wallet 24|2026-09-18|Cold wallet, swept to the main hot wallets in 2025 and 2026.
 Ethereum|coinbase|0x9be1366ca143b1d017e9a535aceb4361970244c2|Coinbase: Cold Wallet 25|2026-09-18|Cold wallet, swept to the main hot wallets in 2025 and 2026.
+Ethereum|coinbase|0xcd531ae9efcce479654c4926dec5f6209531ca7b|Coinbase Prime 1|2026-09-22|Institutional/custody product wallet, own explorer tag; $2.96B moved in the 7-day screen, by far the most active address found this wave.
 Ethereum|kraken|0xaa8ba7d4611437141192e7ceced531bc0a133efb|Kraken: Hot Wallet 5|2026-09-18|Very active.
 Ethereum|kraken|0xc06f25517e906b7f9b4dec3c7889503bb00b3370|Kraken: Cold Wallet 2|2026-09-18|Cold wallet, swept to the main hot wallets in 2025 and 2026.
 Ethereum|kraken|0x29728d0efd284d85187362faa2d4d76c2cfc2612|Kraken 9|2026-09-18|
@@ -789,6 +774,7 @@ Ethereum|bithumb|0xbb5a0408fa54287b9074a2f47ab54c855e95ef82|Bithumb: Old Address
 Ethereum|bithumb|0x5521a68d4f8253fc44bfb1490249369b3e299a4a|Bithumb: Old Address 2|2026-09-18|Legacy address. Last active 2019.
 Ethereum|bithumb|0x8fa8af91c675452200e49b4683a33ca2e1a34e42|Bithumb: Old Address 3|2026-09-18|Legacy address. Last active 2019.
 Ethereum|bithumb|0x3b83cd1a8e516b6eb9f1af992e9354b15a6f9672|Bithumb: Old Address 4|2026-09-18|Legacy address. Last active 2021.
+Ethereum|bithumb|0x18623b12230e0b11b6cced686f59762ba052c5dc|Bithumb 379|2026-09-24|About $8.8M moved in the 7 days to 2026-09-24; the only active wallet among 519 Bithumb tags scanned that day.
 Ethereum|bitfinex|0xdcd0272462140d0a3ced6c4bf970c7641f08cd2c|Bitfinex 4|2026-09-18|Last active 2022.
 Ethereum|bitfinex|0x30a2ebf10f34c6c4874b0bdd5740690fd2f3b70c|Bitfinex 7|2026-09-18|
 Ethereum|bitfinex|0x3f7e77b627676763997344a1ad71acb765fc8ac5|Bitfinex 8|2026-09-18|
@@ -800,6 +786,7 @@ Ethereum|bitfinex|0xcafb10ee663f465f9d10588ac44ed20ed608c11e|Bitfinex: Old Addre
 Ethereum|bitfinex|0x7180eb39a6264938fdb3effd7341c4727c382153|Bitfinex: Old Address 2|2026-09-18|Legacy address.
 Ethereum|kucoin|0x2677c4c8757da1857cc7cc4071e0e0dd32ccb975|KuCoin 49|2026-09-18|Verified proxy vault contract. Holds a very large reserve balance.
 Ethereum|bitget|0x7651fc1605a58fe9a99f1fe0d6db05d4182a9a93|Bitget 21|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation. Last active 2025.
+Ethereum|bitget|0x54a679e853281a440911f72eae0e24107e9413dc|Bitget 33|2026-09-24|About $83M moved in the 7 days to 2026-09-24 in a few large transfers.
 Ethereum|mexc|0xd67f25ef2399a0c769b1a35634c5ce77166714db|MEXC 20|2026-09-18|Cold wallet. Safe multisig reserve wallet contract. Holds a very large reserve balance.
 Ethereum|mexc|0xf95334a86d09a6eec74d69da344efaca424b13a9|MEXC 24|2026-09-18|Cold wallet. Safe multisig reserve wallet contract. Holds a very large reserve balance.
 Ethereum|mexc|0xe4e3eca65460c14a5245b09fee15a92ba09458b6|MEXC 26|2026-09-18|Cold wallet. Safe multisig reserve wallet contract. Holds a very large reserve balance.
@@ -981,6 +968,7 @@ Base|kraken|0xe9f7ecae3a53d2a67105292894676b00d1fab785|Kraken: Hot Wallet|2026-0
 Base|kraken|0xe6a02eefc2612b13f2b3b914009576ce5495ec0e|Kraken: Withdrawals 1|2026-09-20|Withdrawal wallet. Basescan discloses the label as sourced from a public researcher compilation.
 Base|gemini|0xd24400ae8bfebb18ca49be86258a3c749cf46853|Gemini|2026-09-20|Active on Base.
 Base|gemini|0x5f65f7b609678448494de4c87521cdf6cef1e932|Gemini 4|2026-09-20|Contract wallet; active USDC flows.
+Arbitrum|gemini|0x5f65f7b609678448494de4c87521cdf6cef1e932|Gemini 4|2026-09-24|Contract wallet with its own Arbiscan tag (contracts never derive, so this row is what resolves it there); about $1.7M moved in the 3 days to 2026-09-24.
 Base|gemini|0xd69b0089d9ca950640f5dc9931a41a5965f00303|Gemini 7|2026-09-20|Contract wallet deployed on Base.
 Base|gemini|0x183b1ffb0aa9213b9335adfad82e47bfb02f8d24|Gemini 8|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
 Base|gemini|0xf51710015536957a01f32558402902a2d9c35d82|Gemini 9|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
@@ -1062,12 +1050,6 @@ Base|robinhood|0xe0f3e36dbdfa9696b7bcb0d3313522a0bb28d5f4|Robinhood 8|2026-09-20
 Base|robinhood|0x7c5830cb1a1efe898dcd5cf401165cb952508ccc|Robinhood 7|2026-09-20|Lightly used. Basescan discloses the label as sourced from a public researcher compilation.
 Base|wintermute|0xdbf5e9c5206d0db70a90108bf936da60221dc080|Wintermute: 0xdbf...080|2026-09-20|Market-maker trading wallet; active on Base.
 Base|wintermute|0xabc98a142783b7441232d7782e38446641a0ab2b|Wintermute: 0xAbc...B2B|2026-09-20|Trading wallet funded by the main Wintermute wallet.
-Base|falconx|0x1157a2076b9bb22a85cc2c162f20fab3898f4101|FalconX 1|2026-09-20|Active on Base.
-Base|falconx|0xe1ed4da4284924ddaf69983b4d813fb1be58c380|FalconX 2|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
-Base|falconx|0x9fc6bef0702cf47dcd2e5a42b48e19aed8732499|FalconX 3|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
-Base|falconx|0xf9ef3d2bbeacdd439653096c18a199305f8bee19|FalconX 4|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
-Base|falconx|0xf85856147bac1fd760e6b8e81fae4c2e4a02dc8d|FalconX 5|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
-Base|falconx|0xbb017c48a3184146ae05815365e9fa680832c330|FalconX 6|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Dormant on Base.
 Base|anchorage|0xd52055a39a3d2f7505c739f981f296ea31b50191|Anchorage Digital: Custodian 1|2026-09-20|Custody wallet. Basescan discloses the label as sourced from a public researcher compilation.
 Base|anchorage|0xa44d54ae6a00e095daa000365c99c4a27303b6f3|Anchorage Digital Custodian 2|2026-09-20|Custody wallet; dormant on Base. Basescan discloses the label as sourced from a public researcher compilation.
 Base|paxos|0x264bd8291fae1d75db2c5f573b07faa6715997b5|Paxos 4|2026-09-20|Very active operational wallet. Basescan discloses the label as sourced from a public researcher compilation.
@@ -1093,6 +1075,7 @@ Base|bithumb|0x582717501dec047513ec258458da7834011076de|Bithumb 364|2026-09-20|A
 Base|bithumb|0x17e5545b11b468072283cee1f066a059fb0dbf24|Bithumb: Hot Wallet|2026-09-20|Active on Base.
 Base|bithumb|0x88d34944cf554e9cccf4a24292d891f620e9c94f|Bithumb 1|2026-09-20|Dormant on Base.
 Base|bitkub|0xda4231ef1768176536eee3ec187315e60572bbd4|Bitkub 1|2026-09-20|Dormant on Base.
+Base|bitkub|0x7b7b40d0ffc52005ade856d4f65008bff7d4d4a6|Bitkub 8|2026-09-24|About $410k and 450 transfers in the 7 days to 2026-09-24; the only active Bitkub wallet on Base.
 Base|indodax|0x51836a753e344257b361519e948ffcaf5fb8d521|Indodax 1|2026-09-20|Very active on Base.
 Base|indodax|0x91dca37856240e5e1906222ec79278b16420dc92|Indodax 3|2026-09-20|Very active on Base; large ETH balance.
 Base|indodax|0xf077b0289016cdc8a9ae8196705a37f1aefa5091|Indodax 9|2026-09-20|Basescan discloses the label as sourced from a public researcher compilation. Lightly used.
@@ -1132,6 +1115,7 @@ Ethereum|binance|0xa7c0d36c4698981fab42a7d8c783674c6fe2592d|Binance 74|2026-09-2
 Ethereum|binance|0xe4b5b2667e049ac8c79ae6c5a7e3300815aa32be|Binance 104|2026-09-21|Lightly used: about $276k moved in the 7 days to 2026-09-21.
 Ethereum|hashkey|0xee1bf4d7c53af2beafc7dc1dcea222a8c6d87ad9|HashKey Exchange 7|2026-09-21|Main active hot wallet: about $192M moved in the 7 days to 2026-09-21.
 Ethereum|hashkey|0xdf899a960ad64c2ddcb59ebf0a30c2104841cd53|HashKey Exchange|2026-09-21|About $2.4M moved in the 7 days to 2026-09-21. HashKey Exchange 2 and 11 moved under $100k and were left out; the rest were idle.
+Ethereum|hashkey|0xcbea7739929cc6a2b4e46a1f6d26841d8d668b9e|HashKey Exchange 2|2026-09-24|Under $100k on 2026-09-21; about $235k moved in the 7 days to 2026-09-24, so admitted on re-screen.
 Ethereum|independentreserve|0x02c6b2a3a11e95b609d0bdb4e74b04ff48dba819|Independent Reserve: Hot Wallet 4|2026-09-21|Very active: about $257M moved in the 7 days to 2026-09-21.
 Ethereum|independentreserve|0x051acf8d69a18d6a6e4dd063b39501e69704ac50|Independent Reserve: Hot Wallet 2|2026-09-21|Active: about $37M moved in the 7 days to 2026-09-21. Hot Wallets 1, 3 and 5-7 were idle and were left out.
 Ethereum|lemoncash|0x02a78632215262a94ce8651846e7d22adc98ce3c|Lemon Cash 8|2026-09-21|Main active wallet: about $2.7M moved in the 7 days to 2026-09-21, many small deposits.
@@ -1155,5 +1139,4 @@ Arbitrum|bitget|0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23|Bitget 6|2026-09-21|P
 Arbitrum|robinhood|0x841ed663f2636863d40be4ee76243377dff13a34|Robinhood 5|2026-09-21|Previously DERIVED here. About $9.5M moved on Arbitrum in the 3 days to 2026-09-21.
 Arbitrum|robinhood|0x2efb50e952580f4ff32d8d2122853432bbf2e204|Robinhood 2|2026-09-21|Previously DERIVED here. About $0.5M received on Arbitrum in the 3 days to 2026-09-21.
 Arbitrum|maicoin|0x477b8d5ef7c2c42db84deb555419cd817c336b6f|MaiCoin 1|2026-09-21|Previously DERIVED here. About $1.0M moved on Arbitrum in the 3 days to 2026-09-21.
-Arbitrum|falconx|0x1157a2076b9bb22a85cc2c162f20fab3898f4101|FalconX 1|2026-09-21|Previously DERIVED here. About $0.5M received on Arbitrum in the 3 days to 2026-09-21.
 Arbitrum|bitso|0x58b704065b7aff3ed351052f8560019e05925023|Bitso 1|2026-09-21|Previously DERIVED here. About $154k moved on Arbitrum in the 3 days to 2026-09-21.

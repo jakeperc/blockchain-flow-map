@@ -1,11 +1,37 @@
-# Decisions pending for Jake (2026-09-21)
+# Decisions from the September 2026 runs
+
+D1 to D3 came out of the 2026-09-21 "more flows and countries" run. **D4 and D5 were decided on 2026-09-25**,
+when two new chains and the longer time frames were added; they are recorded at the end of this file.
+
+| | Answer | What changed |
+|---|---|---|
+| D4 | **BNB Chain stays out: its stablecoins are bridge-issued pegs, not issuer liabilities.** Jake decided. | Nothing added. Polygon's bridged USDT is excluded by the same rule, so Polygon ships USDC only. Evidence in section D4. |
+| D5 | **A 24H or 7D figure means what THIS browser recorded, sealed in 15-minute spans, and the window is not offered below 80% coverage.** | Built: `rollup.ts`, `history-store.ts`, per-chain sealed spans, measured coverage, real baselines. Section D5. |
+
+# Decisions from the 2026-09-21 run: all three answered
 
 Three decisions came out of the "more flows and countries" run (prompt in `docs/PROMPT-add-flows.md`).
-Each has a recommendation with measured numbers. Nothing here has been implemented; the registry was
-grown under the current rules only. Activity figures are face-value USDC/USDT on Ethereum unless stated,
-from `scripts/registry/screen-activity.mjs` on 2026-09-21.
+Each has a recommendation with measured numbers. Jake answered on 2026-09-21: he approved D2 and asked for D1 and D3
+to be answered outright, "even if both answers are no", so the next agent does not re-research them. Activity figures
+below are face-value USDC/USDT on Ethereum unless stated, from `scripts/registry/screen-activity.mjs` on 2026-09-21.
+
+| | Answer | What changed |
+|---|---|---|
+| D1 | **No.** An explorer name tag stays the only way an address is admitted. | Header of `known-entities.ts` now says so; nothing else. |
+| D2 | **Yes: (c), a 90-day dormant tier.** Approved by Jake. | Built: `measure-dormancy.mjs`, `dormancy.json`, generated `WATCHED` filter, 45-day build gate. Results in section D2. |
+| D3 | **No additions. WhiteBIT stays out. Ten brands failed the operator test and were removed.** | FalconX and Copper on first pass; BitGo, Cumberland, Galaxy, Jump, B2C2, GSR, Zero Hash and Amber Group on a second pass over every brand carrying the same caveat. 37 address rows and 10 entities removed; the operator test is written into the `known-entities.ts` header. |
+
+Do not re-research D1 or D3 unless one of the reopen conditions below is met.
 
 ## D1. Admit wallets that an exchange publishes itself?
+
+**Decision: no.** Not as a general rule and not for Binance's file. Rule 1 in HANDOFF is unchanged: an address enters the
+registry only when its own Etherscan, Basescan or Arbiscan page shows a public name tag. The `known-entities.ts` header
+used to say an "exchange's own published disclosure" could also support an address; that wording was wrong and is fixed.
+**Reopen only if** an exchange in a blocked region (Latin America, Africa, the Gulf, India) starts publishing a hot-wallet
+list that separates its deposit addresses, sits on its own domain, and carries stablecoin flow on Ethereum, Base or
+Arbitrum. None of the 40 checked does today. Binance's separate file (37 Ethereum, 24 Arbitrum and 14 Base addresses) would
+only add first-party anchors for exchanges already on the map, and is not worth the rule change.
 
 HANDOFF rule 1 admits a wallet only through its own explorer name tag. The `known-entities.ts` header also
 mentions "an exchange's own published disclosure", for example a proof-of-reserves address list.
@@ -47,6 +73,30 @@ Findings for the 40 exchanges checked (company pages read 2026-09-21):
 
 ## D2. What to do past 1,000 filter slots per chain
 
+**Decision: (c), a 90-day dormant tier. Approved by Jake and built on 2026-09-21.** Measured over the 90 days to
+2026-09-21, with every range read and no failed query (`docs/measurements/2026-09-21/dormancy.md`):
+
+| Chain | Evidenced | Watched (live filter) | Dormant |
+|---|---|---|---|
+| Ethereum | 812 | 153 | 659 (81%) |
+| Base | 819 | 55 | 764 (93%) |
+| Arbitrum | 787 | 48 | 739 (94%) |
+
+- One filtered request body fell from about 55 KB to 10.9 KB (Ethereum), 4.0 KB (Base) and 3.6 KB (Arbitrum), measured
+  in the built page. Upload for the backfilled hour fell from about 2.2 MB to 0.23 MB, 89% (the memo estimated about 80%).
+  Download is unchanged.
+- Filter headroom is now 847 slots on Ethereum and 949 on Arbitrum (the memo estimated about 840 on Ethereum).
+- Evidence is untouched: every dormant wallet still resolves to its entity. Replaying two stored hours gives identical
+  corridors and values with and without the tier.
+- Out of sample: of 648 Ethereum wallets dormant on 2026-08-22, 11 woke in the following 30 days. No transfer of theirs
+  between two registry wallets went unseen; $11.0M moved against unlabelled counterparties, mostly four Galaxy Digital
+  transfers. Arbitrum: 1 wake-up, $199.90. Base was not validated out of sample.
+- Built as recommended: `scripts/registry/measure-dormancy.mjs` writes a dated `dormancy.json`, `gen-addresses.mjs`
+  emits the live filter, and `verify-registry.cjs` fails the build when the file is older than 45 days (it warns at 30).
+  Re-run it monthly.
+
+The original analysis follows.
+
 The binding caps are 1,000 addresses on Ethereum (eth.drpc.org) and 997 on Arbitrum (arb1, which counts
 the token contracts and event topic against 1,000 selectors). Today: Ethereum 824/1000, Base 831/4800,
 Arbitrum 799/997. Every Ethereum plain-account row also derives onto Base and Arbitrum.
@@ -80,6 +130,22 @@ the build if the file is older than 45 days, the same pattern as the evidence ho
 
 ## D3. Excluded high-volume entities (memo only; nothing added)
 
+**Decision: no additions.** Every brand in the table stays out, WhiteBIT included. FalconX and Copper were then run through
+the same test and failed it, so both were removed (details after the table).
+
+**The operator test** (now written into the `known-entities.ts` header): a brand is admitted only if its own documents name
+ONE legal entity, in one jurisdiction, that holds the brand's customer crypto whatever the client's residence. If the
+contracting or custodying entity is chosen by the client's residence or contract, a brand-level wallet tag cannot be tied to
+one jurisdiction and the brand stays out.
+
+**WhiteBIT: no.** The only document is a user agreement naming Peak Horizon Corp. (Panama) as custodian, with no registration
+number or licence cited. That is weaker than every other entity in the registry, it would add a new country (`PA`) on one
+active wallet, and no regulator or register confirms it. **Reopen only if** a Panamanian registration or a licence for that
+company is found.
+
+**Reopen any other brand only if** its own document changes to name a single custodying entity for all clients, or a
+regulator register names the entity that holds the tagged wallets.
+
 7-day activity counts only wallets that moved at least $100k, among the first 15 tags the explorer search
 returned per brand, so large brands are understated.
 
@@ -100,9 +166,134 @@ returned per brand, so large brands are understated.
 | Remitano | 15+ | 0 | – | Only named operator dissolved 2023 | Cannot be attributed |
 | ProBit | 4 | 0 | – | Webthree Technology (SC), but closed 2026-04-01 | Keep out (ceased) |
 
-Two things to note:
-- **WhiteBIT** is the only brand a document now settles, at HIGH at most, as Panama (not yet in `geography.ts`).
-  Adding it would be your call.
-- **Consistency check:** FalconX and Copper were admitted on 2026-09-19 at HIGH despite multi-jurisdiction
-  affiliates, while Coinbase Prime, Bitstamp and Crypto.com are out because the contracting entity depends on
-  the client. You may want to review FalconX and Copper against the same test.
+**FalconX and Copper: both fail the test and were removed (2026-09-21).** They were admitted on 2026-09-19 at HIGH despite
+multi-jurisdiction affiliates. Each was re-read from the company's own public documents by a research agent limited to WebFetch and WebSearch (no browser).
+- **FalconX** (was US, HIGH; 6 Ethereum, 6 Base and 1 Arbitrum rows). Its disclosures page (last updated 2026-07-24) names
+  eight entities and says availability "is subject to jurisdictional limitations and capabilities of each FalconX entity".
+  No entity is named as holding client assets. US institutional clients' assets sit with Fireblocks Trust Company, a third
+  party (release of 2026-02-04). The only FalconX entity documented with a custody permission is FalconX Limited (Malta).
+  Its Singapore entity is disclosed as not MAS-licensed. Nothing says who controls the tagged wallets, so US/HIGH was not
+  supported.
+  Sources: https://www.falconx.io/disclaimers, https://www.falconx.io/licenses,
+  https://www.falconx.io/newsroom/falconx-expands-u-s-institutional-offering-with-qualified-custody-via-fireblocks-trust.
+- **Copper** (was CH, HIGH; 6 Ethereum rows). Its US terms (last updated July 2026) say services "including custody" for US
+  persons are offered by Copper Markets (US), Inc. and that certain products come through Copper Markets (Switzerland) AG.
+  Liechtenstein has a separate custody entity (Copper Markets (Liechtenstein) AG, FMA TVTG registration), and ADGM has a
+  separately regulated affiliate (Copper Securities (ME) Limited, whose virtual-asset custody permission was only approved in
+  principle in June 2026). The Swiss-only wording the registry cited is the older (June 2024) locale page.
+  Sources: https://copper.co/en-us/terms, https://copper.co/en/terms.
+- Their 13 + 6 address rows are gone from `addresses.txt`; the derived Base and Arbitrum rows go with them. Both brands
+  are now listed as removed in the `known-entities.ts` header. Neither document could be read as a signed customer contract:
+  what was tested is the public terms, which is the same standard as the rest of this table.
+
+**The remaining eight with the same caveat were tested on 2026-09-21 and all eight fail too; removed.** BitGo, Cumberland
+DRW, Galaxy Digital, Jump Trading, B2C2, GSR, Zero Hash and Amber Group carried the same "brand-level tag, several
+affiliates" note as FalconX and Copper. Each was run through the operator test by its own research agent (WebFetch/
+WebSearch only); none passed:
+- **BitGo** (was US, HIGH): at least three differently-chartered US custody entities (federal OCC, NYDFS-limited New
+  York, South Dakota) plus Singapore, Germany/Denmark, Switzerland and Dubai affiliates, each named as custodian for
+  different clients. No document ties the Etherscan-tagged wallet to one of them.
+- **Cumberland DRW** (was US, HIGH): Cumberland DRW LLC (Chicago, general), Cumberland New York LLC (NYDFS BitLicense,
+  New York-specific), DRW Global Markets Ltd (UK FCA) and Cumberland SG Pte Ltd (Singapore MAS) — a document per
+  jurisdiction, not one entity.
+- **Galaxy Digital** (was US, HIGH): its own 10-K exhibit bundles Galaxy Digital LLC (Delaware) and Galaxy Digital
+  Trading Cayman LLC together as one undifferentiated trading operation, and its Prime business explicitly splits New
+  York clients from everyone else (GalaxyOne Prime NY LLC vs GalaxyOne Prime LLC).
+- **Jump Trading** (was US, HIGH): the SEC's 2024 order named the Cayman subsidiary Tai Mo Shan Limited for buying UST
+  in May 2021; a December 2025 Terraform-estate lawsuit attributes the same conduct to the US parent Jump Trading LLC.
+  Nothing resolves which one controls the tagged wallet.
+- **B2C2** (was GB, HIGH): its own disclaimer states "products and services may be provided by different members of
+  the B2C2 group of companies, depending on the jurisdiction of the client and the regulatory status of the product
+  or service," and names UK, Cayman, US (two entities), Luxembourg, Singapore and France entities.
+- **GSR** (was HK, HIGH): its own trading terms define "GSR" as "GSR Markets Limited or any of its affiliates," and
+  separate pages route US clients to GSR Digital LLC, UK clients to GSR Markets UK Limited and Singapore clients to
+  GSR Markets Pte. Ltd.
+- **Zero Hash** (was US, HIGH): US, Louisiana (a separate contracting entity within the US), EEA, Bermuda, Australia
+  and Brazil entities, assigned by client residence per its own onboarding docs.
+- **Amber Group** (was KY, HIGH): a Hong Kong SFC-licensed entity, a Singapore MAS entity trading under a different
+  corporate name (Sparrow Tech Private Limited), a Dubai VASP subsidiary and a separate Cayman public holding
+  company; no document ties the tagged wallets to any one of them.
+
+18 Ethereum address rows and 8 entity records were removed (none had Base or Arbitrum rows, so nothing derived directly,
+but derived Base/Arbitrum rows from those Ethereum accounts went too). Registry after both passes: **1,114 first-party
+addresses, 64 entities, 29 jurisdictions**; the dormant tier (D2) was re-measured against the smaller registry. Replaying
+two stored hours (`measure-corridors.mjs --explain`): the loss is mostly deposit-address inferences that anchored on the
+removed entities. Hour A: corridors 36 to 33, attributed value $73.35M to $66.18M (-9.8%), jurisdictions lit unchanged
+at 20, Arbitrum lost one corridor (its FalconX leg). Hour C: corridors unchanged at 41, attributed value $41.15M to
+$39.52M (-4.0%), one fewer jurisdiction lit (18 to 17); `--explain` shows the drop is inferred deposit addresses that
+used to be read as BitGo's or Zero Hash's (their inflow is now unattributed, since nothing anchors the inference), plus
+one deposit address that used to pay BitGo and now correctly resolves to Coinbase.
+**Reopen any of the ten removed brands (FalconX, Copper, and these eight) only if** its own documents change to name a
+single custodying entity for all clients, or a regulator register names the entity that holds the tagged wallets.
+
+## D4. BNB Chain: are Binance-Peg stablecoins admissible? (2026-09-25)
+
+**Answer: no. BNB Chain stays out, and Polygon's bridged USDT with it.**
+
+The backlog had BNB Chain as the best remaining coverage win. Research on 2026-09-25 found the premise wrong.
+
+The allowlist in `lib/atlas/evm.ts` admits a token contract only when its own **issuer** publishes it, from
+Circle's USDC contract registry or Tether's supported-protocols page. Both are cited in the methodology panel's
+technical references, and that provenance is what makes "USDC" and "USDT" on this map claims about a Circle or
+Tether liability rather than about any token using the ticker. On BNB Chain:
+
+- Circle's registry lists 38 mainnet chains. **BNB Smart Chain is not one of them.**
+- Tether's supported-protocols page lists **no USDT contract on BNB Smart Chain** (only XAU₮).
+- The chain's large stablecoin is `0x55d398326f99059fF775485246999027B3197955`, **Binance-Peg BSC-USD**, 18
+  decimals, 1,569 Transfer logs per 20 blocks. It is a **Binance** liability created by a bridge, and integrity
+  rule 3 excludes bridges.
+
+Jake was offered three options: skip BNB; admit BSC-USD as its own disclosed peg asset (a new asset label, its
+own price source, an explicit "bridge-issued, Binance liability" note, and this decision record); or label it
+`USDT` and move on. He chose to **skip**, and to spend the effort on chains where the issuer publishes the
+contract. The third option was the one to avoid: it would have put a Binance liability into every asset
+composition chart under Tether's name.
+
+The same rule excludes **Polygon's** widely used USDT `0xc2132D05D31c914a87C6611C10748AEb04B58e8F`, bridged
+through the Polygon PoS bridge and absent from Tether's list. Polygon therefore carries **USDC only**, exactly
+as Base does.
+
+**Reopen if** Tether or Circle begins publishing a native contract for BNB Smart Chain, or if Jake decides the
+coverage is worth admitting a disclosed peg asset on the terms in option two. Note what is lost meanwhile: BNB
+carries a large share of Asian and retail stablecoin flow, and none of it is on this map.
+
+## D5. What a 24H or 7D figure means without a backend (2026-09-25)
+
+**Answer: this browser's own recorded observation, sealed in 15-minute spans, and no window is offered until
+80% of it has actually been watched.**
+
+24H and 7D had been rendered but permanently disabled: the client holds about 90 minutes of transfers and
+nothing survived a reload, so baselines were null and the snapshot message said as much. Keeping raw transfers
+for a week is not an option — two `Attribution` records per transfer, each with a long evidence note, puts a
+week past 100 MB per visitor.
+
+So each completed 15 minutes is reduced once, **per chain**, to the accounting it supports (`rollup.ts`) and
+kept in IndexedDB in that browser alone. Consequences, all deliberate:
+
+- **The totals are exact, not estimated.** Sealing calls the same `aggregateSpan()` a live window uses over a
+  half-open span, so spans tile the timeline exactly once. `scripts/verify-rollup.cjs` asserts that a 24H window
+  rebuilt from 96 sealed spans reproduces a direct `aggregate()` over the same transfers — totals, corridors,
+  top-6 lists, jurisdictions and classifications.
+- **Coverage is measured, not assumed.** Each feed records only the block ranges it actually read, so a failed
+  chunk lowers the coverage of the spans it touches. A window's coverage is its least-covered chain.
+- **Progressive unlock, Jake's choice.** A partly watched day is a real measurement of part of a day, but
+  presenting it as "24H" invites reading it as the day's settlement. The window stays locked, with a tooltip
+  saying how much more history is needed. Consequence he accepted: coverage accrues only while the page is open,
+  so a visitor who drops in for an hour a day will never unlock 7D. These windows belong to a page left running.
+  `UNLOCK_SHARE` in `live-client.ts` is the single constant to tune.
+- **No per-transfer detail is stored.** A long window therefore has no transfer list, no counterparty ranking
+  and no evidence cards; those stay on 5M and 1H, where the records and today's registry are both in hand. A
+  stored citation would also freeze evidence the registry may since have corrected, which is what rule 5's
+  expiry horizon exists to prevent.
+- **Baselines are finally real.** Four preceding windows of equal length from the same recorded history, each
+  required to clear the same coverage bar — so a gap in watching cannot read as a collapse in volume. Where the
+  history does not support one, the panel still says "Baseline unavailable".
+- **A registry change does not discard history.** A span sealed under an older registry attributed fewer wallets
+  than today's would; that is a true property of the observation, so such spans are kept and the mixed span is
+  disclosed. A change to the stored *shape* does discard, because reinterpreting a summary under new rules would
+  make a number mean something nobody measured.
+- The unfiltered denominator sample is **not** sealed: it describes recently read chain time, and attaching it
+  to a 24H figure would invite reading it as that window's denominator.
+
+**Reopen if** a backend arrives (the sealed spans then become a cache rather than the only history), or if Jake
+wants the unlock bar moved after seeing how rarely 7D unlocks in practice.

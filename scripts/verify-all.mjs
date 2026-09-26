@@ -10,8 +10,8 @@ import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
-const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds'].map(m=>`lib/atlas/${m}.ts`);
-const CHECKS=[['verify-model.cjs',[]],['verify-registry.cjs',[]],['verify-live.cjs',[]],['verify-live-build.cjs',[]]];
+const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds','rollup','encoding','geo3d','quality-policy','tween'].map(m=>`lib/atlas/${m}.ts`);
+const CHECKS=[['verify-model.cjs',[]],['verify-map.cjs',[]],['verify-registry.cjs',[]],['verify-live.cjs',[]],['verify-rollup.cjs',[]],['verify-live-build.cjs',[]]];
 
 const horizonArg=process.argv.indexOf('--horizon-days');
 const horizon=horizonArg>-1?process.argv[horizonArg+1]:undefined;

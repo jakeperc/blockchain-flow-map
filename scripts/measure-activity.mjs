@@ -1,6 +1,6 @@
 /**
  * Diagnostic, not shipped and not shown to visitors: how much of the evidence registry is actually active?
- * Pulls ERC-20 Transfer logs for one chain and window, filtered to exactly the addresses the live feed filters on
+ * Pulls ERC-20 Transfer logs for one chain and window, filtered to every evidenced address, dormant tier included
  * (first-party rows plus DERIVED cross-chain rows, via evidencedAddresses()), and reports from real chain data:
  *   - per-entity sent/received value, active wallets against registered wallets, and idle entities
  *   - DIRECT edges where both ends are evidenced wallets of different entities, by entity and by jurisdiction
@@ -27,8 +27,9 @@ const endAgo=Number(opt('--end-hours-ago')??0);
 const outFile=opt('--out');
 const pool=POOLS[chain];
 if(!pool||!(hours>0)){console.error('usage: node scripts/measure-activity.mjs <Ethereum|Base|Arbitrum> [hours=4] [--end-hours-ago N] [--out file.json]');process.exit(1);}
-// eth.drpc.org rejects a topic position with 1,024+ entries (measured 2026-09-21); 1,000 passes.
-const TOPIC_CAP=1000;
+// eth.drpc.org rejects a topic position with 1,024+ entries (measured 2026-09-21); 1,000 passes. This diagnostic reads the
+// WHOLE registry, which the dormant tier (decision D2) lets grow past that, so it queries in slices of SLICE addresses.
+const SLICE=900;
 const TRANSFER='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
 const atlas=loadAtlas();
@@ -41,7 +42,9 @@ const derivedCount=[...reg.values()].filter(r=>r.derived).length;
 const pad=a=>'0x'+'0'.repeat(24)+a.slice(2).toLowerCase();
 const hex=n=>'0x'+n.toString(16);
 const meta=id=>ENTITIES[id]??{name:id,jurisdiction:'??',category:'exchange'};
-console.log(`${chain}: ${addrs.length} evidenced addresses in the live filter (${addrs.length-derivedCount} first-party, ${derivedCount} derived); filter slots used ${addrs.length} of ${TOPIC_CAP}`);
+const watched=new Set((atlas['known-entities'].watchedAddresses??atlas['known-entities'].evidencedAddresses)(chain).map(a=>a.toLowerCase()));
+console.log(`${chain}: ${addrs.length} evidenced addresses in the registry (${addrs.length-derivedCount} first-party, ${derivedCount} derived), of which ${watched.size} are in the live filter and ${addrs.length-watched.size} are in the dormant tier; all are queried here, ${SLICE} per request`);
+const slices=[];for(let i=0;i<addrs.length;i+=SLICE)slices.push(addrs.slice(i,i+SLICE).map(pad));
 
 const head=parseInt(await rpcPool(pool.urls,'eth_blockNumber',[]),16);
 const end=head-Math.round(endAgo*3600/pool.slotSec)-5,start=end-Math.round(hours*3600/pool.slotSec)+1;
@@ -60,7 +63,7 @@ async function logsFor(a,b,topics){
 const seen=new Set(),logs=[];let failed=0,failedBlocks=0;
 for(let a=start;a<=end;a+=pool.chunk){
  const b=Math.min(a+pool.chunk-1,end);
- for(const topics of [[TRANSFER,addrs.map(pad),null],[TRANSFER,null,addrs.map(pad)]]){
+ for(const topics of slices.flatMap(sl=>[[TRANSFER,sl,null],[TRANSFER,null,sl]])){
   try{for(const l of await logsFor(a,b,topics)){const k=`${l.transactionHash}:${l.logIndex}`;if(!seen.has(k)){seen.add(k);logs.push(l);}}}
   catch(e){failed++;failedBlocks+=b-a+1;console.warn(`chunk ${a}..${b} failed: ${e.message}`);}
   await sleep(pool.pauseMs);
