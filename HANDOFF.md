@@ -1,6 +1,6 @@
 # Ledger Atlas — handoff notes for the next agent
 
-Last updated 2026-09-26 after the **renderer performance and look pass** (end of section 11), **Avalanche going live (Polygon measured, then parked) and the longer time frames**
+Last updated 2026-09-28 after the **Avalanche Snowscan registry wave** (section 13), the **renderer performance and look pass** (end of section 11), **Avalanche going live (Polygon measured, then parked) and the longer time frames**
 (section 12), the globe renderer rewrite (section 11) and the unplaced-flow / Unmapped work of
 2026-09-24 (section 10); the registry state is from the 2026-09-21 run (commits
 `cc97055` to `be03bf3`) plus the waves of 2026-09-22/24 and the 2026-09-25 chain addition. Read this before touching anything under
@@ -59,7 +59,7 @@ number is a feature, not a bug to be "improved" by loosening rules.
 5. **Evidence expires.** `admissible()` in `lib/atlas/model.ts` refuses evidence older
    than 180 days. Every address row carries the real date its explorer page was read.
    Never stamp a placeholder or a future date; a future date makes the row inadmissible
-   immediately. All current evidence expires **2027-03-17**; the build gate fails 60 days
+   immediately. The earliest current evidence expires **2027-03-17**; the build gate fails 60 days
    before that (`--horizon-days`).
 6. **Derived evidence is second class.** See section 4. It may never anchor
    deposit-address inference and may never apply to a contract address.
@@ -117,13 +117,14 @@ lib/atlas/tween.ts                  eases and retargetable tweens (verified)
 Registry keys are `${chain}:${address}` (lowercase on EVM). This matches the deferred
 backend's `store.ts addressKey`, so keep it.
 
-Current registry: **1,134 first-party rows** (Ethereum 812, Base 260, Arbitrum 62) across
-64 entities and 29 jurisdictions, plus **2,041 derived** (Base 555, Arbitrum 723, Avalanche 763).
-Avalanche has **no first-party rows yet** — it runs on derived evidence alone, so a Snowscan label
-wave is the cheapest remaining coverage win. Polygon is parked (section 12) and carries no rows.
+Current registry: **1,139 first-party rows** (Ethereum 812, Base 260, Arbitrum 62, Avalanche 5) across
+64 entities and 29 jurisdictions, plus **2,037 derived** (Base 555, Arbitrum 723, Avalanche 759).
+Avalanche's five own-page Snowscan tags include one new Bitkub wallet; the other four replace
+derived evidence. Polygon is parked (section 12) and carries no rows.
 Live filter (`WATCHED`) is re-measured per chain by the dormancy scan; the caps it must stay
-under are Ethereum 1,000, Arbitrum 997, Base 4,800 and Avalanche 4,800. The other 2,145 of 2,328 evidenced addresses (Ethereum 655, Base 748,
-Arbitrum 725) are the dormant tier. One filtered request body was measured at about 10.9 KB
+under are Ethereum 1,000, Arbitrum 997, Base 4,800 and Avalanche 4,800. The remaining
+evidenced addresses stay in the dormant tier; `scripts/registry/dormancy.json` records the
+current per-chain counts. One filtered request body was measured at about 10.9 KB
 on Ethereum, 4.0 KB on Base and 3.6 KB on Arbitrum (was about 55 KB each) right after the
 tier shipped; upload for the backfilled hour fell from about 2.2 MB to 0.23 MB.
 Measurements: `docs/measurements/2026-09-21/dormancy.md`.
@@ -246,12 +247,12 @@ dormant row is not free. The diagnostics are read-only and never shipped:
   registries on identical chain history and prices. Windows must end within about 22 hours
   (CoinGecko's free 5-minute series) and after the newest row's `checked` date. The five
   windows and results from 2026-09-21 are in `docs/measurements/2026-09-21/`.
-- `node scripts/registry/label-scan.mjs [--host basescan.org|arbiscan.io] [--expand] <term>...`:
+- `node scripts/registry/label-scan.mjs [--host basescan.org|arbiscan.io|snowscan.xyz] [--expand] <term>...`:
   enumerates explorer tags; `--expand` walks numbered families past the 15-row cap. Terms
   for re-scanning the unlabelled and excluded lists are in `label-scan-terms.txt`.
 - `node scripts/registry/screen-activity.mjs <Chain> <days> <candidates.txt>`: RPC activity
   screen for candidates before spending explorer requests or filter slots on them.
-- `node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io> <addr>...`:
+- `node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz> <addr>...`:
   the admissible read. It prints the tag verbatim and any "tagged based on ... compilation"
   disclosure, which goes into the row's note.
 - `node scripts/probe-endpoint-caps.mjs <Chain>`: endpoint caps for `feeds.ts`.
@@ -448,9 +449,8 @@ integrity rules in section 2 (free does not relax the evidence standard).
    his stated priority order. **Raise these again the next time he asks what to work on:**
    - ~~**BNB Chain, then Polygon.**~~ **Done 2026-09-25, with a different answer than the backlog
      assumed (section 12).** BNB is inadmissible (D4); **Avalanche** shipped and **Polygon** is parked, chosen by
-     measured evidenced activity over Celo and Optimism. Still open from that work: **no first-party
-     Polygonscan or Snowscan labels yet** — both chains run on derived evidence alone, so a label wave
-     on those two explorers is the cheapest remaining coverage win.
+     measured evidenced activity over Celo and Optimism. A first Snowscan label wave shipped on
+     2026-09-28 (section 13); **Polygonscan labels remain unresearched** while Polygon is parked.
    - **Tron**, once Jake supplies a TronGrid key: still the single largest coverage jump, and now the
      only route to India, since BNB is out (section 7b). Needs the key to live somewhere other than the
      client bundle.
@@ -627,10 +627,10 @@ What changed and why:
   shaders compile with `compileAsync` before the first frame and before land joins the scene.
 - **three.js is code-split** (`world-map.tsx` dynamic-imports `./engine`; the request starts at module
   evaluation). A failed chunk load falls back to the SVG map. `verify-live-build.cjs` now walks dynamic
-  imports and asserts the renderer is inside the checked graph. **Not yet confirmed in a production
-  build**: the build gate was already failing on 2026-09-26 (`dormancy.json has no Avalanche entry`), so
-  no build was made. After the dormancy re-run, check `dist-live/assets` has a separate three chunk and
-  that it loads from the nested FTP path on `dist-check`.
+  imports and asserts the renderer is inside the checked graph. Confirmed in the 2026-09-28
+  production build after the dormancy refresh: `dist-live/assets` contains a separate `engine-*.js`
+  chunk, and the nested FTP-style `dist-check` path serves it and the page assets with HTTP 200.
+  A real-device render and thermal check remain open below.
 - **`dispose()` no longer calls `host.replaceChildren()`**, which deleted React-owned nodes (vignette,
   tooltip) and made React throw `insertBefore` on remount (HMR, StrictMode).
 
@@ -798,8 +798,31 @@ If you edit that fixture, keep `lastVerified` inside the 180-day horizon and kee
 
 ### Not done here
 
-- **No first-party Polygonscan or Snowscan labels yet.** Both chains are live on derived evidence alone
-  (763 addresses each). A label wave on those two explorers is the obvious next coverage win, and
-  `label-scan.mjs` already reads Etherscan-family hosts.
+- **Polygonscan labels remain unresearched.** Polygon is parked and has no registry rows. Avalanche
+  now has five first-party Snowscan rows (section 13); the remaining 759 derived addresses are still
+  useful search leads. `label-scan.mjs` reads Etherscan-family hosts.
+
+## 13. Avalanche first-party labels and country wallet screen (2026-09-28)
+
+Snowscan's own address pages were read for every admitted row. A three-day USDC/USDT activity
+screen above the $100k admission floor found **Bitkub 10** (Thailand), a new Avalanche wallet,
+at about $363k of incoming plus outgoing token face value. Four active derived addresses also
+had first-party tags: VALR (South Africa, about $54.4M), BtcTurk (Türkiye, $12.9M), MaiCoin
+(Taiwan, $2.0M), and Bitso (Gibraltar operator, $324k). Their first-party rows can anchor
+deposit inference on Avalanche; the derived rows could not. Their activity values are
+screening totals, not new mapped settlement or an estimate of country flows.
+
+The broader Snowscan screen found only **1 active of 98** previously unevidenced search
+hits after a lightweight title filter. A Basescan screen of **115** comparable hits found **0 active** over
+seven days. Search hits alone were never admitted. Seven existing derived Avalanche wallets
+with own-page tags were screened; Lemon Cash, Bitpanda and Coinsquare were below the $100k
+three-day floor and were left derived. See `docs/measurements/2026-09-28/` for the scans and
+the exact activity results. A fresh Etherscan search across 35 country terms found no new
+unregistered hit since 2026-09-21. Of 19 old unregistered wallet-like hits re-screened,
+Kanga Exchange 1 alone was active (~$22.1M over seven days) but **must stay out**: the
+brand-level tag cannot be assigned to one operator now that Kanga has a separate Latvia
+EU platform, and Poland's KNF says the companies behind kanga.exchange are not registered
+there. See the source links in the measurement report. Free explorer tags on these chains are sparse as a source of new
+active wallets; research future chains by measured activity first.
 - The unfiltered denominator sample is not sealed, so long windows show no sample figure.
 - Optimism is measured and ready if a third chain is wanted.

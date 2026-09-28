@@ -1140,3 +1140,9 @@ Arbitrum|robinhood|0x841ed663f2636863d40be4ee76243377dff13a34|Robinhood 5|2026-0
 Arbitrum|robinhood|0x2efb50e952580f4ff32d8d2122853432bbf2e204|Robinhood 2|2026-09-21|Previously DERIVED here. About $0.5M received on Arbitrum in the 3 days to 2026-09-21.
 Arbitrum|maicoin|0x477b8d5ef7c2c42db84deb555419cd817c336b6f|MaiCoin 1|2026-09-21|Previously DERIVED here. About $1.0M moved on Arbitrum in the 3 days to 2026-09-21.
 Arbitrum|bitso|0x58b704065b7aff3ed351052f8560019e05925023|Bitso 1|2026-09-21|Previously DERIVED here. About $154k moved on Arbitrum in the 3 days to 2026-09-21.
+# Avalanche wave 2026-09-28: own-page Snowscan public tags, admitted above the $100k three-day USDC/USDT activity floor. Four replace DERIVED evidence; Bitkub 10 is a new evidenced wallet.
+Avalanche|valr|0x05cdb1526f6e224e02919a4c018d9784ea25eb3d|VALR: Hot Wallet|2026-09-28|Previously DERIVED here. About $54.4M moved on Avalanche in the 3 days to 2026-09-28.
+Avalanche|btcturk|0x76ec5a0d3632b2133d9f1980903305b62678fbd3|BtcTurk 13|2026-09-28|Previously DERIVED here. About $12.9M moved on Avalanche in the 3 days to 2026-09-28.
+Avalanche|maicoin|0x477b8d5ef7c2c42db84deb555419cd817c336b6f|MaiCoin 1|2026-09-28|Previously DERIVED here. About $2.0M moved on Avalanche in the 3 days to 2026-09-28.
+Avalanche|bitso|0x58b704065b7aff3ed351052f8560019e05925023|Bitso 1|2026-09-28|Previously DERIVED here. About $324k moved on Avalanche in the 3 days to 2026-09-28.
+Avalanche|bitkub|0x91013c9c7c2a856b26df52a8a117afeb9fc90379|Bitkub 10|2026-09-28|New evidenced Avalanche wallet. About $363k moved in the 3 days to 2026-09-28, with both incoming and outgoing transfers.

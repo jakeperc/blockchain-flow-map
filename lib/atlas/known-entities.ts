@@ -3,7 +3,7 @@
  * known-addresses.ts. Pure data; safe to ship to the browser.
  *
  * RULES (these are the whole point of the project — do not relax them):
- *  - Only add an address whose own explorer page (Etherscan, Basescan or Arbiscan) shows a public name tag.
+ *  - Only add an address whose own chain explorer page (Etherscan, Basescan, Arbiscan or Snowscan) shows a public name tag.
  *    An exchange's own published address list is NOT admissible (decision D1, 2026-09-21): such lists mix in
  *    customer deposit addresses, go stale or vanish, and never say which legal entity controls a wallet. A
  *    regulator or court filing supports an entity's jurisdiction, never an address.
@@ -59,7 +59,8 @@
  * licence cited; decision D3, 2026-09-21) and Revolut (operating entity ambiguous), zondacrypto
  * (Estonian licence revoked June 2026), Kuna and Genesis Trading (ceased operations), DWF Labs
  * (entity document unreadable), Abraxas Capital (fund vehicle, not a venue), BitMEX (winding up Sept 2026),
- * EXMO (UK-sanctioned May 2026), Blockchain.com, Deribit, BitMart, Phemex, AscendEX, Bitrue, LBank, CoinEx,
+ * EXMO (UK-sanctioned May 2026), Kanga Exchange (active tagged wallet, but Poland is not its operator
+ * jurisdiction and the brand now spans an EU platform under a separate Latvia entity), Blockchain.com, Deribit, BitMart, Phemex, AscendEX, Bitrue, LBank, CoinEx,
  * BingX, WOO X, XT.com, HitBTC, Wirex, Okcoin, Bakkt, MoonPay, Coinstore (multi-entity or contradicted operator).
  */
 import type {Attribution,Chain} from './model';
@@ -118,7 +119,7 @@ export const ENTITIES:Record<string,EntityRecord>={
  coinhako:e('coinhako','Coinhako','SG','VERIFIED','MAS Financial Institutions Directory entry (Major Payment Institution, digital payment token service)','https://eservices.mas.gov.sg/fid/institution/detail/220377-HAKO-TECHNOLOGY-PTE-LTD','SBI Coinhako Technology Pte. Ltd. (formerly Hako Technology Pte. Ltd.), Singapore; a single MAS-licensed operating entity. Several tagged wallets are historical and near-empty.','2026-09-19'),
  indodax:e('indodax','Indodax','ID','VERIFIED','OJK press release (December 2025) publishing the whitelist of licensed crypto-asset traders (PT Indodax Nasional Indonesia, licence S-18/D.07/2025)','https://ojk.go.id/id/berita-dan-kegiatan/siaran-pers/Pages/OJK-Terbitkan-Whitelist-Penyelenggara-Perdagangan-Aset-Keuangan-Digital-Dan-Aset-Kripto-Berizin.aspx','PT Indodax Nasional Indonesia, Jakarta; OJK-licensed crypto-asset trader.','2026-09-19'),
  tokocrypto:e('tokocrypto','Tokocrypto','ID','VERIFIED','OJK press release (December 2025) publishing the whitelist of licensed crypto-asset traders (PT Aset Digital Berkat, licence S-14/D.07/2025)','https://ojk.go.id/id/berita-dan-kegiatan/siaran-pers/Pages/OJK-Terbitkan-Whitelist-Penyelenggara-Perdagangan-Aset-Keuangan-Digital-Dan-Aset-Kripto-Berizin.aspx','PT Aset Digital Berkat, Jakarta; Binance-majority-owned but separately licensed in Indonesia. Its treasury wallet is deliberately excluded.','2026-09-19'),
- bitkub:e('bitkub','Bitkub','TH','VERIFIED','SEC Thailand licence check, digital asset exchange licensee table (Bitkub Online Company Limited)','https://market.sec.or.th/LicenseCheck/views/DABusiness?exchange/en','Bitkub Online Company Limited, Bangkok; SEC-licensed digital asset exchange. Multisig 1 is the reserve wallet contract that funds the numbered hot wallets.','2026-09-19'),
+ bitkub:e('bitkub','Bitkub','TH','VERIFIED','SEC Thailand licence check, digital asset exchange licensee table (Bitkub Online Company Limited)','https://market.sec.or.th/LicenseCheck/views/DABusiness?exchange/en','Bitkub Online Company Limited, Bangkok; SEC-licensed digital asset exchange. Multisig 1 is the reserve wallet contract that funds the numbered hot wallets.','2026-09-28'),
  coinsph:e('coinsph','Coins.ph','PH','VERIFIED','Bangko Sentral ng Pilipinas list of virtual asset service providers (Betur Inc., doing business as Coins.ph)','https://www.bsp.gov.ph/Lists/Directories/Attachments/19/VASP.pdf','Betur Inc., Taguig City; BSP-registered virtual asset service provider.','2026-09-19'),
  bitopro:e('bitopro','BitoPro','TW','VERIFIED','Taiwan FSC Securities and Futures Bureau list of enterprises that completed VASP anti-money-laundering registration (BitoPro Technology Co., Ltd.)','https://www.sfb.gov.tw/en/home.jsp?id=286&parentpath=0,117','BitoPro Technology Co., Ltd. (幣託科技股份有限公司), Taipei. Its tagged deposit addresses are deliberately excluded.','2026-09-19'),
  maicoin:e('maicoin','MaiCoin','TW','HIGH','Taiwan FSC Securities and Futures Bureau list of enterprises that completed VASP anti-money-laundering registration (Modernity Financial Technologies, Ltd.)','https://www.sfb.gov.tw/en/home.jsp?id=286&parentpath=0,117','Modernity Financial Technologies, Ltd. (現代財富科技股份有限公司), Taipei, which runs both the MaiCoin brokerage and the MAX exchange; the tag names only the MaiCoin brand, so HIGH.','2026-09-19'),
