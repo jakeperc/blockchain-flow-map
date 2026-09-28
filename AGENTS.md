@@ -2,7 +2,13 @@
 
 Read `HANDOFF.md` first. It is the current state of the project, the rules, and the
 workflows. `docs/METHODOLOGY.md` explains the evidence model in depth and
-`docs/PLAN-2026-09.md` is the approved plan behind the last four commits.
+`docs/PLAN-2026-09.md` is the approved plan behind the September phases.
+
+ChatGPT and Claude both work in this repository. After a material change, update
+`HANDOFF.md` with what changed, the evidence or decisions, verification results,
+remaining work, and the commit or deliverable location. Keep `README.md` figures in
+sync, and update these agent instructions when a lasting workflow rule changes.
+Commit the handoff update with the work so the next agent reads the current state.
 
 Hard rules, in short:
 

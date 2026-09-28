@@ -1,9 +1,9 @@
 # Ledger Atlas — handoff notes for the next agent
 
-Last updated 2026-09-28 after the **Avalanche Snowscan registry wave** (section 13), the **renderer performance and look pass** (end of section 11), **Avalanche going live (Polygon measured, then parked) and the longer time frames**
-(section 12), the globe renderer rewrite (section 11) and the unplaced-flow / Unmapped work of
-2026-09-24 (section 10); the registry state is from the 2026-09-21 run (commits
-`cc97055` to `be03bf3`) plus the waves of 2026-09-22/24 and the 2026-09-25 chain addition. Read this before touching anything under
+Last updated 2026-09-28 after the **Avalanche Snowscan registry wave** (section 13,
+commit `684b4af`). Earlier work includes the renderer performance and look pass
+(section 11), Avalanche going live with Polygon measured then parked and longer time
+frames (section 12), and the unplaced-flow / Unmapped work (section 10). Read this before touching anything under
 `lib/atlas/`, `scripts/registry/` or `docs/`. It explains the direction the project has
 been taking, the rules that must not be broken, and the workflows that keep the build
 honest. The longer explanations live in `docs/METHODOLOGY.md` and `live-lite/README.md`.
@@ -801,6 +801,8 @@ If you edit that fixture, keep `lastVerified` inside the 180-day horizon and kee
 - **Polygonscan labels remain unresearched.** Polygon is parked and has no registry rows. Avalanche
   now has five first-party Snowscan rows (section 13); the remaining 759 derived addresses are still
   useful search leads. `label-scan.mjs` reads Etherscan-family hosts.
+- The unfiltered denominator sample is not sealed, so long windows show no sample figure.
+- Optimism is measured and ready if another chain is wanted.
 
 ## 13. Avalanche first-party labels and country wallet screen (2026-09-28)
 
@@ -824,5 +826,22 @@ brand-level tag cannot be assigned to one operator now that Kanga has a separate
 EU platform, and Poland's KNF says the companies behind kanga.exchange are not registered
 there. See the source links in the measurement report. Free explorer tags on these chains are sparse as a source of new
 active wallets; research future chains by measured activity first.
-- The unfiltered denominator sample is not sealed, so long windows show no sample figure.
-- Optimism is measured and ready if a third chain is wanted.
+
+The 2026-09-28 wave is commit `684b4af`. `node scripts/verify-all.mjs`, TypeScript
+typecheck and `corepack pnpm build:live` passed; lint remained at its existing 45
+errors. `outputs/ledger-atlas-live-2026-09-28.zip` packages `dist-live/` with
+`index.html` at the zip root for Jake's FTP deployment. The zip is ignored by Git;
+rebuild and repackage it after any later live-build change.
+These additions broaden first-party Avalanche coverage across five countries; the
+project still has 29 jurisdictions overall. Further country expansion on existing
+chains is constrained by sparse active public labels. The next source decisions are
+TronGrid for Tron and archive-capable Polygon RPC, both requiring a plan that keeps
+credentials out of the static client. Jake signs up for any needed API access himself.
+
+## 14. Cross-agent handoff rule (2026-09-28)
+
+Jake uses both ChatGPT and Claude on this repository. `AGENTS.md` directs coding
+agents here; `CLAUDE.md` directs Claude here. After material code, data, evidence,
+or deployment changes, update this file in the same commit with the current state,
+verification, unresolved work and deliverable path. Keep the short status in
+`README.md` synchronized. Do not rely on chat history as the handoff.
