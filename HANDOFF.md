@@ -1,7 +1,7 @@
 # Ledger Atlas — handoff notes for the next agent
 
-Last updated 2026-09-28 after the **Avalanche Snowscan registry wave** (section 13,
-commit `684b4af`). Earlier work includes the renderer performance and look pass
+Last updated 2026-09-29 after the **public-post lead sweep and API options report** (section 15).
+Before that came the **Avalanche Snowscan registry wave** (section 13, commit `684b4af`). Earlier work includes the renderer performance and look pass
 (section 11), Avalanche going live with Polygon measured then parked and longer time
 frames (section 12), and the unplaced-flow / Unmapped work (section 10). Read this before touching anything under
 `lib/atlas/`, `scripts/registry/` or `docs/`. It explains the direction the project has
@@ -117,8 +117,8 @@ lib/atlas/tween.ts                  eases and retargetable tweens (verified)
 Registry keys are `${chain}:${address}` (lowercase on EVM). This matches the deferred
 backend's `store.ts addressKey`, so keep it.
 
-Current registry: **1,139 first-party rows** (Ethereum 812, Base 260, Arbitrum 62, Avalanche 5) across
-64 entities and 29 jurisdictions, plus **2,037 derived** (Base 555, Arbitrum 723, Avalanche 759).
+Current registry: **1,141 first-party rows** (Ethereum 812, Base 260, Arbitrum 62, Avalanche 7) across
+64 entities and 29 jurisdictions, plus **2,036 derived** (Base 555, Arbitrum 723, Avalanche 758).
 Avalanche's five own-page Snowscan tags include one new Bitkub wallet; the other four replace
 derived evidence. Polygon is parked (section 12) and carries no rows.
 Live filter (`WATCHED`) is re-measured per chain by the dormancy scan; the caps it must stay
@@ -845,3 +845,42 @@ agents here; `CLAUDE.md` directs Claude here. After material code, data, evidenc
 or deployment changes, update this file in the same commit with the current state,
 verification, unresolved work and deliverable path. Keep the short status in
 `README.md` synchronized. Do not rely on chat history as the handoff.
+
+## 15. Public-post lead sweep and API options (2026-09-29)
+
+Jake asked for (a) a list of free and paid APIs he could sign up for, and (b) one last sweep of
+sites not used before, including public posts about USDT/USDC flows.
+
+**APIs:** `docs/API-OPTIONS-2026-09.md`. Top picks, ranked by coverage per dollar:
+1. Tronscan + TronGrid keys (free): Tron.
+2. Infura free: un-parks Polygon with archive getLogs.
+3. Helius (free, or $49): Solana.
+4. Blockscout PRO (free): a tag lead feed.
+5. Solscan Pro ($199): Solana own-explorer labels.
+
+Every key needs the phase-2 Worker backend; plan on Workers Paid at $5/month. **Open decision
+for Jake:** accept Tronscan's `publicTag` as Tron's own-explorer name tag under rule 1.
+Etherscan's nametag API is Pro Plus ($899) and its terms forbid redistribution, so it is not
+recommended.
+
+**Leads:** `docs/measurements/2026-09-29/public-post-leads.md`.
+- Posts (Whale Alert, Lookonchain, Arkham, news) gave no copyable addresses.
+- Search-indexed explorer pages and the `brianleect/etherscan-labels` scrape gave 122 leads for
+  registered entities. 96 of them were already first-party rows.
+- Of the 26 new candidates, two cleared the floor. Both were read on their own Snowscan pages:
+  - **Binance 49**: new, $73.7M over three days.
+  - **Bitfinex: Hot Wallet**: derived → first-party, $21.4M.
+- Excluded brands (Bybit, Bitstamp, Luno, WazirX, Revolut, offshore exchanges, swap services)
+  were dropped unscreened.
+
+A direct scrape of Etherscan's USDT top-holders page was blocked by the agent's safety classifier
+and was not pursued. The Dune spellbook `cex_evms_addresses.sql` remains an unread lead
+compilation.
+
+**Verification:** `verify-all.mjs` passed with one expected warning (Binance 49 is unmeasured
+until the next dormancy scan). `tsc --noEmit` is clean and `pnpm build:live` passed. The UI was
+not changed, so no browser check was run. Deliverable: `outputs/ledger-atlas-live-2026-09-29.zip`
+(ignored by Git).
+
+**Next:** run `measure-dormancy.mjs` at the next monthly refresh (due by 2026-11-12), then wait
+for Jake's API keys and his Tronscan decision.

@@ -1146,3 +1146,5 @@ Avalanche|btcturk|0x76ec5a0d3632b2133d9f1980903305b62678fbd3|BtcTurk 13|2026-09-
 Avalanche|maicoin|0x477b8d5ef7c2c42db84deb555419cd817c336b6f|MaiCoin 1|2026-09-28|Previously DERIVED here. About $2.0M moved on Avalanche in the 3 days to 2026-09-28.
 Avalanche|bitso|0x58b704065b7aff3ed351052f8560019e05925023|Bitso 1|2026-09-28|Previously DERIVED here. About $324k moved on Avalanche in the 3 days to 2026-09-28.
 Avalanche|bitkub|0x91013c9c7c2a856b26df52a8a117afeb9fc90379|Bitkub 10|2026-09-28|New evidenced Avalanche wallet. About $363k moved in the 3 days to 2026-09-28, with both incoming and outgoing transfers.
+Avalanche|binance|0x9f8c163cba728e99993abe7495f06c0a3c8ac8b9|Binance 49|2026-09-29|New evidenced Avalanche wallet, found as a public-post lead then read on its own Snowscan page. About $73.7M moved in the 3 days to 2026-09-29, both directions.
+Avalanche|bitfinex|0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec|Bitfinex: Hot Wallet|2026-09-29|Previously DERIVED here. About $21.4M moved on Avalanche in the 3 days to 2026-09-29.
