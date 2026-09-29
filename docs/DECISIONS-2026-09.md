@@ -297,3 +297,20 @@ kept in IndexedDB in that browser alone. Consequences, all deliberate:
 
 **Reopen if** a backend arrives (the sealed spans then become a cache rather than the only history), or if Jake
 wants the unlock bar moved after seeing how rarely 7D unlocks in practice.
+
+## D6. Tronscan's own name tags are admissible evidence for Tron (2026-09-29)
+
+**Decision (Jake, 2026-09-29): yes.** For Tron addresses, the public name tag shown by Tronscan (Tron's own block
+explorer, `tronscan.org`) is treated exactly like an Etherscan-family tag under rule 1. Tronscan exposes it as
+`publicTag` from `apilist.tronscanapi.com/api/accountv2?address=`, which needs a free Tronscan API key.
+
+Everything else in rule 1 and rule 3 still applies to Tron:
+- store the tag verbatim with the real read date;
+- the entity still needs a regulator or company document naming one operator in one jurisdiction (D3);
+- deposit addresses, funders, bridges, token contracts and Tether treasury/issuer wallets stay out;
+- Tronscan `redTag` or `greyTag` (risk flags) are not identity tags and never admit a wallet.
+
+Tron addresses never derive from EVM rows (section 4). The feed plan and budget are in `docs/API-PLAN.md`.
+
+**Reopen if** Tronscan starts sourcing its tags from third-party compilations without saying so, or the tag API
+disappears behind a paid tier.

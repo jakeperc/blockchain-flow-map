@@ -1,6 +1,6 @@
 # Ledger Atlas — handoff notes for the next agent
 
-Last updated 2026-09-29 after the **public-post lead sweep and API options report** (section 15).
+Last updated 2026-09-29 after the **USDT top-holders wave, Tronscan decision D6 and API plan** (section 16).
 Before that came the **Avalanche Snowscan registry wave** (section 13, commit `684b4af`). Earlier work includes the renderer performance and look pass
 (section 11), Avalanche going live with Polygon measured then parked and longer time
 frames (section 12), and the unplaced-flow / Unmapped work (section 10). Read this before touching anything under
@@ -117,8 +117,8 @@ lib/atlas/tween.ts                  eases and retargetable tweens (verified)
 Registry keys are `${chain}:${address}` (lowercase on EVM). This matches the deferred
 backend's `store.ts addressKey`, so keep it.
 
-Current registry: **1,141 first-party rows** (Ethereum 812, Base 260, Arbitrum 62, Avalanche 7) across
-64 entities and 29 jurisdictions, plus **2,036 derived** (Base 555, Arbitrum 723, Avalanche 758).
+Current registry: **1,147 first-party rows** (Ethereum 818, Base 260, Arbitrum 62, Avalanche 7) across
+64 entities and 29 jurisdictions, plus **2,042 derived** (Base 557, Arbitrum 725, Avalanche 760).
 Avalanche's five own-page Snowscan tags include one new Bitkub wallet; the other four replace
 derived evidence. Polygon is parked (section 12) and carries no rows.
 Live filter (`WATCHED`) is re-measured per chain by the dormancy scan; the caps it must stay
@@ -884,3 +884,31 @@ not changed, so no browser check was run. Deliverable: `outputs/ledger-atlas-liv
 
 **Next:** run `measure-dormancy.mjs` at the next monthly refresh (due by 2026-11-12), then wait
 for Jake's API keys and his Tronscan decision.
+
+## 16. USDT top-holders wave, D6 and the API plan (2026-09-29, later)
+
+- **Budget and hosting are recorded in `docs/API-PLAN.md`. Read it before any API work.**
+  - Jake cannot afford $49 or $199/month plans. He can afford Alchemy pay-as-you-go and Cloudflare $5.
+  - Polygon needs a key only for the offline dormancy scan, so Infura free un-parks it with no server.
+    Run it locally or in GitHub Actions.
+  - Tron and Solana need a cached, rate-limited Cloudflare Worker proxy or cron. The free tier is
+    probably enough.
+  - GitHub Pages can host the site but cannot hold keys.
+- **D6 (Jake, 2026-09-29):** Tronscan's own public name tags are admissible for Tron, like Etherscan
+  tags. See `docs/DECISIONS-2026-09.md`. Operator documents and the rule-3 exclusions still apply.
+- **Registry +6 Ethereum rows** from Jake's Etherscan USDT top-1000 holders export:
+  - OKX: Cold Wallet 2 ($267M over 7 days)
+  - MEXC 22 ($100M)
+  - Upbit 58 ($43M)
+  - KuCoin 66 ($25M)
+  - KuCoin 54 ($12M)
+  - Bitget 23 ($2.6M)
+
+  Of 169 tags, 50 were already registered and 107 were plumbing or excluded brands. Report:
+  `docs/measurements/2026-09-29/usdt-top-holders.md`. **This export beat the search sweeps**
+  (6 wallets against 2), so ask Jake for the USDC and L2/Avalanche holder exports next time. Agents
+  cannot fetch these pages themselves: a direct scrape was blocked by the agent safety classifier.
+- **Verification:** `verify-all.mjs` passed. The only warnings are the expected "unmeasured" ones for
+  rows added since the 2026-09-28 dormancy scan; re-run `measure-dormancy.mjs` to clear them.
+  `tsc --noEmit` is clean and `pnpm build:live` passed. Registry-only change, so no browser check.
+  Deliverable: `outputs/ledger-atlas-live-2026-09-29.zip`, rebuilt after this wave.

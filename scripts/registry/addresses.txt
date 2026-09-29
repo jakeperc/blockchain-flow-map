@@ -1148,3 +1148,9 @@ Avalanche|bitso|0x58b704065b7aff3ed351052f8560019e05925023|Bitso 1|2026-09-28|Pr
 Avalanche|bitkub|0x91013c9c7c2a856b26df52a8a117afeb9fc90379|Bitkub 10|2026-09-28|New evidenced Avalanche wallet. About $363k moved in the 3 days to 2026-09-28, with both incoming and outgoing transfers.
 Avalanche|binance|0x9f8c163cba728e99993abe7495f06c0a3c8ac8b9|Binance 49|2026-09-29|New evidenced Avalanche wallet, found as a public-post lead then read on its own Snowscan page. About $73.7M moved in the 3 days to 2026-09-29, both directions.
 Avalanche|bitfinex|0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec|Bitfinex: Hot Wallet|2026-09-29|Previously DERIVED here. About $21.4M moved on Avalanche in the 3 days to 2026-09-29.
+Ethereum|okx|0xccdcfc4598f539408fc0393b42905c1e0d24a91e|OKX: Cold Wallet 2|2026-09-29|Found in the Etherscan USDT top-1000 holders export (rank 20, ~345M USDT). About $267M moved in the 7 days to 2026-09-29.
+Ethereum|mexc|0xc411ab12837f63935b71b6c6643d0f7000e55e4b|MEXC 22|2026-09-29|Found in the Etherscan USDT top-1000 holders export (rank 42). About $100M moved out in the 7 days to 2026-09-29.
+Ethereum|upbit|0x1d791f12bb6808dc08ab365e2ec8913273c00193|Upbit 58|2026-09-29|Found in the Etherscan USDT top-1000 holders export (rank 165). Very active: about $43M over 245 transfers in the 7 days to 2026-09-29.
+Ethereum|kucoin|0xe8c15aad9d4cd3f59c9dfa18828b91a8b2c49596|KuCoin 66|2026-09-29|Found in the Etherscan USDT top-1000 holders export (rank 370). About $25M moved in the 7 days to 2026-09-29.
+Ethereum|kucoin|0x5b234aaab0f61d346a3ef8faca474c1c19f80c1f|KuCoin 54|2026-09-29|Found in the Etherscan USDT top-1000 holders export (rank 58, ~111M USDT). About $12M moved out in the 7 days to 2026-09-29.
+Ethereum|bitget|0x59708733fbbf64378d9293ec56b977c011a08fd2|Bitget 23|2026-09-29|Found in the Etherscan USDT top-1000 holders export (rank 466). About $2.6M moved in the 7 days to 2026-09-29.
