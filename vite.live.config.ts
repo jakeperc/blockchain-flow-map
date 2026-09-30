@@ -1,5 +1,5 @@
 /**
- * Static build of the full Ledger Atlas UI with an in-browser live data source: `pnpm build:live`.
+ * Static build of the full Blockchain Flow Map UI with an in-browser live data source: `pnpm build:live`.
  * Output in dist-live/ is plain files (relative asset paths) that can be FTP-uploaded to any folder.
  * Deliberately separate from vite.config.ts, which builds the Cloudflare Worker + D1 backend.
  */

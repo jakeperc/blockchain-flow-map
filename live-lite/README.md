@@ -1,6 +1,6 @@
-# Ledger Atlas · Live (static, backend-free build)
+# Blockchain Flow Map · Live (static, backend-free build)
 
-The full Ledger Atlas interface — the Three.js Equal Earth map, corridor panels, evidence inspector,
+The full Blockchain Flow Map interface — the Three.js Equal Earth map, corridor panels, evidence inspector,
 playback, the lot — built as plain static files with an **in-browser live Ethereum data source**
 instead of the server API. Deploy it exactly like `jakepercy.com/bitcoin-battlefield`: upload a folder
 via FTP and open it. No server, no database, no environment variables.

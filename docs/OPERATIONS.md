@@ -1,4 +1,4 @@
-# Ledger Atlas operations
+# Blockchain Flow Map operations
 
 The hosted application opens in **DEMO DATA**. All jurisdictions, entities, classifications and transaction values in that mode are deterministic synthetic fixtures. No API key or evidence dataset was supplied during the build. No live provider has been validated end to end in this deployment.
 

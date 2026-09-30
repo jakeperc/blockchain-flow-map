@@ -1,4 +1,4 @@
-# Ledger Atlas — handoff notes for the next agent
+# Blockchain Flow Map — handoff notes for the next agent
 
 Last updated 2026-09-29 after the **USDT top-holders wave, Tronscan decision D6 and API plan** (section 16).
 Before that came the **Avalanche Snowscan registry wave** (section 13, commit `684b4af`). Earlier work includes the renderer performance and look pass
@@ -13,7 +13,7 @@ reopen conditions before researching any of them again).
 
 ## 1. What this project is and how it ships
 
-Ledger Atlas is a stablecoin cross-border settlement map (React + Three.js globe with an
+Blockchain Flow Map (formerly Ledger Atlas) is a stablecoin cross-border settlement map (React + Three.js globe with an
 SVG fallback). It started as a demo with synthetic data. It now has a **LIVE mode** that
 reads USDC and USDT `Transfer` logs straight from free public JSON-RPC endpoints in the
 visitor's browser. There is no backend for the live build.

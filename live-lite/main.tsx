@@ -1,4 +1,4 @@
-/** Static, backend-free entry: the full Ledger Atlas UI with an in-browser live Ethereum source. */
+/** Static, backend-free entry: the full Blockchain Flow Map UI with an in-browser live Ethereum source. */
 import {createRoot} from 'react-dom/client';
 import Atlas from '@/components/atlas';
 import {aggregate} from '@/lib/atlas/engine';

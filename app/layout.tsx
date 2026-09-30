@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Ledger Atlas | Global settlement intelligence",
+  title: "Blockchain Flow Map | Global settlement intelligence",
   description: "Explore attributed cross-border stablecoin settlement with inspectable evidence and transparent coverage.",
   icons: {
     icon: "/favicon.svg",

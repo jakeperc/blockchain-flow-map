@@ -1,4 +1,4 @@
-# Ledger Atlas methodology v1
+# Blockchain Flow Map methodology v1
 
 An address does not reveal its owner's physical location. Endpoints represent evidenced jurisdiction associations of specific operating entities, not customers, beneficial owners, users, IP locations or headquarters by default. Borders are cartographic references and do not assert sovereignty.
 

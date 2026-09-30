@@ -1,4 +1,4 @@
-# Ledger Atlas
+# Blockchain Flow Map
 
 A full-screen, stablecoin-first map of **attributed cross-border onchain settlement**: an interactive globe that unfolds into an Equal Earth map. The live build uses Three.js and React; a Cloudflare D1 backend is deferred.
 
