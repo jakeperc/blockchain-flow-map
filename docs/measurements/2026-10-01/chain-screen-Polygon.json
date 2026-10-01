@@ -1,0 +1,220 @@
+{
+ "chain": "Polygon",
+ "days": 3,
+ "asOf": "2026-10-01T17:13:50.932Z",
+ "blocks": [
+  94606982,
+  94779781
+ ],
+ "failedQueries": 0,
+ "candidates": 765,
+ "rows": [
+  {
+   "address": "0x58b704065b7aff3ed351052f8560019e05925023",
+   "entity": "bitso",
+   "label": "Bitso 1",
+   "in": 14912085.347437996,
+   "out": 14992885.059999995,
+   "n": 594,
+   "value": 29904970.40743799
+  },
+  {
+   "address": "0x4d8336bda6c11bd2a805c291ec719baedd10acb9",
+   "entity": "coinbase",
+   "label": "Coinbase 39",
+   "in": 3310063.173207999,
+   "out": 3703730.806817998,
+   "n": 2169,
+   "value": 7013793.980025997
+  },
+  {
+   "address": "0xc9aaa6ca0e05b87d53a3e51edbc44b406eeaf299",
+   "entity": "coinbase",
+   "label": "Coinbase 30",
+   "in": 2983006.7845639987,
+   "out": 3053005.3304889956,
+   "n": 2086,
+   "value": 6036012.115052994
+  },
+  {
+   "address": "0x9810762578accf1f314320cca5b72506ae7d7630",
+   "entity": "coinbase",
+   "label": "Coinbase 16",
+   "in": 2802285.0683449972,
+   "out": 2749891.237849002,
+   "n": 2145,
+   "value": 5552176.306193999
+  },
+  {
+   "address": "0xe86f3aaa57f63b2afeca68178182a91bc3909962",
+   "entity": "coinbase",
+   "label": "Coinbase 41",
+   "in": 2113729.7939719995,
+   "out": 1966692.0956020004,
+   "n": 2130,
+   "value": 4080421.8895739997
+  },
+  {
+   "address": "0xce84449a8ebec019ac110a4b6662e55d0fd9f228",
+   "entity": "wintermute",
+   "label": "Wintermute 5",
+   "in": 1750084.010087,
+   "out": 1750084.010082,
+   "n": 43,
+   "value": 3500168.020169
+  },
+  {
+   "address": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+   "entity": "wintermute",
+   "label": "Wintermute 4",
+   "in": 1113000.000001,
+   "out": 1063000,
+   "n": 18,
+   "value": 2176000.0000010002
+  },
+  {
+   "address": "0x576b81f0c21edbc920ad63feeeb2b0736b018a58",
+   "entity": "mexc",
+   "label": "MEXC 11",
+   "in": 872212.8986879999,
+   "out": 1180000,
+   "n": 336,
+   "value": 2052212.898688
+  },
+  {
+   "address": "0x51e3d44172868acc60d68ca99591ce4230bc75e0",
+   "entity": "mexc",
+   "label": "MEXC 8",
+   "in": 1202256.834912,
+   "out": 767820.7685569979,
+   "n": 795,
+   "value": 1970077.6034689979
+  },
+  {
+   "address": "0x264bd8291fae1d75db2c5f573b07faa6715997b5",
+   "entity": "paxos",
+   "label": "Paxos 4",
+   "in": 654346.4743580001,
+   "out": 296628.52,
+   "n": 724,
+   "value": 950974.9943580001
+  },
+  {
+   "address": "0x1887fa9edadeab7562b01cc3f4fa246ace2c3cdd",
+   "entity": "robinhood",
+   "label": "Robinhood 9",
+   "in": 317045.001451,
+   "out": 497732.00568500016,
+   "n": 803,
+   "value": 814777.0071360001
+  },
+  {
+   "address": "0x841ed663f2636863d40be4ee76243377dff13a34",
+   "entity": "robinhood",
+   "label": "Robinhood 5",
+   "in": 269188.397218,
+   "out": 317045,
+   "n": 4,
+   "value": 586233.397218
+  },
+  {
+   "address": "0x02a78632215262a94ce8651846e7d22adc98ce3c",
+   "entity": "lemoncash",
+   "label": "Lemon Cash 8",
+   "in": 502901.3589110005,
+   "out": 47375.0375,
+   "n": 765,
+   "value": 550276.3964110005
+  },
+  {
+   "address": "0x04c079bb31deed8391015eed8d6b625a40957058",
+   "entity": "brasilbitcoin",
+   "label": "Brasil Bitcoin 1",
+   "in": 241427.372561,
+   "out": 193263.15346700003,
+   "n": 25,
+   "value": 434690.52602800005
+  },
+  {
+   "address": "0x916ed5586bb328e0ec1a428af060dc3d10919d84",
+   "entity": "coinspot",
+   "label": "CoinSpot 7",
+   "in": 82680.39094300002,
+   "out": 98732.75522000002,
+   "n": 316,
+   "value": 181413.14616300003
+  },
+  {
+   "address": "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
+   "entity": "bitget",
+   "label": "Bitget 6",
+   "in": 157654.84351399998,
+   "out": 0,
+   "n": 374,
+   "value": 157654.84351399998
+  },
+  {
+   "address": "0x477b8d5ef7c2c42db84deb555419cd817c336b6f",
+   "entity": "maicoin",
+   "label": "MaiCoin 1",
+   "in": 56782.186432,
+   "out": 79694.76351499997,
+   "n": 110,
+   "value": 136476.94994699996
+  },
+  {
+   "address": "0x7dbb4bdcfe614398d1a68ecc219f15280d0959e0",
+   "entity": "shakepay",
+   "label": "Shakepay 8",
+   "in": 50999.11058400002,
+   "out": 48528.858108,
+   "n": 105,
+   "value": 99527.96869200002
+  },
+  {
+   "address": "0xc1da33e8d60daf4f93a52357a57a076f44c45759",
+   "entity": "lemoncash",
+   "label": "Lemon Cash 5",
+   "in": 42468.928143,
+   "out": 50500.734951999984,
+   "n": 150,
+   "value": 92969.66309499998
+  },
+  {
+   "address": "0x91dca37856240e5e1906222ec79278b16420dc92",
+   "entity": "indodax",
+   "label": "Indodax 3",
+   "in": 42893.868757000004,
+   "out": 32546.701137,
+   "n": 103,
+   "value": 75440.569894
+  },
+  {
+   "address": "0xa26e73c8e9507d50bf808b7a2ca9d5de4fcc4a04",
+   "entity": "robinhood",
+   "label": "Robinhood 4",
+   "in": 2551.57,
+   "out": 550.57,
+   "n": 4,
+   "value": 3102.1400000000003
+  },
+  {
+   "address": "0x2efb50e952580f4ff32d8d2122853432bbf2e204",
+   "entity": "robinhood",
+   "label": "Robinhood 2",
+   "in": 550.57,
+   "out": 0,
+   "n": 1,
+   "value": 550.57
+  },
+  {
+   "address": "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
+   "entity": "bitget",
+   "label": "Bitget 35",
+   "in": 0,
+   "out": 0.252415,
+   "n": 1,
+   "value": 0.252415
+  }
+ ]
+}

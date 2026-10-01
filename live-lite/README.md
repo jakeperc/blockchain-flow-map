@@ -21,11 +21,12 @@ app changes.
 - `live-lite/main.tsx` mounts the same `Atlas` component the main app uses, passing it an in-browser
   data source instead of letting it call `/api/snapshot`. It opens on the 1-hour window in live mode.
 - `lib/atlas/live-client.ts` is that source, one feed per chain: Ethereum (USDC, USDT), Base (USDC),
-  Arbitrum (USDC, USDT) and Avalanche (USDC, USDT). On load each feed backfills the preceding hour —
-  300 Ethereum blocks, 1,800 Base, 14,400 Arbitrum or 3,000 Avalanche —
+  Arbitrum (USDC, USDT), Avalanche (USDC, USDT), Polygon (USDC) and Optimism (USDC). On load each feed
+  backfills the preceding hour — 300 Ethereum blocks, 1,800 Base, 14,400 Arbitrum, 3,000 Avalanche,
+  2,400 Polygon or 1,800 Optimism —
   from keyless public RPC endpoints, then polls every ~20 seconds. A contract is only read where its own
   issuer publishes it, which is why BNB Chain is absent entirely (`docs/DECISIONS-2026-09.md`, D4). Polygon
-  is measured but parked (`PARKED` in `lib/atlas/feeds.ts`; HANDOFF section 12).
+  and Optimism went live on 2026-10-01 (HANDOFF section 17).
   **The feed is filtered**: it asks the node only for transfers that touch a wallet with evidence on that
   chain, using the two indexed address positions of the Transfer event. Measured on 2026-09-20 that is
   about 4 MB down and 2 MB up for one hour across all three chains, against roughly 140 MB unfiltered.

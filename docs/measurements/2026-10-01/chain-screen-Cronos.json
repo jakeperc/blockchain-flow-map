@@ -1,0 +1,12 @@
+{
+ "chain": "Cronos",
+ "days": 3,
+ "asOf": "2026-10-01T17:15:54.131Z",
+ "blocks": [
+  96691513,
+  97323707
+ ],
+ "failedQueries": 0,
+ "candidates": 765,
+ "rows": []
+}

@@ -1,0 +1,22 @@
+{
+ "chain": "Kaia",
+ "days": 3,
+ "asOf": "2026-10-01T17:15:01.048Z",
+ "blocks": [
+  228414077,
+  228673276
+ ],
+ "failedQueries": 0,
+ "candidates": 765,
+ "rows": [
+  {
+   "address": "0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec",
+   "entity": "bitfinex",
+   "label": "Bitfinex: Hot Wallet",
+   "in": 138199.79878,
+   "out": 14127.595793999999,
+   "n": 53,
+   "value": 152327.394574
+  }
+ ]
+}

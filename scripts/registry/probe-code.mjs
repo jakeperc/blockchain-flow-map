@@ -28,7 +28,8 @@ const CHAINS={
  Ethereum:['https://eth.drpc.org','https://rpc.mevblocker.io','https://1rpc.io/eth','https://eth-pokt.nodies.app'],
  Base:['https://mainnet.base.org','https://base.drpc.org','https://base-rpc.publicnode.com','https://1rpc.io/base'],
  Arbitrum:['https://arb1.arbitrum.io/rpc','https://arbitrum.drpc.org','https://arbitrum-one-rpc.publicnode.com','https://1rpc.io/arb'],
- Polygon:['https://polygon-bor-rpc.publicnode.com','https://polygon.drpc.org'],
+ Polygon:['https://polygon-bor-rpc.publicnode.com','https://polygon.drpc.org','https://polygon.gateway.tenderly.co'],
+ Optimism:['https://mainnet.optimism.io','https://optimism-rpc.publicnode.com','https://optimism.drpc.org','https://optimism.gateway.tenderly.co'],
  Avalanche:['https://api.avax.network/ext/bc/C/rpc','https://avalanche-c-chain-rpc.publicnode.com','https://avalanche.drpc.org']
 };
 // A missing chain here would silently leave every address unprobed on it, and the only symptom would be a

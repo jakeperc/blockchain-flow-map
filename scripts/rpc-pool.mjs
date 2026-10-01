@@ -13,11 +13,11 @@ export const POOLS={
  Arbitrum:{chainId:42161,slotSec:0.25,chunk:1200,screenChunk:4000,pauseMs:350,probeToken:'0xaf88d065e77c8cc2239327c5edb3a432268e5831',urls:['https://arbitrum.gateway.tenderly.co','https://arb1.arbitrum.io/rpc']},
  // Added 2026-09-25. Block times measured over 100 blocks; endpoint facts and the rejected candidates are in
  // docs/measurements/2026-09-25/new-chain-candidates.md.
- // 700 ms, not the usual 250: polygon-bor-rpc.publicnode.com throttles sustained querying, and its refusals
- // name no range, so a scan that pushes it spends the rest of the run shrinking its own request size.
- // Polygon has no other usable keyless endpoint — seven were tried on 2026-09-25 and all were dead,
- // HTML-blocked or capped at 50 blocks — so pacing it is the only lever.
- Polygon:{chainId:137,slotSec:1.5,chunk:100,screenChunk:2000,pauseMs:700,probeToken:'0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',urls:['https://polygon-bor-rpc.publicnode.com','https://polygon.drpc.org']},
+ // Tenderly's gateway and Sentio (found 2026-10-01) serve full history, so they lead; publicnode prunes past
+ // ~37 hours and drpc serves 100 blocks. 700 ms, not the usual 250, dates from when publicnode was the only
+ // large-range endpoint and throttled sustained querying; it is kept because publicnode is still a fallback.
+ Polygon:{chainId:137,slotSec:1.5,chunk:1200,screenChunk:5000,pauseMs:700,probeToken:'0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',urls:['https://polygon.gateway.tenderly.co','https://rpc.sentio.xyz/matic','https://polygon-bor-rpc.publicnode.com','https://polygon.drpc.org']},
+ Optimism:{chainId:10,slotSec:2,chunk:1500,screenChunk:5000,pauseMs:250,probeToken:'0x0b2c639c533813f4aa9d7837caf62653d097ff85',urls:['https://optimism.gateway.tenderly.co','https://mainnet.optimism.io','https://optimism-rpc.publicnode.com']},
  Avalanche:{chainId:43114,slotSec:1.2,chunk:1500,screenChunk:2000,pauseMs:250,probeToken:'0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',urls:['https://api.avax.network/ext/bc/C/rpc','https://avalanche-c-chain-rpc.publicnode.com']}
 };
 /**

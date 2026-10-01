@@ -3,7 +3,7 @@
  * that were "licensed but unlabelled" (labels appear over time) and (b) find candidate wallets for an entity.
  * A hit is a LEAD only: read the address's own page (read-tag.mjs) and find a jurisdiction document before adding.
  *
- *   node scripts/registry/label-scan.mjs [--host etherscan.io|basescan.org|arbiscan.io|snowscan.xyz] [--pause 1200] [--out file.json] <term>...
+ *   node scripts/registry/label-scan.mjs [--host etherscan.io|basescan.org|arbiscan.io|snowscan.xyz|polygonscan.com|optimistic.etherscan.io] [--pause 1200] [--out file.json] <term>...
  *   node scripts/registry/label-scan.mjs --file terms.txt        (one term per line, # comments)
  *
  * Facts (checked 2026-09-21): the endpoint returns a capped list (about 15 address rows), and popular words are

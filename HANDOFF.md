@@ -1,7 +1,8 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-09-29 after the **USDT top-holders wave, Tronscan decision D6 and API plan** (section 16).
-Before that came the **Avalanche Snowscan registry wave** (section 13, commit `684b4af`). Earlier work includes the renderer performance and look pass
+Last updated 2026-10-01 after **Polygon and Optimism went live on keyless endpoints, a 42-row wallet wave from
+the Dune lead feed, and the finding that Tron's feed needs no key** (section 17). Before that came the
+USDT top-holders wave, Tronscan decision D6 and API plan (section 16), and the **Avalanche Snowscan registry wave** (section 13, commit `684b4af`). Earlier work includes the renderer performance and look pass
 (section 11), Avalanche going live with Polygon measured then parked and longer time
 frames (section 12), and the unplaced-flow / Unmapped work (section 10). Read this before touching anything under
 `lib/atlas/`, `scripts/registry/` or `docs/`. It explains the direction the project has
@@ -40,7 +41,8 @@ public evidence. The map deliberately shows only a small fraction of onchain vol
 number is a feature, not a bug to be "improved" by loosening rules.
 
 1. **Never guess an address-to-entity mapping.** An address enters the registry only when
-   its own explorer page (Etherscan, Basescan, Arbiscan) shows a public name tag for it.
+   its own explorer page (Etherscan, Basescan, Arbiscan, Snowscan, Polygonscan, Optimistic Etherscan) shows a
+   public name tag for it.
    The tag text is stored verbatim in the `label` column. Researcher compilations,
    Dune spellbooks, Arkham, Nansen, blog posts and memory are not admissible sources.
    **Exchange-published address lists are not admissible either** (decision D1, 2026-09-21).
@@ -117,12 +119,12 @@ lib/atlas/tween.ts                  eases and retargetable tweens (verified)
 Registry keys are `${chain}:${address}` (lowercase on EVM). This matches the deferred
 backend's `store.ts addressKey`, so keep it.
 
-Current registry: **1,147 first-party rows** (Ethereum 818, Base 260, Arbitrum 62, Avalanche 7) across
-64 entities and 29 jurisdictions, plus **2,042 derived** (Base 557, Arbitrum 725, Avalanche 760).
-Avalanche's five own-page Snowscan tags include one new Bitkub wallet; the other four replace
-derived evidence. Polygon is parked (section 12) and carries no rows.
-Live filter (`WATCHED`) is re-measured per chain by the dormancy scan; the caps it must stay
-under are Ethereum 1,000, Arbitrum 997, Base 4,800 and Avalanche 4,800. The remaining
+Current registry (2026-10-01): **1,189 first-party rows** (Ethereum 822, Base 262, Arbitrum 63, Avalanche 16,
+Polygon 20, Optimism 6) across 64 entities and 29 jurisdictions, plus **3,567 derived** (Base 560, Arbitrum 728,
+Avalanche 763, Polygon 754, Optimism 762). Polygon and Optimism went live on 2026-10-01 (section 17).
+Live filter (`WATCHED`) is re-measured per chain by the dormancy scan; on 2026-10-01 it was Ethereum 166 of 822, Base 59 of 822, Arbitrum 52 of 791, Avalanche 34 of 779, Polygon 38 of 774, Optimism 15 of 768.
+The caps it must stay under are Ethereum 1,000, Arbitrum 997, Base 4,800, Avalanche 4,800, Polygon 1,000 and
+Optimism 1,000. The remaining
 evidenced addresses stay in the dormant tier; `scripts/registry/dormancy.json` records the
 current per-chain counts. One filtered request body was measured at about 10.9 KB
 on Ethereum, 4.0 KB on Base and 3.6 KB on Arbitrum (was about 55 KB each) right after the
@@ -168,7 +170,7 @@ that Jake chose explicitly:
 - **Per-chain config** in `FEEDS` (`lib/atlas/feeds.ts`, pure, imported by `live-client.ts`,
   the registry verifier and the diagnostic scripts): chain id, slot time, blocks per hour,
   chunk size, pause, and each endpoint's measured caps. Ethereum 50-block chunks, Base 1500,
-  Arbitrum 1200 with a 350 ms pause. Change them only after re-measuring.
+  Arbitrum 1200 with a 350 ms pause, Avalanche 1500, Polygon 1200, Optimism 1500. Change them only after re-measuring.
 - **Endpoint caps** (measured 2026-09-21 with `scripts/probe-endpoint-caps.mjs` in the live
   request shape, three tries per size; "topics" = addresses in one indexed position, ~68
   bytes each; 4,800 addresses and 5,000 blocks were the largest sizes tried, so those are
@@ -187,20 +189,27 @@ that Jake chose explicitly:
   | Arbitrum | arb1.arbitrum.io/rpc | yes | 997: 1,000 selectors incl. 2 contracts + event topic | ~67 KB | 5,000+ | `*` |
   | Arbitrum | arbitrum.drpc.org | no | 1,000 over 100 blocks | ~67 KB | 100 | `*` |
   | Arbitrum | 1rpc.io/arb | no | rate-limited at 773 | – | 50 | `*` |
-  | Polygon | polygon-bor-rpc.publicnode.com | yes | 1,000 (1,024 "exceed max topics") | ~67 KB | 5,000 (10,000 for the dormancy scan) | `*` |
-  | Polygon | polygon.drpc.org | yes | 1,000 | ~67 KB | 100 | `*` |
+  | Polygon | polygon.gateway.tenderly.co | yes | 1,000 (1,024 "not supported") | ~67 KB | 5,000 (**200,000** for the dormancy scan, 90 days back) | `*` |
+  | Polygon | polygon-bor-rpc.publicnode.com | yes | 1,000 (1,024 "exceed max topics") | ~67 KB | 5,000; prunes past ~37 hours | `*` |
+  | Polygon | rpc.sentio.xyz/matic | yes | 4,800+ | ~323 KB+ | 5,000 (10,000 for the scan, 90 days back) | echoes origin |
+  | Polygon | polygon.drpc.org | no (demoted 2026-10-01) | 1,000 | ~67 KB | 100 | `*` |
   | Polygon | polygon-rpc.com | – | **key-gated**: HTTP 401 "API key disabled, tenant disabled" | – | – | `*` |
   | Avalanche | api.avax.network/ext/bc/C/rpc | yes | 4,800+ | ~323 KB+ | 5,000 (**500,000** accepted for the dormancy scan) | echoes origin |
   | Avalanche | avalanche-c-chain-rpc.publicnode.com | yes | 4,800+ | ~323 KB+ | 5,000 (50,000 for the scan) | `*` |
   | Avalanche | avalanche.drpc.org | no (demoted 2026-09-25) | 2,400; 4,800 timed out 1/3 ("upgrade to paid plan") | ~162 KB | 100 | `*` |
   | Celo | forno.celo.org | measured, not shipped | 1,024 (1,200 failed 2/3) | ~69 KB | 5,000 | `*` |
   | Celo | celo.drpc.org | unusable | "invalid hex string" to the filtered shape | – | none | `*` |
-  | Optimism | mainnet.optimism.io | measured, not shipped | 1,000 (1,024 failed 1/3) | ~67 KB | 5,000 | `*` |
-  | Optimism | optimism-rpc.publicnode.com | measured, not shipped | 4,800+ | ~323 KB+ | 5,000 | `*` |
+  | Optimism | optimism.gateway.tenderly.co | yes | 4,800+ | ~323 KB+ | 5,000 (**1,000,000** for the dormancy scan) | `*` |
+  | Optimism | optimism-rpc.publicnode.com | yes | 4,800+ | ~323 KB+ | 5,000; refuses archive depth without a token | `*` |
+  | Optimism | mainnet.optimism.io | yes | 1,000 (1,024 passed 2/3) | ~67 KB | 5,000 (10,000 for the scan) | `*` |
+  | Optimism | optimism.drpc.org | no | refuses filtered ranges on the free plan | – | 100 | `*` |
+  | Tron | api.trongrid.io/jsonrpc | measured, not shipped | 1,000 | ~67 KB | 1,200 in 3.5 s; refuses replies over 10,000 logs; 90 days back answers | `*` |
+  | Tron | tron-evm-rpc.publicnode.com | measured, not shipped | 1,000 ("exceed max topics: 1000") | ~67 KB | 1,200 in 17 s | `*` |
 
-  Polygon and Avalanche were measured 2026-09-25; Celo and Optimism were measured and then rejected on
-  activity (section 12). **Polygon's binding range cap is drpc's 100 blocks**, which is why its chunk is 100 —
-  the same trade Ethereum makes to keep two endpoints able to serve the filtered feed.
+  Polygon and Avalanche were first measured 2026-09-25, and Polygon and Optimism were re-measured on 2026-10-01
+  when they went live (section 17). Celo was measured and rejected on activity (section 12). Polygon's chunk
+  was 100 while drpc had to serve the filtered feed; with Tenderly, publicnode and Sentio serving it, the chunk
+  is 1,200 and drpc keeps only the small calls. The Tron rows are a measurement only: Tron is not built.
 
   **The binding caps are 1,000 addresses on Ethereum (drpc) and 997 on Arbitrum (arb1).**
   They now apply to the WATCHED list, not the whole registry (D2). Every Ethereum plain-account
@@ -247,13 +256,16 @@ dormant row is not free. The diagnostics are read-only and never shipped:
   registries on identical chain history and prices. Windows must end within about 22 hours
   (CoinGecko's free 5-minute series) and after the newest row's `checked` date. The five
   windows and results from 2026-09-21 are in `docs/measurements/2026-09-21/`.
-- `node scripts/registry/label-scan.mjs [--host basescan.org|arbiscan.io|snowscan.xyz] [--expand] <term>...`:
+- `node scripts/screen-candidate-chain.mjs <Chain> <days>`: the gate for a chain the build does not read
+  yet. It needs no entry in `model.ts` or `rpc-pool.mjs`, so a candidate is measured before anything is wired.
+- `node scripts/registry/label-scan.mjs [--host basescan.org|arbiscan.io|snowscan.xyz|polygonscan.com|optimistic.etherscan.io] [--expand] <term>...`:
   enumerates explorer tags; `--expand` walks numbered families past the 15-row cap. Terms
   for re-scanning the unlabelled and excluded lists are in `label-scan-terms.txt`.
 - `node scripts/registry/screen-activity.mjs <Chain> <days> <candidates.txt>`: RPC activity
   screen for candidates before spending explorer requests or filter slots on them.
-- `node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz> <addr>...`:
-  the admissible read. It prints the tag verbatim and any "tagged based on ... compilation"
+- `node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz|polygonscan.com|optimistic.etherscan.io> <addr>...`:
+  the admissible read. Optimistic Etherscan, like Arbiscan, answers 403 on address pages, so its `/txs?a=`
+  page header is read instead. It prints the tag verbatim and any "tagged based on ... compilation"
   disclosure, which goes into the row's note.
 - `node scripts/probe-endpoint-caps.mjs <Chain>`: endpoint caps for `feeds.ts`.
 
@@ -290,6 +302,9 @@ node scripts/registry/gen-addresses.mjs scripts/registry/addresses.txt lib/atlas
 node scripts/verify-all.mjs
 ```
 
+- To save the 35 to 40 minutes Base takes, run it beside the rest and merge the parts (same day, same window):
+  `--chains Base --out base.json`, `--chains Ethereum,Arbitrum,Avalanche,Polygon,Optimism --out rest.json`,
+  then `--merge base.json,rest.json`.
 - The scan goes newest to oldest and drops each wallet from the query the first time it moves, so busy hubs leave
   in the first few requests. It aborts and writes nothing if any range cannot be read: an unread range cannot
   be called dormant.
@@ -336,7 +351,7 @@ corepack pnpm build:live
 `.claude/launch.json` has a `dist-check` entry: `node scripts/serve-dist.cjs dist-live`
 serves the build on port 5180 under a nested path (`/ledger-atlas-live/`) to mimic the
 FTP folder. Look for: no 404s (including the `world-110m.json` preload), reaches LIVE,
-corridors appear on All chains, Ethereum, Base, Arbitrum and Avalanche, Tron and
+corridors appear on All chains, Ethereum, Base, Arbitrum, Avalanche, Polygon and Optimism, Tron and
 Solana say Not connected, no blank map on any option, and the layout holds at 375x812.
 For recorded history (section 12): on a fresh profile **24H and 7D are disabled** and hovering one
 explains how much more history is needed; after about an hour the Data & coverage panel shows sealed
@@ -418,6 +433,12 @@ integrity rules in section 2 (free does not relax the evidence standard).
     decimals. **Superseded 2026-09-25: BNB is inadmissible, not just tight** — no issuer
     publishes a USDC or USDT contract for it, so its volume is a Binance-Peg bridge asset
     (decision D4, section 12). The India/LatAm gap is Tron's to fill, not BNB's.
+- **Resolved 2026-10-01 (section 17):** Polygon is live with no key. Tenderly's public gateway serves the
+  90-day archive, so the "free endpoints cannot support its dormancy scan" limit below is gone. Optimism is
+  live too. Linea, Unichain, World Chain, Sonic, ZKsync Era, Ink, Plasma, Kaia, Cronos, Morph and Kava were
+  screened and rejected on activity. **Tron's feed needs no key either**: TronGrid's JSON-RPC serves the
+  filtered request shape with CORS. What Tron still needs from Jake is one free Tronscan API key for reading
+  tags offline, plus a decision on bandwidth.
 - **Resolved 2026-09-25/26 (section 12):** Avalanche is live, adding South Africa (VALR) and
   Türkiye (BtcTurk). Polygon, which would add Brazil (Brasil Bitcoin), Indonesia (Indodax) and
   the Mexico corridor, is measured but **parked**: free endpoints cannot support its dormancy scan.
@@ -451,9 +472,11 @@ integrity rules in section 2 (free does not relax the evidence standard).
      assumed (section 12).** BNB is inadmissible (D4); **Avalanche** shipped and **Polygon** is parked, chosen by
      measured evidenced activity over Celo and Optimism. A first Snowscan label wave shipped on
      2026-09-28 (section 13); **Polygonscan labels remain unresearched** while Polygon is parked.
-   - **Tron**, once Jake supplies a TronGrid key: still the single largest coverage jump, and now the
-     only route to India, since BNB is out (section 7b). Needs the key to live somewhere other than the
-     client bundle.
+   - **Tron**: still the single largest coverage jump. Measured 2026-10-01 (section 17): the feed needs
+     **no TronGrid key and no Worker**, and 17 lead wallets moved $3.70B of USDT in one day. It is blocked on
+     evidence, not transport: Jake needs one free Tronscan API key so tags can be read offline under D6, and
+     must choose how much bandwidth a Tron feed may cost visitors. India is not solved by it (CoinDCX's lead
+     wallets moved $5k).
    - ~~**Longer in-browser history via IndexedDB.**~~ **Done 2026-09-25 (section 12, decision D5):**
      15-minute sealed spans, measured coverage, 24H/7D unlocking at 80% observed, and real baselines.
      Tunable: `UNLOCK_SHARE` in `live-client.ts`.
@@ -471,7 +494,8 @@ integrity rules in section 2 (free does not relax the evidence standard).
 5. More first-party L2 labels: done on 2026-09-21 for every entity measured as active on
    Base or Arbitrum. The unregistered market-maker, Upbit and Bithumb wallets were idle, so
    they were not pursued.
-6. Tron needs a keyed TronGrid account, so it is out of scope for the keyless static build. Candidate for the key list Jake is asked for (section 7b).
+6. Tron: transport is keyless (section 17). Waiting on a free Tronscan API key from Jake for tag evidence, and on
+   his bandwidth decision. Then model work: Tron must not join `EVM_CHAINS`, and the registry needs base58 keys.
 7. Solana needs a paid indexer; same.
 8. Phase-2 backend (Workers + D1): the registry loader is trivial now that keys are
    `chain:address`, but nothing has been started.
@@ -686,6 +710,7 @@ This is why section 6 says to measure first.
 Also found: **`polygon-rpc.com` is now key-gated** (HTTP 401, "API key disabled"), and
 **`celo.drpc.org` answers "invalid hex string"** to the filtered request shape.
 
+**Superseded 2026-10-01: Polygon is live (section 17).** The history below explains why it waited.
 **Polygon was then parked (2026-09-26, Jake's decision), and only Avalanche went live.** Polygon's
 live feed works, but the 90-day dormancy scan decision D2 requires does not fit on free endpoints:
 `polygon-bor-rpc.publicnode.com` **prunes everything older than ~37 hours** ("History has been pruned
@@ -798,11 +823,10 @@ If you edit that fixture, keep `lastVerified` inside the 180-day horizon and kee
 
 ### Not done here
 
-- **Polygonscan labels remain unresearched.** Polygon is parked and has no registry rows. Avalanche
-  now has five first-party Snowscan rows (section 13); the remaining 759 derived addresses are still
-  useful search leads. `label-scan.mjs` reads Etherscan-family hosts.
+- ~~Polygonscan labels remain unresearched.~~ Done 2026-10-01 (section 17): 20 first-party Polygon rows and
+  6 Optimism rows. `label-scan.mjs` reads Etherscan-family hosts.
 - The unfiltered denominator sample is not sealed, so long windows show no sample figure.
-- Optimism is measured and ready if another chain is wanted.
+- ~~Optimism is measured and ready if another chain is wanted.~~ Live since 2026-10-01 (section 17).
 
 ## 13. Avalanche first-party labels and country wallet screen (2026-09-28)
 
@@ -912,3 +936,48 @@ for Jake's API keys and his Tronscan decision.
   rows added since the 2026-09-28 dormancy scan; re-run `measure-dormancy.mjs` to clear them.
   `tsc --noEmit` is clean and `pnpm build:live` passed. Registry-only change, so no browser check.
   Deliverable: `outputs/ledger-atlas-live-2026-09-29.zip`, rebuilt after this wave.
+
+## 17. Polygon and Optimism live, a 42-row wallet wave, and keyless Tron (2026-10-01)
+
+Jake asked for more API sources and more wallets. Report with every table:
+`docs/measurements/2026-10-01/new-sources.md`.
+
+- **Polygon is un-parked with no key.** `polygon.gateway.tenderly.co` serves 90 days of history in
+  200,000-block spans and returned the same logs as `polygon.drpc.org` at four depths. `rpc.sentio.xyz/matic`
+  does too, at 10,000 blocks. The dormancy scan took 64 queries. The Infura step in
+  `docs/API-PLAN.md` is no longer needed.
+- **Optimism is live**, added in the same wave so 24H and 7D re-lock once (section 12). Its scan took
+  22 queries on Tenderly.
+- **Twelve candidate chains were screened** with the new `scripts/screen-candidate-chain.mjs`. Polygon had 23
+  active evidenced wallets and $66.4M in three days; Optimism 12 and $27.6M. Sonic, Morph, Kaia and World Chain
+  had one to three wallets. Linea, Unichain, ZKsync Era, Ink, Plasma, Cronos and Kava had none. Do not re-screen
+  the rejected ones without a reason.
+- **Registry +42 rows**, every tag read on the address's own explorer page today:
+  - 22 from the Dune spellbook lead feed (4,957 leads, 1,538 unregistered candidates for registered brands,
+    screened on all six chains). Largest: OKX 179 on Avalanche ($59.9M in 3 days), Coinbase 7 on Polygon
+    ($45.3M), OKX 234 on Base ($43.5M in 7 days), five Binance wallets on Avalanche ($10M to $16M each).
+  - 14 Polygon and 6 Optimism first-party rows for active wallets that would otherwise be derived.
+  - Rejected and recorded in the report: "HashKey 2" ($231M, brand-level tag), "KuCoin: ERC-20 Batch Transfer"
+    ($80.6M, distribution contract), Bitfinex Tether Treasury, and Arbiscan's truncated "Coins.p" tag.
+- **Tron's feed needs no key and no Worker.** `api.trongrid.io/jsonrpc` answers the filtered `eth_getLogs`
+  shape with CORS `*`, 1,000 addresses per topic position, one hour in 3.5 s, and 90 days back. 17 Dune lead
+  wallets for registered brands moved $3.70B of USDT in one day. Not built. It needs a free Tronscan API key
+  from Jake (tags, offline only; tronscan.org pages sit behind a bot challenge), a bandwidth decision, and
+  model work. `docs/API-PLAN.md` is updated.
+- `read-tag.mjs` reads Optimistic Etherscan through the `/txs?a=` header, as it does Arbiscan.
+- **Dormancy re-measured 2026-10-01** on all six chains: Ethereum 166 of 822, Base 59 of 822, Arbitrum 52 of 791, Avalanche 34 of 779, Polygon 38 of 774, Optimism 15 of 768. Next due by 2026-11-15.
+- **`measure-dormancy.mjs` hardening.** It writes nothing until every chain has finished, and a null block header
+  from Tenderly's Optimism gateway (it has no pre-Bedrock blocks) crashed the first run after 45 minutes. A null
+  header now falls through to the next endpoint. `--chains X --out part.json` followed by
+  `--merge a.json,b.json` lets Base run beside the other chains; `--merge` refuses parts from different days
+  or windows and refuses to leave a live chain out.
+- **Base's scan is the slow one**: about 35 minutes on `mainnet.base.org` at 2,000 blocks.
+  `base.gateway.tenderly.co` answers "invalid params" to the filtered shape, so it does not help.
+
+**Verification:** `node scripts/verify-all.mjs` passed with no warnings. `tsc --noEmit` is clean, `pnpm build:live` passed and lint is still at 45 errors. The built site was served from the nested `dist-check` path: no local 404s, LIVE on all six chains, Tron and Solana Not connected, 46 corridors on All chains, and no horizontal overflow at 375x812. In the first hour Polygon showed $2.04M and Optimism $272k of evidenced activity but one small corridor each: most of their flow is one-sided until deposit inference finds anchors, so expect unplaced flow there before routes.
+
+**Deliverable:** `outputs/ledger-atlas-live-2026-10-01.zip` (ignored by Git).
+
+**Next:** ask Jake for a free Tronscan API key and his bandwidth decision for Tron. Holder CSV exports
+(USDC on Ethereum, and the Polygon, Base and Avalanche holder pages) are still the best wallet source he
+can supply. Re-run the Dune lead screen monthly with the family walk.

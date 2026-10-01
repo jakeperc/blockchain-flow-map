@@ -1,0 +1,40 @@
+{
+ "chain": "Sonic",
+ "days": 3,
+ "asOf": "2026-10-01T17:14:39.730Z",
+ "blocks": [
+  80046625,
+  80201834
+ ],
+ "failedQueries": 0,
+ "candidates": 765,
+ "rows": [
+  {
+   "address": "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
+   "entity": "bitget",
+   "label": "Bitget 35",
+   "in": 0,
+   "out": 2337989.96023,
+   "n": 1,
+   "value": 2337989.96023
+  },
+  {
+   "address": "0x680178d61d910736153991660c5710841c440ec7",
+   "entity": "mexc",
+   "label": "MEXC 32",
+   "in": 27139.330037,
+   "out": 49608.03431999998,
+   "n": 127,
+   "value": 76747.36435699998
+  },
+  {
+   "address": "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
+   "entity": "bitget",
+   "label": "Bitget 6",
+   "in": 14180.856335,
+   "out": 0,
+   "n": 26,
+   "value": 14180.856335
+  }
+ ]
+}

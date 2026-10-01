@@ -10,6 +10,8 @@
  *
  *   node scripts/registry/measure-dormancy.mjs                         # 90 days, all chains, writes dormancy.json
  *   node scripts/registry/measure-dormancy.mjs --days 90 --end-days-ago 30 --out scratch.json   # as of a past date
+ *   node scripts/registry/measure-dormancy.mjs --chains Base --out base.json                    # one part; then:
+ *   node scripts/registry/measure-dormancy.mjs --merge base.json,rest.json                    # parts -> dormancy.json
  *   node scripts/registry/gen-addresses.mjs scripts/registry/addresses.txt lib/atlas/known-addresses.ts
  *
  * Method. Scan newest to oldest with filtered eth_getLogs (Transfer, sender or receiver in the still-unseen addresses,
@@ -38,13 +40,18 @@ const ENDPOINTS={
  Ethereum:[{url:'https://rpc.mevblocker.io',maxSpan:10000},{url:'https://eth.drpc.org',maxSpan:100}],
  Base:[{url:'https://base-rpc.publicnode.com',maxSpan:5000},{url:'https://mainnet.base.org',maxSpan:2000}],
  Arbitrum:[{url:'https://arbitrum.gateway.tenderly.co',maxSpan:1000000},{url:'https://arb1.arbitrum.io/rpc',maxSpan:1000000}],
- // Measured 2026-09-25 with the real 864-address filter: publicnode answers "exceed maximum block range: 10000"
- // above 10,000, and polygon.drpc.org refuses anything useful on its free plan, so it is a fallback only.
- Polygon:[{url:'https://polygon-bor-rpc.publicnode.com',maxSpan:10000},{url:'https://polygon.drpc.org',maxSpan:100}],
+ // Measured 2026-10-01 with the real filter, 90 days back: Tenderly's gateway took 200,000 blocks (13,567 logs in
+ // 0.7 s; 1,000,000 answers "invalid params") and returned the same logs as polygon.drpc.org at four depths.
+ // rpc.sentio.xyz caps at 10,000. polygon-bor-rpc.publicnode.com prunes past ~37 hours and drpc serves 100
+ // blocks per request, which is why Polygon was parked until Tenderly was found.
+ Polygon:[{url:'https://polygon.gateway.tenderly.co',maxSpan:200000},{url:'https://rpc.sentio.xyz/matic',maxSpan:10000},{url:'https://polygon.drpc.org',maxSpan:100}],
+ // Measured 2026-10-01, 90 days back: Tenderly took 1,000,000 blocks (5,556 logs in 0.6 s); mainnet.optimism.io
+ // answers "limited to a 10,000 range"; optimism-rpc.publicnode.com refuses archive depth without a token.
+ Optimism:[{url:'https://optimism.gateway.tenderly.co',maxSpan:1000000},{url:'https://mainnet.optimism.io',maxSpan:10000}],
  // api.avax.network took 500,000 blocks in one filtered request (11,263 logs in 26 s); publicnode caps at 50,000.
  Avalanche:[{url:'https://api.avax.network/ext/bc/C/rpc',maxSpan:500000},{url:'https://avalanche-c-chain-rpc.publicnode.com',maxSpan:50000}]
 };
-const FIRST_SPAN={Ethereum:100,Base:500,Arbitrum:5000,Polygon:2000,Avalanche:5000},MIN_SPAN=50;
+const FIRST_SPAN={Ethereum:100,Base:500,Arbitrum:5000,Polygon:2000,Avalanche:5000,Optimism:5000},MIN_SPAN=50;
 const SLICE=900; // addresses per topic position; eth.drpc.org and Tenderly refuse 1,024 or more
 const TRANSFER='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const hex=n=>'0x'+n.toString(16);
@@ -85,12 +92,17 @@ const ARCHIVE_LIMIT=/archive|personal token|full node|pruned|historical.*(not av
  */
 const RPC_TIMEOUT_MS=Number(process.env.ATLAS_RPC_TIMEOUT_MS)||45000;
 /** One request, trying each endpoint whose measured span covers it and which has not refused this depth outright. */
-async function call(chain,method,params,span=0){
+async function call(chain,method,params,span=0,valid){
  let last;
  for(const ep of ENDPOINTS[chain]){
   if(ep.archiveLimited||span>ep.maxSpan)continue;
   for(let attempt=0;attempt<4;attempt++){
-   try{return await rpc(ep.url,method,params,RPC_TIMEOUT_MS);}
+   try{
+    const r=await rpc(ep.url,method,params,RPC_TIMEOUT_MS);
+    // An endpoint that answers but does not hold the data (see timestamp() below): next endpoint, no retry.
+    if(valid&&!valid(r)){last=Error(`${ep.url} returned no ${method} result`);break;}
+    return r;
+   }
    catch(e){
     last=e;
     if(ARCHIVE_LIMIT.test(e.message)){
@@ -113,7 +125,12 @@ async function call(chain,method,params,span=0){
  }
  throw last??Error(`no endpoint serves a span of ${span} blocks`);
 }
-const timestamp=async(chain,n)=>parseInt((await call(chain,'eth_getBlockByNumber',[hex(n),false])).timestamp,16);
+/**
+ * A header may be null rather than an error: optimism.gateway.tenderly.co returns null for every pre-Bedrock block
+ * (below about 105.2M), and blockAt's bisection starts at half the head. On 2026-10-01 that null crashed the run
+ * after 45 minutes of the other chains, with nothing written. A null header now falls through to the next endpoint.
+ */
+const timestamp=async(chain,n)=>parseInt((await call(chain,'eth_getBlockByNumber',[hex(n),false],0,b=>!!b&&!!b.timestamp)).timestamp,16);
 /** Smallest block whose header time is at or after `ts`, by bisection between block 1 and the head. */
 async function blockAt(chain,ts,head){
  let lo=1,hi=head;
@@ -123,6 +140,27 @@ async function blockAt(chain,ts,head){
 
 const atlas=loadAtlas();
 const {CONTRACTS}=atlas.evm;
+/**
+ * --merge a.json,b.json: combine part files written with --chains into one dormancy.json. Nothing is written until
+ * every chain has finished, so one bad reply on the last chain used to cost the whole run (Base alone is 40
+ * minutes). Chains are measured independently, so parts measured the same day over the same window are the same
+ * measurement run in pieces. Refuses parts from different days or windows, and refuses to leave a live chain out.
+ */
+const mergeArg=opt('--merge');
+if(mergeArg){
+ const parts=mergeArg.split(',').map(f=>JSON.parse(readFileSync(f,'utf8')));
+ const [first]=parts;
+ for(const p of parts)if(p.measuredAt!==first.measuredAt||p.windowDays!==first.windowDays||p.endDaysAgo!==first.endDaysAgo)throw Error('--merge: parts differ in measuredAt, windowDays or endDaysAgo; measure them on the same day with the same window');
+ const merged={...first,asOf:parts.map(p=>p.asOf).sort()[0],chains:{}};
+ for(const c of Object.keys(atlas.feeds.FEEDS)){
+  const p=parts.find(x=>x.chains[c]);
+  if(!p)throw Error(`--merge: no part covers ${c}; dormancy.json must cover every chain the build reads`);
+  merged.chains[c]=p.chains[c];
+ }
+ writeFileSync(outFile,JSON.stringify(merged,null,1)+'\n');
+ console.log('merged',Object.keys(merged.chains).join(', '),'into',outFile);
+ process.exit(0);
+}
 const only=opt('--chains');
 if(only&&outFile==='scripts/registry/dormancy.json'){console.error('--chains measures a subset, so it needs its own --out; dormancy.json must cover every chain');process.exit(1);}
 const chains=Object.keys(atlas.feeds.FEEDS).filter(c=>!only||only.split(',').includes(c));

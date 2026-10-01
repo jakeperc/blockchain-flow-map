@@ -1,0 +1,12 @@
+{
+ "chain": "ZKsync",
+ "days": 3,
+ "asOf": "2026-10-01T17:13:45.417Z",
+ "blocks": [
+  72255107,
+  72293793
+ ],
+ "failedQueries": 0,
+ "candidates": 765,
+ "rows": []
+}

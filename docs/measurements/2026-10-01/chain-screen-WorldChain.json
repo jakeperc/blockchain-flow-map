@@ -1,0 +1,22 @@
+{
+ "chain": "WorldChain",
+ "days": 3,
+ "asOf": "2026-10-01T17:14:05.824Z",
+ "blocks": [
+  35639985,
+  35769584
+ ],
+ "failedQueries": 0,
+ "candidates": 765,
+ "rows": [
+  {
+   "address": "0x02a78632215262a94ce8651846e7d22adc98ce3c",
+   "entity": "lemoncash",
+   "label": "Lemon Cash 8",
+   "in": 2152.4384569999997,
+   "out": 0,
+   "n": 231,
+   "value": 2152.4384569999997
+  }
+ ]
+}

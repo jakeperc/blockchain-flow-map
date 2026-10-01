@@ -1,0 +1,31 @@
+{
+ "chain": "Morph",
+ "days": 3,
+ "asOf": "2026-10-01T17:14:13.258Z",
+ "blocks": [
+  27508991,
+  27655431
+ ],
+ "failedQueries": 0,
+ "candidates": 765,
+ "rows": [
+  {
+   "address": "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
+   "entity": "bitget",
+   "label": "Bitget 6",
+   "in": 1383925.8566849995,
+   "out": 0,
+   "n": 221,
+   "value": 1383925.8566849995
+  },
+  {
+   "address": "0x141fef8cd8397a390afe94846c8bd6f4ab981c48",
+   "entity": "binance",
+   "label": "Binance 32",
+   "in": 0,
+   "out": 1682.305929,
+   "n": 1,
+   "value": 1682.305929
+  }
+ ]
+}

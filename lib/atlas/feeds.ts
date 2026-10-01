@@ -30,8 +30,8 @@ export interface FeedConfig{
  /** Unfiltered blocks per denominator sample. Sized to a few hundred logs on each chain. */
  sampleBlocks:number;
 }
-/** Date the maxTopics and maxRange figures below were measured (Polygon and Avalanche on 2026-09-25). */
-export const ENDPOINTS_MEASURED='2026-09-25';
+/** Date the maxTopics and maxRange figures below were last measured (Polygon and Optimism on 2026-10-01, Avalanche on 2026-09-25). */
+export const ENDPOINTS_MEASURED='2026-10-01';
 /**
  * Endpoints, all keyless and browser-callable (CORS confirmed 2026-09-21). One hour is 300 Ethereum blocks, 1,800 Base
  * blocks or 14,400 Arbitrum blocks. Measured 2026-09-21 in the live request shape, three tries per size:
@@ -63,7 +63,7 @@ export const FEEDS:Partial<Record<Chain,FeedConfig>>={
   * new-chain-candidates.md). Celo was rejected despite being the busiest chain of the four by raw volume — its
   * traffic is retail, and only three evidenced wallets touched it in three days — and Optimism was third on both
   * value and wallet count. BNB Chain was excluded before measuring: its stablecoins are bridge-issued pegs
-  * (decision D4). Polygon was chosen alongside Avalanche and then parked; see PARKED below.
+  * (decision D4). Polygon was chosen alongside Avalanche, parked, and switched on 2026-10-01; see below.
   */
  Avalanche:{
   // api.avax.network echoes the request origin instead of sending '*', which is fine for a real page load.
@@ -72,24 +72,29 @@ export const FEEDS:Partial<Record<Chain,FeedConfig>>={
   // at the measured 1.14 s block time, rounded to a nominal 1.2 s; real header times are interpolated anyway.
   endpoints:[{url:'https://api.avax.network/ext/bc/C/rpc',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://avalanche-c-chain-rpc.publicnode.com',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://avalanche.drpc.org',largeBody:false}],
   chainId:43114,slotMs:1200,blocks:3000,chunk:1500,liveRange:40,catchupRange:1500,pauseMs:0,sampleBlocks:60
- }
-};
-/**
- * Measured, working, and deliberately NOT read by the build (Jake's decision, 2026-09-26). Polygon cleared the
- * activity gate (20 evidenced wallets in one day, the broadest geography of the four candidates), and its live
- * feed works on these endpoints. What it cannot do on free endpoints is the 90-day dormancy scan decision D2
- * requires: polygon-bor-rpc.publicnode.com prunes history older than ~37 hours ("History has been pruned for
- * this block"), and polygon.drpc.org keeps full history but serves at most 100 blocks per request, so a scan is
- * ~102,000 requests, about 8 hours, every month. Shipping it unmeasured would mean every open tab uploading the
- * full 763-address filter on each poll, around 19 MB an hour — the cost D2 exists to remove.
- * Switch-on conditions: a keyed Polygon endpoint with archive access, or the phase-2 backend running the scan.
- * Then move this into FEEDS and add Polygon back to CHAINS and EVM_CHAINS in model.ts.
- */
-export const PARKED:Partial<Record<string,FeedConfig>>={
+ },
+ /**
+  * Switched on 2026-10-01 (HANDOFF section 17; docs/measurements/2026-10-01/). Polygon cleared the activity gate
+  * on 2026-09-25 and was parked the next day, because the 90-day dormancy scan decision D2 requires did not fit
+  * on the keyless endpoints known then: polygon-bor-rpc.publicnode.com prunes history older than ~37 hours and
+  * polygon.drpc.org serves 100 blocks per request (~102,000 requests a month). polygon.gateway.tenderly.co serves
+  * the full 90 days in 200,000-block spans and returned the same logs as drpc at four depths, so the scan is a
+  * few dozen requests and the 100-block chunk drpc forced is gone: drpc now serves only the small calls.
+  * USDC only: Polygon's widely used USDT is bridge-issued (evm.ts). 2,400 blocks is one hour.
+  */
  Polygon:{
-  // polygon-rpc.com now answers HTTP 401 "API key disabled, tenant disabled" and is deliberately not listed.
-  // drpc takes the filter over only 100 blocks, which binds the chunk. 2,400 blocks is one hour.
-  endpoints:[{url:'https://polygon-bor-rpc.publicnode.com',largeBody:true,maxTopics:1000,maxRange:5000},{url:'https://polygon.drpc.org',largeBody:true,maxTopics:1000,maxRange:100}],
-  chainId:137,slotMs:1500,blocks:2400,chunk:100,liveRange:40,catchupRange:100,pauseMs:0,sampleBlocks:2
+  // polygon-rpc.com answers HTTP 401 "API key disabled, tenant disabled" and is deliberately not listed.
+  endpoints:[{url:'https://polygon.gateway.tenderly.co',largeBody:true,maxTopics:1000,maxRange:5000},{url:'https://polygon-bor-rpc.publicnode.com',largeBody:true,maxTopics:1000,maxRange:5000},{url:'https://rpc.sentio.xyz/matic',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://polygon.drpc.org',largeBody:false}],
+  chainId:137,slotMs:1500,blocks:2400,chunk:1200,liveRange:40,catchupRange:1200,pauseMs:0,sampleBlocks:10
+ },
+ /**
+  * Added 2026-10-01 in the same wave as Polygon, so the 24H and 7D windows re-lock once rather than twice.
+  * Third on measured evidenced activity on both 2026-09-25 and 2026-10-01 (12 wallets, ~$27.6M in three days,
+  * mostly Coinbase). USDC only: Tether publishes no USDT contract for OP Mainnet. 1,800 blocks is one hour.
+  */
+ Optimism:{
+  // optimism.drpc.org refuses filtered ranges on its free plan, so it serves only the small calls.
+  endpoints:[{url:'https://optimism.gateway.tenderly.co',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://optimism-rpc.publicnode.com',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://mainnet.optimism.io',largeBody:true,maxTopics:1000,maxRange:5000},{url:'https://optimism.drpc.org',largeBody:false}],
+  chainId:10,slotMs:2000,blocks:1800,chunk:1500,liveRange:30,catchupRange:1500,pauseMs:0,sampleBlocks:10
  }
 };

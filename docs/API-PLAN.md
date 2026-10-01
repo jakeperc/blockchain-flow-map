@@ -1,4 +1,15 @@
-# API and hosting plan — Jake's budget (agreed 2026-09-29)
+# API and hosting plan — Jake's budget (agreed 2026-09-29, revised 2026-10-01)
+
+**Revised 2026-10-01 after measuring more keyless endpoints** (`docs/measurements/2026-10-01/new-sources.md`):
+
+- **Polygon is done and needed no key.** Tenderly's public gateway serves the 90-day archive. Skip Infura.
+- **Tron's live feed needs no TronGrid key and no Cloudflare Worker.** TronGrid's JSON-RPC answers the same
+  filtered request the other chains use, with CORS, from a browser. The only key Tron needs is a
+  **free Tronscan API key**, used offline to read name tags (decision D6). It never ships.
+- Solana is unchanged: Helius through a Worker.
+
+The tables below are the 2026-09-29 plan, kept for the reasoning. Where they disagree with the three
+points above, the points above win.
 
 Revisit this file before any API or hosting work. The full provider comparison with prices
 and sources is in [API-OPTIONS-2026-09.md](API-OPTIONS-2026-09.md). This page is the short
@@ -45,7 +56,17 @@ version, fitted to Jake's budget.
   - Better still, a cron Worker fetches the latest Tron and Solana transfers every minute or so into
     KV or D1, and browsers read that cache. Visitor count then never touches the key.
 
-## Suggested order
+## Suggested order (revised 2026-10-01)
+
+1. **Jake gets a free Tronscan API key** and hands it over. The agent reads the tags of the Tron lead wallets
+   offline (17 of them moved $3.70B of USDT in one day), finds operator documents where needed, and builds
+   the Tron feed on keyless TronGrid JSON-RPC. Jake also decides how much bandwidth a Tron feed may cost
+   visitors, because one Binance wallet alone makes about 145,000 transfers a day.
+2. **Helius free** for Solana, through a Cloudflare Worker, if Solana is still wanted after Tron.
+3. Optional: **Blockscout PRO free** as a tag lead feed. The Dune spellbook on GitHub already serves as a free
+   lead feed with no key (22 wallets on 2026-10-01).
+
+## Original order (2026-09-29, superseded above)
 
 1. **Jake signs up for Infura (free)** and gives the agent the key. The agent adds a keyed endpoint to
    `measure-dormancy.mjs` (read from an environment variable, never committed), runs the Polygon

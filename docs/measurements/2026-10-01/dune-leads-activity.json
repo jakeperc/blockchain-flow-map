@@ -1,0 +1,398 @@
+{
+ "Ethereum": {
+  "days": 7,
+  "asOf": "2026-10-01T17:38:48.546Z",
+  "blocks": [
+   26048597,
+   26098996
+  ],
+  "candidates": 1538,
+  "failedChunkQueries": 0,
+  "active": [
+   {
+    "address": "0x5754284f345afc66a98fbb0a0afe71e0f007b949",
+    "lead": "bitfinex|Bitfinex Tether Treasury",
+    "in": 540795116,
+    "out": 428931335,
+    "nIn": 7,
+    "nOut": 17,
+    "value": 969726451
+   },
+   {
+    "address": "0xffe15ff598e719d29dfe5e1d60be1a5521a779ae",
+    "lead": "hashkey|HashKey Exchange 1",
+    "in": 115565767,
+    "out": 115987458,
+    "nIn": 371,
+    "nOut": 499,
+    "value": 231553225
+   },
+   {
+    "address": "0xd91efec7e42f80156d1d9f660a69847188950747",
+    "lead": "kucoin|KuCoin 26",
+    "in": 41172337,
+    "out": 39411286,
+    "nIn": 26,
+    "nOut": 2077,
+    "value": 80583624
+   },
+   {
+    "address": "0xdd276dc5223d0120f9bf1776f38957cc8da23cb0",
+    "lead": "kucoin|KuCoin 61",
+    "in": 5563892,
+    "out": 5500000,
+    "nIn": 4,
+    "nOut": 2,
+    "value": 11063892
+   },
+   {
+    "address": "0x677adbe3b82f0689971b7ee39c0c038c1581aaeb",
+    "lead": "hashkey|HashKey Exchange 11",
+    "in": 1014692,
+    "out": 1014511,
+    "nIn": 12,
+    "nOut": 14,
+    "value": 2029203
+   },
+   {
+    "address": "0x5569fd6991d1802dbee9bdd67e763fe7be67c7a9",
+    "lead": "hashkey|HashKey Exchange 5",
+    "in": 201340,
+    "out": 566649,
+    "nIn": 2,
+    "nOut": 1,
+    "value": 767989
+   },
+   {
+    "address": "0x95b564f3b3bae3f206aa418667ba000afafacc8a",
+    "lead": "bitvavo|Bitvavo 20",
+    "in": 0,
+    "out": 17572,
+    "nIn": 0,
+    "nOut": 2,
+    "value": 17572
+   },
+   {
+    "address": "0x4d24eececb86041f47bca41265319e9f06ae2fcb",
+    "lead": "coindcx|CoinDCX 5",
+    "in": 4406,
+    "out": 0,
+    "nIn": 4,
+    "nOut": 0,
+    "value": 4406
+   },
+   {
+    "address": "0x7830c87c02e56aff27fa8ab1241711331fa86f43",
+    "lead": "coinbase|Coinbase 33",
+    "in": 3718,
+    "out": 0,
+    "nIn": 3,
+    "nOut": 0,
+    "value": 3718
+   },
+   {
+    "address": "0xceb69f6342ece283b2f5c9088ff249b5d0ae66ea",
+    "lead": "coinbase|Coinbase Prime 2",
+    "in": 0,
+    "out": 0,
+    "nIn": 0,
+    "nOut": 2,
+    "value": 0
+   }
+  ]
+ },
+ "Base": {
+  "days": 7,
+  "asOf": "2026-10-01T17:42:52.187Z",
+  "blocks": [
+   51741024,
+   52043423
+  ],
+  "candidates": 1538,
+  "failedChunkQueries": 0,
+  "active": [
+   {
+    "address": "0x17fe9197970454875df742a74b74ed5f984b645a",
+    "lead": "okx|OKX 244",
+    "in": 22344361,
+    "out": 21194387,
+    "nIn": 5644,
+    "nOut": 5403,
+    "value": 43538748
+   },
+   {
+    "address": "0x377b8ce04761754e8ac153b47805a9cf6b190873",
+    "lead": "upbit|Upbit 23",
+    "in": 358684,
+    "out": 0,
+    "nIn": 3,
+    "nOut": 0,
+    "value": 358684
+   },
+   {
+    "address": "0x5754284f345afc66a98fbb0a0afe71e0f007b949",
+    "lead": "bitfinex|Bitfinex Tether Treasury",
+    "in": 0,
+    "out": 0,
+    "nIn": 2,
+    "nOut": 0,
+    "value": 0
+   }
+  ]
+ },
+ "Arbitrum": {
+  "days": 3,
+  "asOf": "2026-10-01T17:47:01.039Z",
+  "blocks": [
+   509694286,
+   510731085
+  ],
+  "candidates": 1538,
+  "failedChunkQueries": 0,
+  "active": [
+   {
+    "address": "0x4577f1a9b54492fa1b9ef3b58d7cdc1ea8b3225c",
+    "lead": "coinsph|Coins.ph 1",
+    "in": 11109989,
+    "out": 10692539,
+    "nIn": 136,
+    "nOut": 109,
+    "value": 21802529
+   },
+   {
+    "address": "0xcacb823a3d0c5a8490b1d3e60d1f33ab1eeb0387",
+    "lead": "bitkub|Bitkub 14",
+    "in": 272952,
+    "out": 68386,
+    "nIn": 217,
+    "nOut": 119,
+    "value": 341338
+   },
+   {
+    "address": "0x25a58cee7928b3d6c1d392ebe1a97318aa5ff2f2",
+    "lead": "hashkey|HashKey Exchange 9",
+    "in": 3277,
+    "out": 5077,
+    "nIn": 14,
+    "nOut": 97,
+    "value": 8354
+   },
+   {
+    "address": "0x1e7016f7c23859d097668c27b72c170ed7129a10",
+    "lead": "coinbase|Coinbase Prime 3",
+    "in": 300,
+    "out": 0,
+    "nIn": 4,
+    "nOut": 0,
+    "value": 300
+   }
+  ]
+ },
+ "Avalanche": {
+  "days": 3,
+  "asOf": "2026-10-01T17:40:05.777Z",
+  "blocks": [
+   96329433,
+   96545432
+  ],
+  "candidates": 1538,
+  "failedChunkQueries": 0,
+  "active": [
+   {
+    "address": "0xc94bb9b883ab642c1c3ed07af4e36523e7daf1fe",
+    "lead": "okx|OKX 164",
+    "in": 30994518,
+    "out": 28924645,
+    "nIn": 2565,
+    "nOut": 2920,
+    "value": 59919163
+   },
+   {
+    "address": "0x978b21a854dbefcd6d51dfd269875d158046240b",
+    "lead": "binance|Binance 109",
+    "in": 7716637,
+    "out": 7941010,
+    "nIn": 5,
+    "nOut": 747,
+    "value": 15657647
+   },
+   {
+    "address": "0x3bce63c6c9abf7a47f52c9a3a7950867700b0158",
+    "lead": "binance|Binance 114",
+    "in": 7372551,
+    "out": 7504460,
+    "nIn": 5,
+    "nOut": 832,
+    "value": 14877010
+   },
+   {
+    "address": "0x6d8be5cdf0d7dee1f04e25fd70b001ae3b907824",
+    "lead": "binance|Binance 85",
+    "in": 6839738,
+    "out": 6843802,
+    "nIn": 4,
+    "nOut": 820,
+    "value": 13683540
+   },
+   {
+    "address": "0xcddc5d0ebeb71a08fff26909aa6c0d4e256b4fe1",
+    "lead": "binance|Binance 105",
+    "in": 6046323,
+    "out": 6111052,
+    "nIn": 4,
+    "nOut": 825,
+    "value": 12157375
+   },
+   {
+    "address": "0xaba2d404c5c41da5964453a368aff2604ae80a14",
+    "lead": "binance|Binance 106",
+    "in": 4462353,
+    "out": 5884647,
+    "nIn": 3,
+    "nOut": 809,
+    "value": 10347001
+   },
+   {
+    "address": "0x4e75e27e5aa74f0c7a9d4897dc10ef651f3a3995",
+    "lead": "kucoin|KuCoin 27",
+    "in": 2036703,
+    "out": 2200371,
+    "nIn": 190,
+    "nOut": 172,
+    "value": 4237075
+   },
+   {
+    "address": "0x876164d68d68e4b65339694589811132da7a9bf7",
+    "lead": "okx|OKX 177",
+    "in": 598269,
+    "out": 596326,
+    "nIn": 135,
+    "nOut": 47,
+    "value": 1194595
+   },
+   {
+    "address": "0x9ef63958c90cf47f78ad489d5881ef2737601111",
+    "lead": "coinspot|CoinSpot 22",
+    "in": 62555,
+    "out": 98317,
+    "nIn": 46,
+    "nOut": 192,
+    "value": 160872
+   },
+   {
+    "address": "0x58a1c909c5ec6cbf9c1df9ab3e9e2301ff707b6b",
+    "lead": "kucoin|KuCoin 59",
+    "in": 50878,
+    "out": 0,
+    "nIn": 3,
+    "nOut": 0,
+    "value": 50878
+   }
+  ]
+ },
+ "Polygon": {
+  "days": 3,
+  "asOf": "2026-10-01T17:42:23.094Z",
+  "blocks": [
+   94607905,
+   94780704
+  ],
+  "candidates": 1538,
+  "failedChunkQueries": 0,
+  "active": [
+   {
+    "address": "0x3eb9845b9c8f835ad130456f8dab6aef79af5272",
+    "lead": "coinbase|Coinbase 86",
+    "in": 22188465,
+    "out": 23126440,
+    "nIn": 1526,
+    "nOut": 1608,
+    "value": 45314904
+   },
+   {
+    "address": "0x9ac5637d295fea4f51e086c329d791cc157b1c84",
+    "lead": "kucoin|KuCoin 23",
+    "in": 4041640,
+    "out": 4718915,
+    "nIn": 154,
+    "nOut": 667,
+    "value": 8760555
+   },
+   {
+    "address": "0xcb39c5b0db9c5b6bd1d9273dccc2f98f532a8bc6",
+    "lead": "coinbase|Coinbase 81",
+    "in": 2344511,
+    "out": 2457884,
+    "nIn": 447,
+    "nOut": 1666,
+    "value": 4802395
+   },
+   {
+    "address": "0x9573a11d939753737e8f09f80f07f6462c093a1c",
+    "lead": "bitkub|Bitkub 32",
+    "in": 176536,
+    "out": 122725,
+    "nIn": 44,
+    "nOut": 46,
+    "value": 299261
+   },
+   {
+    "address": "0xf0675af76cc32542239c6fb3d1ddbfd881b98e47",
+    "lead": "bitpanda|Bitpanda 9",
+    "in": 81604,
+    "out": 102608,
+    "nIn": 65,
+    "nOut": 309,
+    "value": 184212
+   },
+   {
+    "address": "0x377b8ce04761754e8ac153b47805a9cf6b190873",
+    "lead": "upbit|Upbit 23",
+    "in": 147473,
+    "out": 0,
+    "nIn": 1,
+    "nOut": 0,
+    "value": 147473
+   },
+   {
+    "address": "0x686076d8581cfd6b698f2b16253a612067855e41",
+    "lead": "bitopro|BitoPro 6",
+    "in": 7545,
+    "out": 0,
+    "nIn": 9,
+    "nOut": 0,
+    "value": 7545
+   }
+  ]
+ },
+ "Optimism": {
+  "days": 3,
+  "asOf": "2026-10-01T17:37:37.959Z",
+  "blocks": [
+   157509109,
+   157638708
+  ],
+  "candidates": 1538,
+  "failedChunkQueries": 0,
+  "active": [
+   {
+    "address": "0xa3f45e619ce3aae2fa5f8244439a66b203b78bcc",
+    "lead": "kucoin|KuCoin 19",
+    "in": 56253,
+    "out": 42319,
+    "nIn": 38,
+    "nOut": 30,
+    "value": 98572
+   },
+   {
+    "address": "0x5e8c4499fdd78a5efe998b3abf78658e02bb7702",
+    "lead": "bitpanda|Bitpanda 10",
+    "in": 316,
+    "out": 4721,
+    "nIn": 2,
+    "nOut": 4,
+    "value": 5037
+   }
+  ]
+ }
+}

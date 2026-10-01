@@ -1,0 +1,121 @@
+{
+ "chain": "Optimism",
+ "days": 3,
+ "asOf": "2026-10-01T17:14:46.754Z",
+ "blocks": [
+  157508416,
+  157638015
+ ],
+ "failedQueries": 0,
+ "candidates": 765,
+ "rows": [
+  {
+   "address": "0xc8373edfad6d5c5f600b6b2507f78431c5271ff5",
+   "entity": "coinbase",
+   "label": "Coinbase 11",
+   "in": 9269361.861038001,
+   "out": 9865433.192414999,
+   "n": 204,
+   "value": 19134795.053453
+  },
+  {
+   "address": "0xf491d040110384dbcf7f241ffe2a546513fd873d",
+   "entity": "coinbase",
+   "label": "Coinbase 18",
+   "in": 3113002.492221001,
+   "out": 3040902.534595999,
+   "n": 209,
+   "value": 6153905.026817
+  },
+  {
+   "address": "0xffa8db7b38579e6a2d14f9b347a9ace4d044cd54",
+   "entity": "bitget",
+   "label": "Bitget 35",
+   "in": 0,
+   "out": 1017924.816482,
+   "n": 1,
+   "value": 1017924.816482
+  },
+  {
+   "address": "0xd839c179a4606f46abd7a757f7bb77d7593ae249",
+   "entity": "coinbase",
+   "label": "Coinbase 34",
+   "in": 358232.03024600004,
+   "out": 462586.3274559999,
+   "n": 183,
+   "value": 820818.357702
+  },
+  {
+   "address": "0xdf90c9b995a3b10a5b8570a47101e6c6a29eb945",
+   "entity": "mexc",
+   "label": "MEXC 7",
+   "in": 96330.177477,
+   "out": 71917.44161199995,
+   "n": 586,
+   "value": 168247.61908899996
+  },
+  {
+   "address": "0x841ed663f2636863d40be4ee76243377dff13a34",
+   "entity": "robinhood",
+   "label": "Robinhood 5",
+   "in": 119822.155875,
+   "out": 0,
+   "n": 3,
+   "value": 119822.155875
+  },
+  {
+   "address": "0x1ab4973a48dc892cd9971ece8e01dcc7688f8f23",
+   "entity": "bitget",
+   "label": "Bitget 6",
+   "in": 35007.73396299998,
+   "out": 44007.392895,
+   "n": 129,
+   "value": 79015.12685799997
+  },
+  {
+   "address": "0x1887fa9edadeab7562b01cc3f4fa246ace2c3cdd",
+   "entity": "robinhood",
+   "label": "Robinhood 9",
+   "in": 0.000001,
+   "out": 70545.78194699997,
+   "n": 70,
+   "value": 70545.78194799996
+  },
+  {
+   "address": "0x0529ea5885702715e83923c59746ae8734c553b7",
+   "entity": "bitpanda",
+   "label": "Bitpanda 18",
+   "in": 0.000001,
+   "out": 65000,
+   "n": 2,
+   "value": 65000.000001
+  },
+  {
+   "address": "0x02a78632215262a94ce8651846e7d22adc98ce3c",
+   "entity": "lemoncash",
+   "label": "Lemon Cash 8",
+   "in": 6015.282011,
+   "out": 0,
+   "n": 16,
+   "value": 6015.282011
+  },
+  {
+   "address": "0xc1da33e8d60daf4f93a52357a57a076f44c45759",
+   "entity": "lemoncash",
+   "label": "Lemon Cash 5",
+   "in": 0,
+   "out": 2002.584821,
+   "n": 16,
+   "value": 2002.584821
+  },
+  {
+   "address": "0x4207837d4cd914467eb76bf88c4d6e7ba11ccdf9",
+   "entity": "coinspot",
+   "label": "CoinSpot 17",
+   "in": 74.662724,
+   "out": 0,
+   "n": 5,
+   "value": 74.662724
+  }
+ ]
+}

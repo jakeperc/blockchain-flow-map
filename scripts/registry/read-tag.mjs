@@ -2,7 +2,7 @@
  * Read the public name tag from an address's own explorer page, which is the only admissible address evidence
  * (HANDOFF rule 1). Prints the tag verbatim and the date to put in the `checked` column.
  *
- *   node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz> <0xaddress>...
+ *   node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz|polygonscan.com|optimistic.etherscan.io> <0xaddress>...
  *
  * Arbiscan address pages return 403 to bots, so for arbiscan.io the /txs?a= page header is read instead (the tag
  * is still shown there). Requests are paced and the script stops on any non-200 or challenge page; it never works
@@ -12,9 +12,10 @@
  * note, as existing rows do.
  */
 const [host,...addrs]=process.argv.slice(2);
-if(!host||!addrs.length){console.error('usage: node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz> <0xaddress>...');process.exit(1);}
+if(!host||!addrs.length){console.error('usage: node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz|polygonscan.com|optimistic.etherscan.io> <0xaddress>...');process.exit(1);}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const arb=host.startsWith('arbiscan');
+// Arbiscan and Optimistic Etherscan answer 403 on address pages; their /txs?a= page header carries the same tag.
+const arb=host.startsWith('arbiscan')||host.startsWith('optimistic.');
 const today=new Date().toISOString().slice(0,10);
 for(const a of addrs){
  if(!/^0x[0-9a-fA-F]{40}$/.test(a)){console.log(a,'| not an address');continue;}
