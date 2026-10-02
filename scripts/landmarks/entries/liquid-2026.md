@@ -49,7 +49,7 @@
     }
   ],
   "status": {"asOf": "2026-10-02", "text": "Blockstream's report of 23 September 2026 counts about 602 BTC still outstanding, with recovery under way and peg operations not yet resumed [1]. No primary document this page could read names the attacker."},
-  "returned": {"text": "{{leg3.amount}} of the {{leg1.amount}} released came back to the reserve the next day, in a transaction this page reads. Blockstream counts about 602 BTC still outstanding [1]."},
+  "returned": {"text": "{{leg3.amount}} of the {{leg1.amount}} released came back to the reserve the next day, in a transaction this page reads. Blockstream counts about 602 BTC still outstanding across all the unauthorised transactions, not only the release shown here [1]."},
   "sources": [
     {
       "n": 1, "kind": "document", "docType": "party", "publisher": "Blockstream", "title": "Liquid Network Security Incident Assessment", "date": "2026-09-23",

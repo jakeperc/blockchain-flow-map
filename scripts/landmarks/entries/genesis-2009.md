@@ -5,7 +5,7 @@
   "category": "milestone",
   "label": "Genesis block",
   "title": "The block that started the ledger",
-  "dek": "The ledger begins with a single reward of {{leg1.amount}} and a newspaper headline written into the block itself [m1]. The software never lets that reward move [1].",
+  "dek": "The ledger begins with a single reward of {{leg1.amount}} and a newspaper headline written into the block itself [m1]. The software never lets that reward move [1][2].",
   "criterion": "Block {{m1.firstBlock}}, the start of the chain every later block links back to [m1].",
   "priority": 10,
   "legs": [
@@ -19,7 +19,7 @@
       "from": {"role": "newly issued coins: a block reward has no sender"},
       "to": {"role": "the key that received the reward"},
       "todayApplicable": false,
-      "todayReason": "The reference software skips this block's transactions when it records spendable coins, so the reward can never move [1]."
+      "todayReason": "The reference software skips this block's transactions when it records spendable coins, so the reward can never move [1][2]."
     }
   ],
   "matches": [
@@ -47,7 +47,7 @@
 
 ## What happened
 
-On {{leg1.date}} the Bitcoin ledger began with block {{leg1.block}}. Its only transaction created {{leg1.amount}} from nothing, the reward that every later block has also paid to whoever produced it.
+On {{leg1.date}} the Bitcoin ledger began with block {{leg1.block}}. Its only transaction created {{leg1.amount}} from nothing: a block reward, of the kind every later block has also paid to whoever produced it.
 
 Whoever made the block also wrote a line of text into it, where a miner may put any data. The line is a newspaper headline: "{{leg1.coinbaseText}}".
 
@@ -63,4 +63,4 @@ Every block since links back, one by one, to this block, so every later bitcoin 
 
 ## What happened next
 
-The reward never moved and never can: the reference software skips the block's transactions when it records which coins are spendable [1]. Its value at today's price is therefore not shown.
+The reward never moved and never can: the reference software skips the block's transactions when it records which coins are spendable [1], and the Bitcoin Wiki notes that the genesis block's subsidy is unspendable [2]. Its value at today's price is therefore not shown.

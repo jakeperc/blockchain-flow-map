@@ -202,7 +202,7 @@ try {
   for (const [, target] of html.matchAll(/href="#([^"]+)"/g)) if (!ids.includes(target)) throw new Error(`the static page links #${target}, which does not exist`);
 
   const legs = new Set(model.entries.flatMap((e) => e.legs.map((l) => `${l.chain}:${l.txid}`))).size;
-  console.log(`PASS: landmarks (${model.entries.length} entries, ${legs} transactions read from every public source and in agreement, names under D7, sources found in their archived copies, data as of ${model.dataAsOf}; ${DATA_FILE} current; self-tests passed)`);
+  console.log(`PASS: landmarks (${model.entries.length} entries, ${legs} transactions read from every operator this page uses and in agreement, names under D7, sources found in their archived copies, data as of ${model.dataAsOf}; ${DATA_FILE} current; self-tests passed)`);
 } catch (e) {
   console.error(e.message);
   process.exit(1);

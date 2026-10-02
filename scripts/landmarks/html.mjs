@@ -54,7 +54,7 @@ export function renderHero(model) {
   <div class="lm-hero-text">
     <div class="eyebrow"><span></span>THE RECORD BOOK</div>
     <h1 id="lm-title">Transactions that moved the ledger.</h1>
-    <p>Every entry is a real transaction, read from its own chain. Each one is checked against every public source that serves it, and a name appears only when an explorer's own tag or a primary document supplies it.</p>
+    <p>Every entry is a real transaction, read from its own chain. Each one is read from two Bitcoin operators or three Ethereum endpoints, which must agree, and a name appears only when an explorer's own tag or a primary document supplies it.</p>
   </div>
   <div class="lm-metrics">
     <div class="lm-primary"><span>Verified on chain</span><strong>${txs}</strong><small>transactions in ${model.entries.length} ${model.entries.length === 1 ? 'entry' : 'entries'}</small></div>
@@ -94,7 +94,7 @@ function evidence(p, side, leg, e) {
     const notes = (ev.alerts || []).length ? ` The explorer also shows: “${esc(ev.alerts.join(' '))}”` : '';
     return `<li><b>${who}</b>: public name tag on ${esc(CHAIN_INFO[leg.chain].explorer)}, “${esc(ev.tag)}”, read ${esc(dateUTC(Date.parse(ev.read)))}. The explorer credits no outside source for it.${notes}</li>`;
   }
-  if (ev.kind === 'document') return `<li><b>${who}</b>: named by source <a href="#${e.id}-s${ev.source}">[${ev.source}]</a>, which lists this ${ev.identifies === 'address' ? 'address' : 'transaction'} in its own text.</li>`;
+  if (ev.kind === 'document') return `<li><b>${who}</b>: named by source <a href="#${e.id}-s${ev.source}">[${ev.source}]</a>, whose archived copy contains this ${ev.identifies === 'address' ? 'address' : 'transaction id'}.</li>`;
   if (ev.kind === 'matched') return `<li><b>${who}</b>: identified by matching the description in source <a href="#${e.id}-s${ev.source}">[${ev.source}]</a> to exactly one transaction (<a href="#${e.id}-${ev.match}">proof</a>).</li>`;
   return '';
 }
@@ -166,7 +166,9 @@ function proofItem(m, e) {
 /** One address's balance at each stated block, as every operator returned it. */
 function balanceItem(b) {
   const info = CHAIN_INFO[b.chain];
-  const at = b.reads.map((r) => `${esc(amount(r.units, b.asset, {exact: true}))} at block ${groupDecimal(String(r.block))} (${esc(dateUTC(r.time))} ${esc(timeUTC(r.time))})`).join('; ');
+  // The genesis block's header carries a zero timestamp, which is not a date.
+  const when = (r) => (r.block === 0 || r.time === 0 ? 'the genesis block, whose header carries no time' : `${dateUTC(r.time)} ${timeUTC(r.time)}`);
+  const at = b.reads.map((r) => `${esc(amount(r.units, b.asset, {exact: true}))} at block ${groupDecimal(String(r.block))} (${esc(when(r))})`).join('; ');
   const sources = [...new Set(b.reads.flatMap((r) => r.sources))];
   return `<li><b>Balance</b> of <a class="mono" href="${esc(info.address(b.address))}" rel="noopener noreferrer">${esc(short(b.address))}</a>: ${at}. Read from ${esc(sources.join(' and '))}, which agree.</li>`;
 }
@@ -279,7 +281,7 @@ export function renderMeasured(model) {
     </article>
     <article class="lm-table-card" id="lm-m-usdc">
       <h3>The largest USDC mints and burns</h3>
-      <p class="lm-caption">Mint and Burn events by every USDC minter except Circle's cross-chain minters, which its own explorer tags identify; their mints move USDC between chains rather than add to it.</p>
+      <p class="lm-caption">Mint and Burn events by every USDC minter except Circle's cross-chain transfer minters, identified by their Etherscan tags.</p>
       ${usdc.complete ? tbl(['Date', 'Event', 'Amount', 'Value then', 'Minter', 'Transaction'], usdcRows) : notMeasured(usdc)}
     </article>
     <article class="lm-table-card" id="lm-m-transfers">
@@ -299,7 +301,7 @@ function returnedFigure(model) {
   const thefts = model.entries.filter((e) => e.category === 'theft');
   if (!thefts.length) return '';
   const rows = thefts.map((e) => `<div><dt><a href="#${e.id}">${esc(e.title)}</a> <span class="lm-dim">${esc(dateUTC(e.time))}</span></dt><dd>${e.returned ? prose(e.returned.text, e.id) : 'No source this page read gives a figure.'}</dd></div>`).join('');
-  return `<figure class="lm-chart lm-returned" id="lmc-returned"><figcaption><h3>What came back</h3><p>For each theft on this page, what the chain or the victim's own statement shows was returned, recovered or frozen. Markers link to the sources in each story.</p></figcaption><dl class="lm-returned-list">${rows}</dl></figure>`;
+  return `<figure class="lm-chart lm-returned" id="lmc-returned"><figcaption><h3>What came back</h3><p>For each theft on this page, what the chain or a primary statement shows was returned, recovered or frozen. Markers link to the sources in each story.</p></figcaption><dl class="lm-returned-list">${rows}</dl></figure>`;
 }
 
 export function renderAnalysis(model) {
@@ -319,7 +321,7 @@ export function renderMethod(model) {
   <div class="eyebrow"><span></span>HOW THIS PAGE IS BUILT</div>
   <h2 id="lm-method-title">A record you can check.</h2>
   <div class="lm-method-grid">
-    <div class="method-step"><span>01</span><div><h3>Read from the chain</h3><p>Every transaction is read from each public source that serves its chain, two operators for Bitcoin and three endpoints for Ethereum, and listed only if they agree and the block is final. Amounts come from the transaction itself: an output, a token event, or the internal calls a contract made.</p></div></div>
+    <div class="method-step"><span>01</span><div><h3>Read from the chain</h3><p>Every transaction is read from every keyless source this page uses for its chain, two operators for Bitcoin and three endpoints for Ethereum, and listed only if they agree and the block is final. Amounts come from the transaction itself: an output, a token event, or the internal calls a contract made.</p></div></div>
     <div class="method-step"><span>02</span><div><h3>Names need evidence</h3><p>A sender or receiver is named only by the explorer's own public tag, when the explorer credits no outside source, or by a court record, a government document or the party's own statement that identifies the address or the transaction. News and analytics firms never name anyone here. A person is named only on their own statement or a court record of conviction or plea.</p></div></div>
     <div class="method-step"><span>03</span><div><h3>Descriptions are matched, not assumed</h3><p>When a document describes a transaction without giving its id, the page reads every transaction in the stated window. The description identifies a transaction only if exactly one matches; otherwise the page says how many did.</p></div></div>
     <div class="method-step"><span>04</span><div><h3>Prices from traded candles</h3><p>The value at the time comes from the exchange candle containing the block, one minute where it traded, then hourly, then daily, and only from a candle with trades. Where no series reaches the date the page says so. Today's value uses live prices in your browser and is not shown for coins that can never move.</p></div></div>

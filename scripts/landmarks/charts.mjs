@@ -92,7 +92,7 @@ export function thenTodayChart(model) {
   for (const t of ends) parts.push(`<text x="${xb + 12}" y="${r1(t.y + 3.5)}" font-size="10.5" fill="${TEXT}">${esc(t.text)}</text>`);
   parts.push('</svg>');
   const groups = [...new Set(rows.map((r) => r.e.group))];
-  const note = `Reference prices from ${esc(ref.source)}, read ${esc(dateUTC(Date.parse(ref.at)))}; the stories above use live prices. Coins that can never move are left out.`;
+  const note = `Reference prices from ${esc(ref.source)}, read ${esc(dateUTC(Date.parse(ref.at)))}; the stories above use live prices. Entries with no value at today's price (coins that can never move, removed or frozen tokens, amounts too small to price) are left out.`;
   return figure('lmc-then-today', 'What the same amounts are worth now', note, parts.join('') + legend(groups.map((g) => [GROUP_COLORS[g], GROUP_LABELS[g]])), table(['Entry', 'At the time', 'At reference prices', 'Change'], rows.map((r) => [esc(r.e.title), r.then === null ? 'no market price' : esc(usd(r.then)), esc(usd(r.today)), r.then === null ? 'not defined' : `${(r.today / r.then).toFixed(r.today / r.then >= 10 ? 0 : 2)} times`])));
 }
 
@@ -123,7 +123,7 @@ export function shareChart(model) {
   parts.push('</svg>');
   const note = 'Bitcoin against the coins its issuance schedule allowed by that block; stablecoins against their Ethereum supply at that block, read from the contract. Not shown for ETH, whose supply no keyless call returns, or for transactions under 0.001% of supply.';
   const groups = [...new Set(rows.map((r) => r.e.group))];
-  return figure('lmc-share', 'How much of everything that existed', note, parts.join('') + legend(groups.map((g) => [GROUP_COLORS[g], GROUP_LABELS[g]])), table(['Transaction', 'Share', 'Of'], rows.map((r) => [esc(legName(r.e, r.l, 'title')), esc(percent(r.v)), esc(r.l.share.of)])));
+  return figure('lmc-share', 'Share of the supply at the time', note, parts.join('') + legend(groups.map((g) => [GROUP_COLORS[g], GROUP_LABELS[g]])), table(['Transaction', 'Share', 'Of'], rows.map((r) => [esc(legName(r.e, r.l, 'title')), esc(percent(r.v)), esc(r.l.share.of)])));
 }
 
 /** What moving it cost: fee against the value moved, both in US dollars at the time, on log axes. */
@@ -211,6 +211,6 @@ export function supplyChart(model) {
   }
   parts.push('</svg>');
   const largest = [...ev].sort((a, b) => b.v - a.v).slice(0, 12);
-  const note = `A complete read of the contract's Issue and Redeem events, ${ev.length} in all. Redeem is the contract's own word: it removes tokens from Ethereum's supply, and says nothing by itself about dollars paid out.`;
+  const note = `A complete read of the contract's Issue and Redeem events since its launch, ${ev.length} in all; the table lists the twelve largest. Redeem is the contract's own word: it removes tokens from Ethereum's supply, and says nothing by itself about dollars paid out.`;
   return figure('lmc-supply', 'USDT on Ethereum, issue by issue', note, parts.join('') + legend([[issue, 'Added (Issue)'], [redeem, 'Removed (Redeem)']]), table(['Date', 'Event', 'Amount'], largest.map((e) => [esc(dateUTC(e.time)), e.type === 'Issue' ? 'Added (Issue)' : 'Removed (Redeem)', esc(fmtAmount(e.amount, 'USDT'))])));
 }

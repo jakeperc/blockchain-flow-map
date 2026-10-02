@@ -1226,9 +1226,19 @@ rather than ranking them.
   Silk Road addresses' histories, the 2011 and 2020 output orders, and every Ethereum leg's log index or trace by RPC.
 - Bundle sizes: the map's JS is 875.8 KB raw, 266.9 KB gzipped (874.4 KB and 263.4 KB before); the engine is unchanged.
   Landmarks loads 224.8 KB of JS (72.1 KB gzipped) and a 282.7 KB static page (47.5 KB gzipped).
-- Not done: the cold-read review by a fresh agent (only the built page text and the archived sources) was started and
-  stopped unfinished when the session reached its usage limit. Run it before the next upload. Also not done: an
-  updated `docs/measurements` note; the facts above are the record.
+- Cold read (2026-10-02, later): a fresh agent given only the page as text and the archived sources found five
+  serious problems, all fixed. The genesis story cited only GitHub's copy of `validation.cpp`, whose readable text is
+  cut off (the gate had found the quote in the page's embedded data); it now also cites the Bitcoin Wiki. The Tether
+  story said "exactly these four removals", but destroying frozen balances also lowers supply; it now says four Redeem
+  events and points to the destructions. Poly's USDT "stayed frozen" overstated a source that says Tether was
+  confirming how to unfreeze it. Bybit's "the signers approved the transaction" was wrong: they signed the earlier code
+  change, not the drain. It also asked for the Silk Road receiver to be re-read: both operators still show it unspent.
+  Of the moderate and minor items, these were fixed: the hero and method say two Bitcoin operators or three Ethereum
+  endpoints instead of "every public source"; shares of supply say "allowed by the issuance schedule"; evidence lines
+  say the archived copy contains the id or address; the considered list is worded neutrally; Satoshi is no longer
+  named; the DAO and Liquid figures explain what they cover; the genesis balance date and rounded balances read
+  correctly. Not changed: the two Ethereum Foundation posts keep different source labels, and "Years covered" counts
+  calendar years (2009 to 2026 is 18).
 
 **Deliverable:** `outputs/ledger-atlas-live-2026-10-02.zip` (ignored by Git): `dist-live/` with `index.html` and
 `landmarks.html` at the root.

@@ -473,7 +473,7 @@ export function buildModel({entries, facts, measured, config}, opts = {}) {
     const vars = {};
     for (const b of balances) {
       b.reads.forEach((r, i) => {
-        vars[`${b.id}.at${i}`] = fmtAmount(r.units, b.asset);
+        vars[`${b.id}.at${i}`] = fmtAmount(r.units, b.asset, {digits: 2});
         vars[`${b.id}.block${i}`] = groupDecimal(String(r.block));
         vars[`${b.id}.date${i}`] = dateUTC(r.time);
         vars[`${b.id}.time${i}`] = timeUTC(r.time);

@@ -5,7 +5,7 @@
   "category": "theft",
   "label": "Ronin bridge",
   "title": "The Ronin bridge drained in two withdrawals",
-  "dek": "Attackers who held five of the bridge's nine validator keys signed their own withdrawals [1]. Two transactions drained {{leg1.amount}} and {{leg2.amount}} from it.",
+  "dek": "An attacker who held five of the bridge's nine validator keys signed withdrawals with them [1]. Two transactions drained {{leg1.amount}} and {{leg2.amount}} from it.",
   "criterion": "A bridge theft that its operator documented transaction by transaction [1], with the receiving address later listed by the US Treasury [2].",
   "priority": 8,
   "legs": [
@@ -74,7 +74,7 @@ The USDC moved as an ordinary token transfer, worth {{leg2.share}} of all USDC o
 
 ## Why it matters
 
-The bridge's security rested on a signature threshold, and the threshold was the attack surface. Ronin's own post says the five-of-nine threshold was set low because some validator nodes kept falling behind the chain [1].
+The bridge's security rested on a signature threshold. Ronin's own post says the five-of-nine threshold was set low because some validator nodes kept falling behind the chain [1].
 
 The theft was only noticed when a user could not withdraw from the bridge, days after the funds had gone [1].
 

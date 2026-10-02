@@ -45,7 +45,7 @@
 
 When Ethereum launched, its blocks could not hold a single transaction. The genesis block set a gas limit of {{m1.genesisGas}}, and the smallest transfer needs 21,000 [m1].
 
-The limit crept up block by block and first reached that mark at block {{m1.firstAtGas}}; the first transaction followed in block {{m1.lastBlock}} [m1]. GoldRush, a blockchain data provider, describes finding the same thing: thousands of empty blocks, then this one [1].
+The limit crept up block by block and first reached that mark at block {{m1.firstAtGas}}; the first transaction followed in block {{m1.lastBlock}} [m1]. GoldRush, a blockchain data provider, also identifies it as the first transaction on Ethereum [1].
 
 ## What the chain shows
 

@@ -47,7 +47,7 @@ On 16 July 2026 CoinDesk reported that a bitcoin address that had not spent a co
 
 One transaction in block {{leg1.block}}, at {{leg1.time}} on {{leg1.date}}, moved {{leg1.amount}}, about {{leg1.usdThen}} at the time, for a fee of {{leg1.fee}}.
 
-The coins it spent arrived in block {{leg1.oldestBlock}}, on {{leg1.oldestInput}}, and had not moved in the {{leg1.coinAge}} since. A complete read of the address's history finds no other spend from it, before or after [m1].
+The single earlier payment it spent arrived in block {{leg1.oldestBlock}}, on {{leg1.oldestInput}}, and had not moved in the {{leg1.coinAge}} since. A complete read of the address's history finds no other spend from it, before or after [m1].
 
 ## Why it matters
 

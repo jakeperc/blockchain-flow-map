@@ -2,13 +2,13 @@
   "recent": {"start": "2026-07-03", "end": "2026-10-01"},
   "allTimeStart": "2009-01-03",
   "considered": [
-    {"title": "The large bitcoin move of 3 August 2026.", "reason": "Its coins had arrived only months before, so it was not the long-dormant holding some reports described, and a payment it made repeats one seen on earlier dates."},
-    {"title": "OFAC's July 2026 listing of addresses held by Iran's central bank.", "reason": "The designation lists addresses, not transactions, and neither it nor Tether's statement on the related freezes prints a transaction id."},
-    {"title": "The US forfeiture action over Iran-linked crypto, September 2026.", "reason": "The filing could not be read: the government site served a bot check, and the only archived copy captured that check."},
-    {"title": "The Coldcard wallet theft, July and August 2026.", "reason": "The maker's own advisory publishes no addresses or transaction ids, so no transaction can be tied to it."},
+    {"title": "A large bitcoin move of 3 August 2026.", "reason": "The coins it spent had arrived only months before, so it was not a long-dormant holding, and a payment it made repeats one seen on earlier dates."},
+    {"title": "OFAC's July 2026 designation of cryptocurrency addresses.", "reason": "A designation lists addresses, not transactions, and no document this page read prints a transaction id for them."},
+    {"title": "A US forfeiture complaint announced in September 2026.", "reason": "The filing could not be read: the government site served a bot check, and the only archived copy captured that check."},
+    {"title": "Thefts reported by users of a hardware wallet, July and August 2026.", "reason": "The maker's own advisory publishes no addresses or transaction ids, so no transaction can be tied to it."},
     {"title": "Mt. Gox's collapse in 2014.", "reason": "Not one transaction: the losses built up over years, and no single transfer on chain stands for them."},
     {"title": "The Bitfinex theft of 2016 and the US seizure of 2022.", "reason": "The theft was spread over a great many transfers, and the seized coins moved in many transactions to one address. No primary document this page could read prints any of those transactions, so none can be identified on its own."},
-    {"title": "The Prince Group forfeiture of 2025.", "reason": "The complaint lists the addresses that held the coins, not the transactions that moved them, and the case is still contested in court."},
-    {"title": "Large transfers flagged by alert accounts and analytics dashboards.", "reason": "A transfer is listed for what the chain and a source can prove about it, not for size alone. On this page's own measured read, the largest transfers between known wallets are mostly a company moving coins between its own wallets."}
+    {"title": "The Prince Group forfeiture of 2025.", "reason": "The complaint lists the addresses that held the coins, not the transactions that moved them."},
+    {"title": "Large transfers flagged by alert accounts and analytics dashboards.", "reason": "A transfer is listed for what the chain and a source can prove about it, not for size alone. On this page's own measured read, the largest transfers between known wallets were all a company moving coins between its own wallets."}
   ]
 }

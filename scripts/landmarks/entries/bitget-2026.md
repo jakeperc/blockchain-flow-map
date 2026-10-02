@@ -56,7 +56,7 @@
     }
   ],
   "status": {"asOf": "2026-10-02", "text": "Bitget's update of 25 September 2026 says tracing and recovery continue and that some affected assets have been frozen [2]. No primary document this page could read attributes the theft."},
-  "returned": {"text": "No figure yet. Bitget says some affected assets have been frozen [2], and that its User Protection Fund covers the loss [1]."},
+  "returned": {"text": "No figure yet. Bitget says some affected assets have been frozen [2]; separately, it says the loss falls within the coverage of its User Protection Fund [1]."},
   "sources": [
     {
       "n": 1, "kind": "document", "docType": "party", "publisher": "Bitget", "title": "[SECURITY NOTICE] Bitget exchange hot wallets Incident — September 24, 2026", "date": "2026-09-24",
@@ -93,7 +93,7 @@ The next day it raised the figure to about $387.5 million, after counting assets
 
 ## What the chain shows
 
-On Ethereum, a wallet that Etherscan tags as Bitget's sent {{leg1.amount}} at {{leg1.time}}, then three ETH transfers between {{leg2.time}} and {{leg4.time}}, all to the address Bitget published. Each is an ordinary transfer signed by the wallet itself; nothing on chain marks it as theft except where it went.
+On Ethereum, a wallet that Etherscan tags as Bitget's sent {{leg1.amount}} at {{leg1.time}}, then three ETH transfers between {{leg2.time}} and {{leg4.time}}, all to the address Bitget published. Each is an ordinary transfer signed by the wallet itself. Hypernative also reports small test transfers from 18:31, before these [3].
 
 Hypernative reports that the attacker's requests carried round gas limits, unlike the computed ones on Bitget's own withdrawals, and that this was the one detail that set them apart [3].
 
@@ -105,4 +105,4 @@ About a quarter of the haul was in stablecoins and other tokens whose issuers ca
 
 ## What happened next
 
-Bitget said its User Protection Fund would cover the loss [1], and launched a bounty paying a share of any funds frozen or recovered with help from outside [2]. Hypernative reports that withdrawals were to reopen in stages from 28 September [3].
+Bitget said the loss falls within the coverage of its User Protection Fund [1], and launched a bounty paying a share of any funds frozen or recovered with help from outside [2]. Hypernative reports that withdrawals were to reopen in stages from 28 September [3].

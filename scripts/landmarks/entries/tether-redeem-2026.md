@@ -6,7 +6,7 @@
   "label": "USDT removals",
   "title": "Tether takes billions of USDT out of Ethereum's supply",
   "dek": "Four times in July and August, the multisig that owns the USDT contract took tokens out of the supply on Ethereum [m1]. The contract's code shows they were its own tokens, removed from its own balance [1].",
-  "criterion": "Every removal of USDT supply on Ethereum in the recent window, found by a complete read of the contract's events [m1].",
+  "criterion": "Every Redeem of USDT on Ethereum in the recent window, found by a complete read of the contract's events [m1].",
   "priority": 7,
   "legs": [
     {
@@ -91,15 +91,15 @@ Tether published no statement about these removals that this page could find, so
 
 ## What the chain shows
 
-The removals took {{leg1.amount}} and {{leg2.amount}} on {{leg1.date}}, {{leg3.amount}} on {{leg3.date}} and {{leg4.amount}} on {{leg4.date}}. The removal at {{leg1.time}} on {{leg1.date}} was by itself {{leg1.share}} of all USDT on Ethereum at its block.
+The removals took {{leg1.amount}} and {{leg2.amount}} on {{leg1.date}}, {{leg3.amount}} on {{leg3.date}} and {{leg4.amount}} on {{leg4.date}}. The removal at {{leg1.time}} on {{leg1.date}} was by itself {{leg1.share}} of all USDT on Ethereum at its block. Each was sent by an account acting through the multisig, which owns the contract and made the call; the measured table lists those senders.
 
-A complete read of the contract's events over the whole window finds exactly these four removals [m1], and not one Issue, the event that adds supply [m2].
+A complete read of the contract's events over the whole window finds exactly these four Redeem events [m1], and not one Issue, the event that adds supply [m2]. Tether also destroyed frozen balances in the window, which the contract's code shows lowers the supply too [1]; the measured table further down lists them.
 
 ## Why it matters
 
-The tokens removed were Tether's own: the code takes them from the owner's balance, so no other holder's tokens were cancelled [1]. The event is named Redeem, but nothing in it records a payment to anyone; it records only that the supply on Ethereum shrank.
+The tokens these Redeems removed were Tether's own: the code takes them from the owner's balance, so no other holder's tokens were cancelled [1]. The event is named Redeem, but nothing in it records a payment to anyone.
 
-A token's supply on one chain can fall because holders cash out, or because its issuer moves supply to another chain. The contract cannot tell these apart, and without a statement this page does not guess.
+The contract records only that the supply on Ethereum shrank, not why, and without a statement from Tether this page does not guess.
 
 ## What happened next
 

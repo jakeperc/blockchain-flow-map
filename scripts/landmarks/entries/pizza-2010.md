@@ -50,7 +50,7 @@
 
 On 18 May 2010 a Bitcoin Forum user named laszlo offered 10,000 bitcoins for a couple of large pizzas, to be delivered by anyone who would take the coins [1].
 
-On 22 May 2010 he reported in the same thread that he had traded 10,000 bitcoins for pizza, and thanked the user who had arranged it [1].
+On 22 May 2010 he reported in the same thread that he had traded 10,000 bitcoins for pizza, and thanked another forum user [1].
 
 ## What the chain shows
 

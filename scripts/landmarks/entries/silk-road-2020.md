@@ -90,7 +90,7 @@ Before them, the complaint says, the address had last sent coins in April 2015, 
 
 The chain shows the coins leaving; only the complaint says who moved them and why [1]. Both payments that day went to one address, which fits the custody the complaint describes, but no document this page could read prints that address, so it stays unnamed here.
 
-The complaint itself contains an error: it prints the address without its final character in its caption and in two paragraphs, and in full only once, in paragraph 17 [1].
+The complaint prints the address without its final character in its caption and in two paragraphs, and in full only once, in paragraph 17 [1].
 
 ## What happened next
 

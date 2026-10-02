@@ -65,19 +65,19 @@
 
 On 21 February 2025 Bybit said that a scheduled move of ether from its multisig cold wallet to its hot wallet had been manipulated, and that more than 400,000 ETH and stETH went to an unidentified address [1]. Bybit wrote that the attack altered the wallet's smart contract logic and masked the signing interface [1].
 
-The Safe Ecosystem Foundation, which promotes the multisig software the wallet ran on, said the attack was achieved through a compromised developer machine at Safe{Wallet}, which proposed a disguised malicious transaction [4].
+The Safe Ecosystem Foundation, which promotes the multisig software the wallet ran on, published the Safe{Wallet} team's finding that the attack came through a compromised developer machine, which proposed a disguised malicious transaction [4].
 
 ## What the chain shows
 
 One transaction in block {{leg1.block}}, at {{leg1.time}} on {{leg1.date}}, moved {{leg1.amount}}, about {{leg1.usdThen}} at the time. The ether moved inside a contract call, so the amount is read from the transaction's trace and checked against the wallet's balance before and after the block.
 
-Bybit's notice says it detected the unauthorised activity at about 12:30 UTC; the chain dates this transfer to {{leg1.time}} [1].
+Bybit's notice gives about 12:30 UTC as the time it detected the activity, while the chain dates this transfer to {{leg1.time}}; the notice does not explain the gap [1].
 
 ## Why it matters
 
-The wallet's own signers approved the transaction. According to CertiK, the attacker obtained three valid signatures for a change that swapped the wallet's code for a malicious contract, then drained it [3].
+The signers never approved this transfer as such. According to CertiK, the attacker first obtained three valid signatures for an earlier transaction that swapped the wallet's code for a malicious contract, then used that contract to drain the wallet [3].
 
-The foundation said outside reviewers found no flaw in the multisig's contracts [4]. The weakness was in what the signers were shown, which Bybit describes as a masked signing interface [1].
+The Safe{Wallet} team's statement says outside reviewers found no flaw in the multisig's contracts [4]. The weakness was in what the signers were shown, which Bybit describes as a masked signing interface [1].
 
 ## What happened next
 

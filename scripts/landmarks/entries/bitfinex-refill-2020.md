@@ -17,7 +17,7 @@
       "basis": "btc-output",
       "output": 0,
       "asset": "BTC",
-      "from": {"role": "the exchange's reserve address", "label": "Bitfinex", "evidence": {"kind": "document", "source": 1, "identifies": "tx"}},
+      "from": {"role": "the exchange's sending address", "label": "Bitfinex", "evidence": {"kind": "document", "source": 1, "identifies": "tx"}},
       "to": {"role": "the exchange's hot wallet", "label": "Bitfinex hot wallet", "evidence": {"kind": "document", "source": 1, "identifies": "tx"}},
       "todayApplicable": true
     }
@@ -56,7 +56,7 @@ The transaction in block {{leg1.block}}, at {{leg1.time}} on {{leg1.date}}, spen
 
 A transaction's inputs are not its payments. Bitcoin spends whole earlier outputs, so a wallet paying out part of a large balance sends the remainder back to itself as change, and the total can look like a transfer of everything.
 
-Read by its outputs, this was an exchange moving part of its reserve into its own hot wallet; read by its inputs, it became a billion-dollar headline [1][2].
+Read by its outputs, this was an exchange moving part of a balance into its own hot wallet; read by its inputs, it became a billion-dollar headline [1][2].
 
 ## What happened next
 

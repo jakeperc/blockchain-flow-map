@@ -5,8 +5,8 @@
   "category": "record",
   "label": "Half-million transfer",
   "title": "Over half a million bitcoin in one transaction",
-  "dek": "One transaction on {{leg1.date}} moved {{leg1.txAmount}}, {{leg1.txShare}} of all the bitcoin that existed at the time. No primary document says whose coins they were.",
-  "criterion": "A single transaction that moved a large share of every bitcoin then in existence, measured here against supply rather than dollars.",
+  "dek": "One transaction on {{leg1.date}} moved {{leg1.txAmount}}, {{leg1.txShare}} of all the bitcoin the issuance schedule had allowed by then. No primary document says whose coins they were.",
+  "criterion": "A single transaction that moved a large share of all the bitcoin issued by then, measured here against supply rather than dollars.",
   "priority": 8,
   "legs": [
     {
@@ -65,11 +65,11 @@ No primary document this page could find says whose coins they were, so the addr
 
 The transaction in block {{leg1.block}}, at {{leg1.time}} on {{leg1.date}}, paid {{leg1.amount}} to one address and {{leg2.amount}} to another, for a fee of {{leg1.fee}}. Together that was {{leg1.txShare}} of all the bitcoin the issuance schedule had allowed by that block.
 
-Decrypt's figure of 500,000 counts only the larger payment: the transaction moved {{leg1.txAmount}} in all [2].
+Decrypt gives its size as 500,000 BTC [2], which matches the larger payment; the transaction moved {{leg1.txAmount}} in all.
 
 ## Why it matters
 
-Dollar figures flatter recent transfers, because the price has risen so far. Measured against supply instead, this one transaction moved {{leg1.txShare}} of every bitcoin then in existence; the share chart further down compares it with the other entries.
+Dollar figures flatter recent transfers, because the price has risen so far. Measured against supply instead, this one transaction moved {{leg1.txShare}} of all the bitcoin the schedule had allowed by then; the share chart further down compares it with the other entries.
 
 ## What happened next
 
