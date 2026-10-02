@@ -9,7 +9,8 @@ const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(process.argv[2]||'dist-live');
 const prefix=process.argv[3]||'/ledger-atlas-live';
 const port=Number(process.argv[4]||5180);
-const TYPES={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.woff2':'font/woff2'};
+// .txt and .md carry no charset on purpose: that is how the real host sends .txt, so a non-ASCII byte in llms.txt shows up garbled here too.
+const TYPES={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.woff2':'font/woff2','.txt':'text/plain','.md':'text/markdown'};
 if(!fs.existsSync(root)){console.error(`${root} does not exist — run "pnpm build:live" first.`);process.exit(1);}
 http.createServer((req,res)=>{
  const url=decodeURIComponent((req.url||'/').split('?')[0]);

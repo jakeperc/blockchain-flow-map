@@ -16,6 +16,11 @@ addressable on jakepercy.com (for example a `ledger-atlas-live` folder under `pu
 paths are relative, so any folder works. Rebuild and re-upload whenever the evidence registry or the
 app changes.
 
+The folder also holds `llms.txt` and `methodology.md`, written by the build for readers that run no JavaScript, and
+`index.html` carries a canonical link, Open Graph tags, a link to `llms.txt` and a `<noscript>` summary. The prose of
+`llms.txt` is `llms.txt.tpl` in this folder; everything that moves is stamped from the code; `methodology.md` is
+`docs/METHODOLOGY.md`. The build fails if a sentence the template quotes has left the page. See `HANDOFF.md` section 18.
+
 ## How it works
 
 - `live-lite/main.tsx` mounts the same `Atlas` component the main app uses, passing it an in-browser

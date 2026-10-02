@@ -1,7 +1,8 @@
 /**
  * Compile the pure modules once, then run every integrity check: the aggregation model, the evidence
- * registry (including the build horizon, so a published build cannot expire on the public) and the
- * live path. Wired into `pnpm build:live`, so a failing check stops the build rather than shipping.
+ * registry (including the build horizon, so a published build cannot expire on the public), the
+ * live path and the plain-text description published beside the page (llms.txt, methodology.md). Wired
+ * into `pnpm build:live`, so a failing check stops the build rather than shipping.
  *
  *   node scripts/verify-all.mjs [--horizon-days N]
  */
@@ -11,7 +12,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
 const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds','rollup','encoding','geo3d','quality-policy','tween'].map(m=>`lib/atlas/${m}.ts`);
-const CHECKS=[['verify-model.cjs',[]],['verify-map.cjs',[]],['verify-registry.cjs',[]],['verify-live.cjs',[]],['verify-rollup.cjs',[]],['verify-live-build.cjs',[]]];
+const CHECKS=[['verify-model.cjs',[]],['verify-map.cjs',[]],['verify-registry.cjs',[]],['verify-live.cjs',[]],['verify-rollup.cjs',[]],['verify-live-build.cjs',[]],['verify-llms.mjs',[]]];
 
 const horizonArg=process.argv.indexOf('--horizon-days');
 const horizon=horizonArg>-1?process.argv[horizonArg+1]:undefined;

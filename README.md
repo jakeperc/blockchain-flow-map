@@ -6,6 +6,17 @@ A full-screen, stablecoin-first map of **attributed cross-border onchain settlem
 
 The static **live build** (`pnpm build:live` → `dist-live/`) reads USDC and USDT transfers on Ethereum, Base, Arbitrum, Avalanche, Polygon and Optimism from free public RPC endpoints in the browser, attributing them against a registry of 1,189 first-party explorer-labelled wallets (plus 3,567 derived) across 64 entities and 29 jurisdictions. A token contract is read only where its own issuer publishes it, so BNB Chain, whose stablecoins are bridge-issued pegs, is absent entirely. Polygon and Optimism joined on 2026-10-01 (USDC only on both), once a keyless endpoint with full history was found for Polygon. The 5M and 1H windows come from transfers held in memory; 24H and 7D are assembled from summaries of every completed 15 minutes the visitor's own browser has watched, and stay unavailable until it has seen at least 80% of the window. It is deployed by copying `dist-live/` under `public_html` on jakepercy.com. Tron and Solana are not connected. Tron's transfers turned out to be readable without a key (measured 2026-10-01); it is waiting on tag evidence, which needs a free Tronscan API key. Solana needs a keyed indexer. The Cloudflare D1 backend mode remains unconnected and is deferred.
 
+## Plain-text description for AI readers
+
+The page draws everything with JavaScript, so `pnpm build:live` also writes `llms.txt` and `methodology.md` into
+`dist-live/`, adds a canonical link, Open Graph tags, a link to `llms.txt` and a `<noscript>` summary to `index.html`, and
+leaves the app bundle untouched. The prose is `live-lite/llms.txt.tpl`. Chains, assets, registry counts, the evidence-expiry
+date and the thresholds are stamped from the code, and `methodology.md` is `docs/METHODOLOGY.md` with one internal reference
+fixed. The build checks that every sentence the template quotes is still in the page, that no number is typed into the prose,
+and that the methodology, the meta description and the code agree. Changing a label, band or formula the template quotes
+means updating the template; adding a chain also means updating the chain list in `docs/METHODOLOGY.md` and the meta
+description in `live-lite/index.html`. Details: [HANDOFF.md](HANDOFF.md) section 18.
+
 API and hosting plan for more coverage (Tron, Solana, Polygon), fitted to the budget: [docs/API-PLAN.md](docs/API-PLAN.md).
 
 **Handing this project to another agent or developer? Start with [HANDOFF.md](HANDOFF.md).**
