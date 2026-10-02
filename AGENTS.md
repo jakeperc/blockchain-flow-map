@@ -27,6 +27,18 @@ Hard rules, in short:
   and the code (HANDOFF section 18). If you reword a page sentence the template quotes, rename a UI term, add a chain,
   retune `UNLOCK_SHARE` or make the page read the URL, `verify-llms.mjs` fails until the template and the docs agree. Do not
   type a number into the template prose; stamp it in `scripts/llms/render.mjs`. Never put a copy in `public/`.
+- The Landmarks page (`landmarks.html`, HANDOFF section 19) names a party only under decision D7: an explorer tag
+  the explorer credits to no outside source, a primary document that identifies the address or transaction, or a
+  description that a complete read matches to exactly one transaction. News and analytics firms never name anyone;
+  a person is named only on their own statement or a court record of conviction or plea. Its names never enter the
+  registry. `lib/landmarks/data.ts` is generated: edit `scripts/landmarks/entries/`, run `fetch-facts.mjs` then
+  `gen-landmarks.mjs`. Its recent window moves monthly (`scripts/landmarks/README.md`). A tag with any third-party
+  credit (a compilation, a report, "Submitted by ...") names nobody there, nor does one read on Arbiscan or Optimistic
+  Etherscan (their readable page hides the banners). A leg that `follows` another is told but never added to a total.
+- Edit files containing backticks or `$` with the Edit tool or a script file, never with `node -e "..."` in bash:
+  double quotes run backtick text as commands and eat `$`, silently (it happened twice on 2026-10-02).
+- Read explorer tags with `scripts/registry/read-tag.mjs` (logic in `tag-reader.mjs`). Before 2026-10-02 it missed
+  compilation disclosures whose name was a link; registry notes written before then may lack one.
 - No synthetic data, ever. Everything shown must be real, live or recent. Never fall back
   to simulated values when a feed fails; show the honest health state. The old demo engine
   in `lib/atlas/engine.ts` is slated for removal.

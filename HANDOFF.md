@@ -1,9 +1,11 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-01 after **the build began publishing `llms.txt` and `methodology.md` beside the page, and a plain-text
-summary inside it for readers that run no JavaScript** (section 18). Earlier the same day came **Polygon and Optimism going
-live on keyless endpoints, a 42-row wallet wave from the Dune lead feed, and the finding that Tron's feed needs no key**
-(section 17). Before that came the
+Last updated 2026-10-02 after **a second page, Landmarks (`landmarks.html`): sixteen landmark transactions, each
+read from its own chain, with analysis, under the new naming decision D7** (section 19). On 2026-10-01 **the build
+began publishing `llms.txt` and `methodology.md` beside the page, and a plain-text summary inside it for readers that
+run no JavaScript** (section 18); earlier that day came **Polygon and Optimism going live on keyless endpoints, a
+42-row wallet wave from the Dune lead feed, and the finding that Tron's feed needs no key** (section 17). Before that
+came the
 USDT top-holders wave, Tronscan decision D6 and API plan (section 16), and the **Avalanche Snowscan registry wave** (section 13, commit `684b4af`). Earlier work includes the renderer performance and look pass
 (section 11), Avalanche going live with Polygon measured then parked and longer time
 frames (section 12), and the unplaced-flow / Unmapped work (section 10). Read this before touching anything under
@@ -1107,3 +1109,137 @@ reworded ("the page was formerly named Ledger Atlas"; "no URL routes"). The file
 - `docs/OPERATIONS.md` still says the hosted application opens in DEMO DATA, which section 2 says was removed on 2026-09-21,
   and `live-lite/README.md` quotes the 2026-09-21 registry figures. Neither is read by the build.
 - `public/` ships `file.svg`, `globe.svg` and `window.svg`, Next.js starter files the page does not use.
+
+## 19. Landmarks: a second page of landmark transactions (2026-10-02)
+
+Jake asked for a page about the most significant transactions ever and of the last few months, with analysis, as
+beautiful as the map. It is `landmarks.html`, beside `index.html`. The approved plan, with its 30-point red-team
+review, is in the session plan file (`lets-plan-to-add-proud-graham.md`); this section is the durable record.
+
+**What Jake decided (2026-10-02).** All of crypto; a curated recent list plus our own measured tables; names only
+under the new decision D7 (`docs/DECISIONS-2026-09.md`: an explorer tag crediting no outside source, a primary
+document that prints the address or transaction, or a document's description matched to exactly one transaction by
+a complete read); a person only on their own statement or a court record of conviction or plea; a "Constellation"
+hero (a glowing value-over-time field linked to the stories).
+
+**How the page works**
+- Static first. The build renders the hero, the field as SVG, every story, the measured tables, the charts and the
+  method as HTML (`scripts/landmarks/html.mjs`, `charts.mjs`), injected into `live-lite/landmarks.html` by the
+  `landmarksPage()` plugin in `vite.live.config.ts`. Readers without JavaScript and AI fetchers get everything.
+- The island (`components/landmarks/`) adds the canvas glow, THEN to TODAY (live prices: CoinGecko, then Coinbase,
+  then Kraken; TODAY is locked with a reason until they load), filters, sort, scroll-linking and the keyboard path. It
+  never builds or reads a URL: a story's address is its own `#id`, and the island only asks which story is `:target`.
+- It loads no three.js, no engine chunk and no registry (`verify-live-build.cjs` walks its module graph).
+
+**The data pipeline** (`scripts/landmarks/README.md` has the monthly runbook and the entry schema)
+- `entries/<id>.md`: a JSON block of facts, then four prose sections. Every on-chain number is a placeholder.
+- `fetch-facts.mjs` (network, cached) writes `chain-facts.json`: every transaction from every operator that serves it
+  (two for Bitcoin, three for Ethereum), finality, traces and balance reads, the traded candle containing the block,
+  supply at the block, match proofs (complete reads), and each source's archived copy searched for its txids,
+  addresses and quote.
+- `build.mjs` (pure) checks everything; `gen-landmarks.mjs` writes `lib/landmarks/data.ts` (GENERATED); the gate is
+  `scripts/verify-landmarks.mjs`, run by `verify-all.mjs`, with self-tests that mutate copies of the real facts.
+- `measure-largest.mjs` writes `measured.json`: Ethereum only, the fixed window 2026-07-03 to 2026-10-01.
+
+**Entries (v1): twelve all-time, four recent**
+
+| Entry | Chain | What identifies the transaction | Who is named, and on what |
+|---|---|---|---|
+| `genesis-2009` | Bitcoin | Match: block 0's coinbase | Nobody (new coins); TODAY not applicable (unspendable) |
+| `block170-2009` | Bitcoin | Match: first non-coinbase transaction, blocks 0 to 170 | Hal Finney, receiver (matched tier, his own post) |
+| `pizza-2010` | Bitcoin | Reporting prints the txid; a complete read found two 10,000 BTC payments that day | Nobody |
+| `half-million-2011` | Bitcoin | Reporting prints the txid (two outputs, 550,000 BTC) | Nobody |
+| `first-eth-2015` | Ethereum | Match: every header from genesis; the gas limit first reached 21,000 at block 46,145, and 46,147 holds the first transaction | Nobody |
+| `dao-2016` | Ethereum | A technical source prints the txid; balance reads show the drain and the fork | Both sides by clean Etherscan tags |
+| `bitfinex-refill-2020` | Bitcoin | Bitfinex's CTO's reply (txid in the archived thread) | Bitfinex and its hot wallet (party statement) |
+| `silk-road-2020` | Bitcoin | Set: every spend from the complaint's address on 3 Nov 2020 (two) | The sending address (court filing); receiver unnamed |
+| `fee-2021` | Ethereum | DeversiFi's post-mortem prints the txid | Sender by tag (Bitfinex 2); DeversiFi from its own post |
+| `poly-2021` | Ethereum | Reporting prints the txids (ETH, USDC, USDT legs) | Receiver from Poly Network's own notice |
+| `ronin-2022` | Ethereum | Ronin's post prints both txids | Bridge by tag; receiver from OFAC's list |
+| `bybit-2025` | Ethereum | Reporting prints the txid; trace checked against the balance delta | Nobody; the FBI's attribution quoted |
+| `tether-redeem-2026` | Ethereum | Set: every USDT Redeem event in the window (four) | Tether: Multisig by tag |
+| `dormant-2026` | Bitcoin | Match: the address's only spend ever (reporting links the address) | Nobody |
+| `liquid-2026` | Bitcoin | Blockstream's report prints all three txids | Liquid Federation and SideSwap (the report) |
+| `bitget-2026` | Ethereum | Reporting prints the txids | Sender by tag (Bitget 6); receiver from Bitget's update |
+
+Considered, not listed (on the page, with reasons, from `config.json`): the 3 Aug 2026 16,400 BTC move (coins only
+months old), OFAC's July 2026 Iran listing (addresses, no txids), the SDNY Iran forfeiture (bot-checked page), the
+Coldcard theft (no addresses), Mt. Gox, the Bitfinex theft and 2022 seizure (no primary document prints any of the
+many transactions), the Prince Group forfeiture (addresses, not transactions; contested).
+
+**Rules the gate enforces** (`verify-landmarks.mjs`; every one has a self-test that mutates the real facts)
+- Every leg read from every operator that serves its chain, in agreement, final (six confirmations on Bitcoin,
+  Ethereum's `finalized` tag). Amounts from the declared basis only: an output, a token event, an issuer's supply
+  event, the trace, or a balance delta; a trace is checked against the receipt event or the balance where declared.
+- Names only under D7. A tag with any third-party credit (compilation, report, or "Submitted by") names nobody, and
+  neither does a tag read on Arbiscan or Optimistic Etherscan, whose readable page hides those banners (section 20).
+  A person needs their own statement or a court record of conviction or plea.
+- A match identifies a transaction only when exactly one is found; a set (`"set": true`, every event scan) must be
+  shown whole. A read that is not complete proves nothing.
+- No typed numbers in prose (placeholders or a source marker), no superlative without a marker, quotes under 15
+  words and found in the archived copy, every claimed txid and address found there too.
+- A leg that `follows` another (a forward, a return) is drawn and told but never added to a total; totals, the sort,
+  TODAY and the charts all count each coin once.
+- Coin age only from a complete read of the inputs' funding transactions. Balance reads need agreeing operators.
+- Before Byzantium (block 4,370,000) receipts carry no status: it is left out of the agreement, no operator may report
+  a failure and one must report success (Tenderly re-executes and fills one in; MEV Blocker leaves it out).
+- `lib/landmarks/data.ts` must equal a fresh generation; chains shared with the map must link and colour the same.
+
+**Endpoint facts measured on 2026-10-02**
+- Ethereum batches: MEV Blocker answers 100 calls per JSON-RPC batch; Tenderly's gateway rate-limits a batch of
+  100; drpc's free tier refuses more than 3.
+- MEV Blocker once returned 0 ETH for the DAO's child at block 1,919,999, where Tenderly and drpc returned
+  3,642,408 ETH; a minute later all three agreed. The agreement rule exists for exactly this. The first-transaction
+  proof reads headers from MEV Blocker but fails on any missing block, checks every gas-limit step against the
+  protocol, and re-reads the decisive block on Tenderly.
+- archive.org answers 429 under load (pace 8 to 10 s); WebFetch cannot read web.archive.org, so the scripts read the
+  raw `id_` snapshots themselves. X posts and Bybit's announcement carry their text only in the page's metadata,
+  which the source check also reads.
+
+**Analysis on the page** ("What the record shows"): what the same amounts are worth now (slope chart at reference
+prices), how much of everything that existed (share of supply at the block; under 0.001% left out), what moving it cost
+(fee against value, one dot per transaction, fees priced in their own asset), what came back after each theft (from the
+chain where it shows a return, else the victim's own statement, else an honest blank; entry field `returned`), and every
+USDT issue and redemption on Ethereum since launch. The measured tables (2026-07-03 to 2026-10-01, blocks 25,448,271 to
+26,100,913, 380 requests): USDT had four Redeems and no Issue; USDC 43,042 mints and 19,461 burns by non-bridge minters;
+the 20 largest transfers between registry wallets were all a company's own wallets, which the page reports as a finding
+rather than ranking them.
+
+**Verification (2026-10-02)**
+- `node scripts/verify-all.mjs`: all checks pass, including `verify-landmarks` (16 entries, 28 transactions, every
+  self-test) and `verify-llms` (`llms.txt` 9,974 of 10,240 bytes; its Landmarks paragraph now names the matched tier). `tsc --noEmit` clean. `pnpm lint` still 45 errors
+  (the Landmarks files lint clean). `corepack pnpm build:live` built; `render.mjs --dist` passes; the hub's
+  `check-llms.mjs`, run from JakePercy.com, reports 0 failures and 0 warnings.
+- In `dist-check` (port 5180, nested path): the map and Landmarks load with no local 404s; Landmarks loads its own chunk,
+  the shared chunk and its CSS, never the engine. Live prices loaded and every TODAY figure filled.
+  With all three price hosts made to fail (a fresh frame with `fetch` stubbed before the island ran), the pill reads
+  PRICES UNAVAILABLE, TODAY is `aria-disabled` with its reason as the title and ignores clicks, and every TODAY figure
+  says why it is missing. `#bybit-2025` lands on its story. Home, End and the arrows step through the lights in date order
+  and the live region announces each one ("the same coins moving on" for a follow-on leg); Enter focuses the story.
+  Without scripts (a sandboxed frame) all 16 stories, the static field, the five analysis blocks and every details panel
+  render. At 375 x 812 neither page overflows and the map's status-strip link to Landmarks shows; the measured tables
+  were clipped on phones until `.lm-tables` got a `minmax(0, 1fr)` column (fixed and re-checked). No chart has
+  overlapping labels (the fee chart now places labels greedily). Reduced motion was checked in the code (no ignition,
+  glide, breathing, riding light or smooth scroll), because the pane was hidden and runs no animation frames.
+- Hand checks against the chain, independent of the gate: Liquid's three transactions on both Bitcoin operators (the
+  forward spends the release's output in the same block and pays the address the return came from), the dormant and
+  Silk Road addresses' histories, the 2011 and 2020 output orders, and every Ethereum leg's log index or trace by RPC.
+- Bundle sizes: the map's JS is 875.8 KB raw, 266.9 KB gzipped (874.4 KB and 263.4 KB before); the engine is unchanged.
+  Landmarks loads 224.8 KB of JS (72.1 KB gzipped) and a 282.7 KB static page (47.5 KB gzipped).
+- Not done: the cold-read review by a fresh agent (only the built page text and the archived sources) was started and
+  stopped unfinished when the session reached its usage limit. Run it before the next upload. Also not done: an
+  updated `docs/measurements` note; the facts above are the record.
+
+**Deliverable:** `outputs/ledger-atlas-live-2026-10-02.zip` (ignored by Git): `dist-live/` with `index.html` and
+`landmarks.html` at the root.
+
+**Found while doing it (reported, not fixed)**
+- The hub's upload manifest (`JakePercy.com/content/llms/upload-manifest.md`, row 24) lists `llms.txt`, `methodology.md`
+  and `index.html`; it now also needs `landmarks.html` and the new `assets/` files. The homepage card still says
+  "3 chains" (the build reads six).
+- The recent window is fixed at 2026-07-03 to 2026-10-01. Refresh it monthly (`scripts/landmarks/README.md`): the four
+  recent stories leave the window at the next refresh unless they still qualify.
+- D7's reopen condition now includes the Silk Road case: a complete set whose every member pays one address cannot
+  name that address under "exactly one matches".
+- The research agents could not read PDFs (justice.gov, CourtListener storage, the SEC's DAO report, Verichains' Bybit
+  report); the entries avoid them. Court records came from CourtListener's archived HTML text.

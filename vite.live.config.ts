@@ -11,7 +11,7 @@ import path from 'node:path';
 const root=fileURLToPath(new URL('.',import.meta.url));
 
 /** What scripts/llms/render.mjs hands back (it is plain ESM, loaded at build time, so it is typed here by hand). */
-interface Llms{files:Record<string,string>;head:string;noscript:string;warnings:string[]}
+interface Llms{files:Record<string,string>;head:string;noscript:string;pages:Record<string,{head:string;noscript:string}>;warnings:string[]}
 interface LlmsRenderer{
  renderAll:(opts:{root:string;atlas?:unknown})=>Llms;
  loadAtlasFor:(root:string)=>Promise<unknown>;
@@ -38,11 +38,16 @@ function llms():Plugin{
    out=renderer.renderAll({root,atlas});
    for(const w of out.warnings)this.warn(w);
   },
-  transformIndexHtml:{order:'post',handler(html){
-   const surfaces=out;
-   if(!surfaces||!surfaces.head)return html;
-   if(!/\n\s*<\/head>/.test(html)||!/<body[^>]*>/.test(html))throw new Error('llms: live-lite/index.html has no <head> and <body> to add the page surfaces to');
-   return html.replace(/\n(\s*)<\/head>/,(_,indent:string)=>`\n    ${surfaces.head}\n${indent}</head>`).replace(/<body[^>]*>/,tag=>`${tag}\n    ${surfaces.noscript}`);
+  // Each page gets its own surfaces (the map: canonical, og tags and <noscript>; Landmarks: its own canonical and og
+  // tags, no <noscript> because its stories are static HTML). A page render.mjs does not know fails the build.
+  transformIndexHtml:{order:'post',handler(html,ctx){
+   if(!out||!out.head)return html;
+   const page=path.posix.basename(ctx.path)||'index.html';
+   const surfaces=out.pages[page];
+   if(!surfaces)throw new Error(`llms: no page surfaces for ${page}; add it to pagesOf() in scripts/llms/render.mjs`);
+   if(!/\n\s*<\/head>/.test(html)||!/<body[^>]*>/.test(html))throw new Error(`llms: live-lite/${page} has no <head> and <body> to add the page surfaces to`);
+   const withHead=html.replace(/\n(\s*)<\/head>/,(_,indent:string)=>`\n    ${surfaces.head}\n${indent}</head>`);
+   return surfaces.noscript?withHead.replace(/<body[^>]*>/,tag=>`${tag}\n    ${surfaces.noscript}`):withHead;
   }},
   generateBundle(){
    if(out)for(const [fileName,source] of Object.entries(out.files))this.emitFile({type:'asset',fileName,source});
@@ -56,12 +61,34 @@ function llms():Plugin{
   },
  };
 }
+/**
+ * The Landmarks page (live-lite/landmarks.html) is static HTML with its stories, field and method written in at
+ * serve and build time by scripts/landmarks/page.mjs, which builds and checks the model first and throws on any
+ * problem. The page's <!--lm:name--> markers name the fragments. HANDOFF section 19.
+ */
+interface LandmarksPage{pageFragments:(root:string)=>Record<string,string>}
+function landmarksPage():Plugin{
+ return {
+  name:'jp-landmarks',
+  transformIndexHtml:{order:'pre',async handler(html,ctx){
+   if(path.posix.basename(ctx.path)!=='landmarks.html')return html;
+   // The query string makes the dev server re-render after an entry changes; its imports stay cached, so a change to
+   // the renderer itself needs a restart.
+   const mod=await import(`${pathToFileURL(path.join(root,'scripts','landmarks','page.mjs')).href}?t=${Date.now()}`) as LandmarksPage;
+   const fragments=mod.pageFragments(root);
+   return html.replace(/<!--lm:(\w+)-->/g,(_,key:string)=>{
+    if(!(key in fragments))throw new Error(`landmarks: live-lite/landmarks.html asks for <!--lm:${key}-->, which scripts/landmarks/html.mjs does not render`);
+    return fragments[key];
+   });
+  }},
+ };
+}
 export default defineConfig({
  root:path.join(root,'live-lite'),
  base:'./',
  publicDir:path.join(root,'public'),
- plugins:[react(),llms()],
+ plugins:[react(),landmarksPage(),llms()],
  resolve:{alias:{'@':root}},
  css:{postcss:{plugins:[tailwindcss()]}},
- build:{outDir:path.join(root,'dist-live'),emptyOutDir:true},
+ build:{outDir:path.join(root,'dist-live'),emptyOutDir:true,rolldownOptions:{input:{index:path.join(root,'live-lite','index.html'),landmarks:path.join(root,'live-lite','landmarks.html')}}},
 });

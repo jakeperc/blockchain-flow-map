@@ -17,6 +17,15 @@ and that the methodology, the meta description and the code agree. Changing a la
 means updating the template; adding a chain also means updating the chain list in `docs/METHODOLOGY.md` and the meta
 description in `live-lite/index.html`. Details: [HANDOFF.md](HANDOFF.md) section 18.
 
+## Landmarks page
+
+`dist-live/landmarks.html` is a second page: sixteen landmark transactions (twelve all-time, four from the fixed window
+3 July to 1 October 2026), each read from its own chain by every public source that serves it, with analysis charts,
+Ethereum supply and transfer tables measured over the same window, and a list of events considered but not listed. It is
+static HTML built from `scripts/landmarks/entries/`; only today's prices load in the browser. A party is named only under
+decision D7 in `docs/DECISIONS-2026-09.md`. The recent window and the measured tables need a monthly refresh
+(`scripts/landmarks/README.md`). Details: [HANDOFF.md](HANDOFF.md) section 19.
+
 API and hosting plan for more coverage (Tron, Solana, Polygon), fitted to the budget: [docs/API-PLAN.md](docs/API-PLAN.md).
 
 **Handing this project to another agent or developer? Start with [HANDOFF.md](HANDOFF.md).**

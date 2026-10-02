@@ -1,0 +1,2832 @@
+{
+ "measuredAt": "2026-10-02",
+ "asOf": "2026-10-02T16:24:44.907Z",
+ "script": "scripts/landmarks/measure-largest.mjs",
+ "window": {
+  "start": "2026-07-03",
+  "end": "2026-10-01",
+  "fromBlock": 25448271,
+  "toBlock": 26100913
+ },
+ "requests": 380,
+ "tables": {
+  "usdt": {
+   "complete": true,
+   "requests": 273,
+   "events": [
+    {
+     "type": "Redeem",
+     "units": "2500000000000000",
+     "block": 25479732,
+     "txid": "0xc7ad979c685d83a9adb8819e5ed36011c146b3171efcb9065eae0fd9ad70c1ff",
+     "holder": null,
+     "time": 1783416011000,
+     "amount": "2500000000",
+     "usd": 2497300000,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99892
+     },
+     "caller": "0x61d5a4d5bd270e59e9320243e574288e2a199fed",
+     "callerTag": {
+      "tag": "Bitfinex: Deployer 7",
+      "compilation": "hildobby compilation",
+      "reports": [],
+      "alerts": [
+       "This address has been tagged based on hildobby compilation."
+      ]
+     }
+    },
+    {
+     "type": "Redeem",
+     "units": "2500000000000000",
+     "block": 25483169,
+     "txid": "0xcbbfda11256dfb723fc50f2d0c77c3142b2c53dde84081c28b76231003273334",
+     "holder": null,
+     "time": 1783457363000,
+     "amount": "2500000000",
+     "usd": 2498425000,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99937
+     },
+     "caller": "0xac3b242e2e561da9f4ce34746e67d004e6341fa0",
+     "callerTag": {
+      "tag": null,
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "type": "Redeem",
+     "units": "2000000000000000",
+     "block": 25804475,
+     "txid": "0x6c54a4818ae437f8ea5a3ed6a2f8088bb481dd918353796881ec20676cefd66c",
+     "holder": null,
+     "time": 1787326919000,
+     "amount": "2000000000",
+     "usd": 1999220000,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99961
+     },
+     "caller": "0xac3b242e2e561da9f4ce34746e67d004e6341fa0",
+     "callerTag": {
+      "tag": null,
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "type": "Redeem",
+     "units": "1750000000000000",
+     "block": 25723152,
+     "txid": "0x4eb5420ecf4a5aa4599e54cb5ef12467bf8d357e37c7ea51a4ef5ec75512eb0e",
+     "holder": null,
+     "time": 1786347515000,
+     "amount": "1750000000",
+     "usd": 1748337500,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99905
+     },
+     "caller": "0x61d5a4d5bd270e59e9320243e574288e2a199fed",
+     "callerTag": {
+      "tag": "Bitfinex: Deployer 7",
+      "compilation": "hildobby compilation",
+      "reports": [],
+      "alerts": [
+       "This address has been tagged based on hildobby compilation."
+      ]
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "1642752780747",
+     "block": 26005582,
+     "txid": "0xbe3f0a05b02a4091c95f8e5cf7c03eef94757d61dcae138ca5b7524a574ad01c",
+     "holder": "0x9269fe10d91e434a8742b35b695464e8ecb001e0",
+     "time": 1789748915000,
+     "amount": "1642752.780747",
+     "usd": 1642046.3970512785,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99957
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "1509723008264",
+     "block": 25594383,
+     "txid": "0x1f057841e915088d402383ff5a7b22335ebe13e65d073101fdc336828a9f3138",
+     "holder": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+     "time": 1784797031000,
+     "amount": "1509723.008264",
+     "usd": 1508953.0495297853,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99949
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "1176039906036",
+     "block": 25532708,
+     "txid": "0xef92076af47a4f4a475ee0b68271ef939918d988abb384ad55e436a3ca1b8274",
+     "holder": "0x4926889a6e354def48d5d83082e60b2674b224ce",
+     "time": 1784054135000,
+     "amount": "1176039.906036",
+     "usd": 1175251.959298956,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99933
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "1033790536722",
+     "block": 25594383,
+     "txid": "0x34440fc209f3e8ccc2d0e561700916dce8167d2c85ff6f76cad3648330b1b6a6",
+     "holder": "0x0000000000000000000000000000000000000000",
+     "time": 1784797031000,
+     "amount": "1033790.536722",
+     "usd": 1033263.3035482718,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99949
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "534803798823",
+     "block": 25675376,
+     "txid": "0xc2cc084ab33a82b1be9e53b215552d45f6bf109c7759cf6ed37391b0a6cf5a4b",
+     "holder": "0xecec07e601cebeb9c2503b4e91a01118ca3ceb9c",
+     "time": 1785772223000,
+     "amount": "534803.798823",
+     "usd": 534183.4264163653,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99884
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "524417468042",
+     "block": 26093952,
+     "txid": "0xed624d74740b5db66add6d3a68750f2bd0b30098ec03d89861f3107062cf31d3",
+     "holder": "0xb699334ae8b8204e1854eae697ac2a42be77aa12",
+     "time": 1790815391000,
+     "amount": "524417.468042",
+     "usd": 524060.8641637314,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99932
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "275608121964",
+     "block": 26093953,
+     "txid": "0x74f0970f9499309ef231803d0ab70936405c0ef75b6f50e68bbda22ecb7b77a3",
+     "holder": "0x7a93af474843c4acdbd39579fa7282bf5c58556c",
+     "time": 1790815403000,
+     "amount": "275608.121964",
+     "usd": 275420.70844106446,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99932
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "250000000000",
+     "block": 25525713,
+     "txid": "0x9ce4f5f2b2e854b4768b578fc253770d1a91e7b5537973daa90871d356615df0",
+     "holder": "0x31daf684e54a3422a8fb081dd215f1bbdba8ca7e",
+     "time": 1783969883000,
+     "amount": "250000",
+     "usd": 249740,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99896
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "247752921169",
+     "block": 25675374,
+     "txid": "0x89eee4da894682c3f7ac2fd81e663f1c18120356aa00acdffa5306387210de23",
+     "holder": "0x29452a5703cd3cb50e658d3c018acef1e57b7145",
+     "time": 1785772199000,
+     "amount": "247752.921169",
+     "usd": 247465.52778044395,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99884
+     }
+    },
+    {
+     "type": "DestroyedBlackFunds",
+     "units": "243401127443",
+     "block": 25525713,
+     "txid": "0xbda72004135fcf1ee908877949024ca624fe2d72ce84f57a30e0e58010ce701d",
+     "holder": "0x876e936acae44abe67f6348a94d7c7df5999bc20",
+     "time": 1783969883000,
+     "amount": "243401.127443",
+     "usd": 243147.99027045927,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99896
+     }
+    }
+   ],
+   "counts": {
+    "issue": 0,
+    "redeem": 4,
+    "destroyed": 41
+   },
+   "history": [
+    {
+     "type": "Issue",
+     "amount": "10000",
+     "block": 4638757,
+     "time": 1511886266000
+    },
+    {
+     "type": "Issue",
+     "amount": "30000000",
+     "block": 4885749,
+     "time": 1515595323000
+    },
+    {
+     "type": "Issue",
+     "amount": "30000000",
+     "block": 4988786,
+     "time": 1517155597000
+    },
+    {
+     "type": "Issue",
+     "amount": "20000000",
+     "block": 7526341,
+     "time": 1554711442000
+    },
+    {
+     "type": "Issue",
+     "amount": "30000000",
+     "block": 7526432,
+     "time": 1554712664000
+    },
+    {
+     "type": "Issue",
+     "amount": "50000000",
+     "block": 7538741,
+     "time": 1554878135000
+    },
+    {
+     "type": "Issue",
+     "amount": "70000000",
+     "block": 7573636,
+     "time": 1555346336000
+    },
+    {
+     "type": "Issue",
+     "amount": "70000000",
+     "block": 7629963,
+     "time": 1556106955000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 7637646,
+     "time": 1556209950000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 7822443,
+     "time": 1558702248000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 7855157,
+     "time": 1559141580000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 7936931,
+     "time": 1560248104000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 7969780,
+     "time": 1560691279000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 8002915,
+     "time": 1561139847000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 8066883,
+     "time": 1562000687000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 8084213,
+     "time": 1562234789000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 8111387,
+     "time": 1562599624000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 8119605,
+     "time": 1562709586000
+    },
+    {
+     "type": "Issue",
+     "amount": "50000000",
+     "block": 8169881,
+     "time": 1563388543000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 8291694,
+     "time": 1565022130000
+    },
+    {
+     "type": "Issue",
+     "amount": "10000000",
+     "block": 8471699,
+     "time": 1567440152000
+    },
+    {
+     "type": "Issue",
+     "amount": "15000000",
+     "block": 8479323,
+     "time": 1567541855000
+    },
+    {
+     "type": "Issue",
+     "amount": "15000000",
+     "block": 8494804,
+     "time": 1567751368000
+    },
+    {
+     "type": "Issue",
+     "amount": "25000000",
+     "block": 8497505,
+     "time": 1567788033000
+    },
+    {
+     "type": "Issue",
+     "amount": "20000000",
+     "block": 8521883,
+     "time": 1568115790000
+    },
+    {
+     "type": "Issue",
+     "amount": "300000000",
+     "block": 8534034,
+     "time": 1568279558000
+    },
+    {
+     "type": "Issue",
+     "amount": "15000000",
+     "block": 8542883,
+     "time": 1568399124000
+    },
+    {
+     "type": "Issue",
+     "amount": "15000000",
+     "block": 8613884,
+     "time": 1569356678000
+    },
+    {
+     "type": "Issue",
+     "amount": "20000000",
+     "block": 8650692,
+     "time": 1569855010000
+    },
+    {
+     "type": "Issue",
+     "amount": "20000000",
+     "block": 8694221,
+     "time": 1570441815000
+    },
+    {
+     "type": "Issue",
+     "amount": "20000000",
+     "block": 8716062,
+     "time": 1570738047000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 9077061,
+     "time": 1575889487000
+    },
+    {
+     "type": "Issue",
+     "amount": "25000000",
+     "block": 9126285,
+     "time": 1576684052000
+    },
+    {
+     "type": "Issue",
+     "amount": "30000000",
+     "block": 9136463,
+     "time": 1576859927000
+    },
+    {
+     "type": "Issue",
+     "amount": "20000000",
+     "block": 9171904,
+     "time": 1577469539000
+    },
+    {
+     "type": "Issue",
+     "amount": "8005.642",
+     "block": 9482855,
+     "time": 1581706169000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9513458,
+     "time": 1582112829000
+    },
+    {
+     "type": "Issue",
+     "amount": "300000000",
+     "block": 9520573,
+     "time": 1582208024000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9545714,
+     "time": 1582541492000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 9610476,
+     "time": 1583401218000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9612110,
+     "time": 1583423387000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9637246,
+     "time": 1583757211000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9648985,
+     "time": 1583913210000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9655515,
+     "time": 1583999455000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9658052,
+     "time": 1584034077000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9663997,
+     "time": 1584114206000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9689009,
+     "time": 1584447774000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9690465,
+     "time": 1584466896000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9695683,
+     "time": 1584535845000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9700942,
+     "time": 1584605201000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9702818,
+     "time": 1584630328000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9704205,
+     "time": 1584648995000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9708858,
+     "time": 1584711416000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9733209,
+     "time": 1585039754000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9735376,
+     "time": 1585069807000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9740703,
+     "time": 1585142467000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9749136,
+     "time": 1585255179000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9773269,
+     "time": 1585574354000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9782640,
+     "time": 1585699638000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9787694,
+     "time": 1585766600000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9792659,
+     "time": 1585831475000
+    },
+    {
+     "type": "Issue",
+     "amount": "60000000",
+     "block": 9795182,
+     "time": 1585865805000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9821100,
+     "time": 1586211047000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9865208,
+     "time": 1586796927000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9871690,
+     "time": 1586882206000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9884686,
+     "time": 1587056068000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9898222,
+     "time": 1587237383000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9917297,
+     "time": 1587491825000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9923352,
+     "time": 1587573352000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9956106,
+     "time": 1588011713000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 9956121,
+     "time": 1588011906000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10021595,
+     "time": 1588887415000
+    },
+    {
+     "type": "Issue",
+     "amount": "300000000",
+     "block": 10360768,
+     "time": 1593434041000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10510472,
+     "time": 1595438103000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10542556,
+     "time": 1595866490000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10547704,
+     "time": 1595934872000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10572237,
+     "time": 1596263996000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10592877,
+     "time": 1596539150000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10606504,
+     "time": 1596720691000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10614073,
+     "time": 1596821300000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 10632135,
+     "time": 1597062393000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10659591,
+     "time": 1597426985000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 10697308,
+     "time": 1597929801000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10702589,
+     "time": 1597999724000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 10775969,
+     "time": 1598972542000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 10794750,
+     "time": 1599221320000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 10866207,
+     "time": 1600167423000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 10880312,
+     "time": 1600353782000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 10893881,
+     "time": 1600534332000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 10968665,
+     "time": 1601534926000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 11105094,
+     "time": 1603357702000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 11133560,
+     "time": 1603735677000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 11146533,
+     "time": 1603906057000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 11159385,
+     "time": 1604077426000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 11185771,
+     "time": 1604428136000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 11203990,
+     "time": 1604668405000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 11238422,
+     "time": 1605125874000
+    },
+    {
+     "type": "Issue",
+     "amount": "150000000",
+     "block": 11270159,
+     "time": 1605546480000
+    },
+    {
+     "type": "Issue",
+     "amount": "120000000",
+     "block": 11294520,
+     "time": 1605869314000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 11313302,
+     "time": 1606118810000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 11322355,
+     "time": 1606238719000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 11360255,
+     "time": 1606740856000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 11366933,
+     "time": 1606829149000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 11459242,
+     "time": 1608056645000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 11510033,
+     "time": 1608729180000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 11517660,
+     "time": 1608830834000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 11543001,
+     "time": 1609165813000
+    },
+    {
+     "type": "Issue",
+     "amount": "300000000",
+     "block": 11568075,
+     "time": 1609499765000
+    },
+    {
+     "type": "Issue",
+     "amount": "200000000",
+     "block": 11596112,
+     "time": 1609870667000
+    },
+    {
+     "type": "Issue",
+     "amount": "300000000",
+     "block": 11602568,
+     "time": 1609956173000
+    },
+    {
+     "type": "Issue",
+     "amount": "300000000",
+     "block": 11615861,
+     "time": 1610132376000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11641345,
+     "time": 1610470638000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11732463,
+     "time": 1611678968000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11752228,
+     "time": 1611942496000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11777368,
+     "time": 1612276335000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11782949,
+     "time": 1612350844000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11783240,
+     "time": 1612354424000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11783301,
+     "time": 1612355320000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11783373,
+     "time": 1612356291000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11783456,
+     "time": 1612357271000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11785708,
+     "time": 1612387520000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11796148,
+     "time": 1612526756000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11810104,
+     "time": 1612711463000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 11830343,
+     "time": 1612981062000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11861633,
+     "time": 1613396261000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11882687,
+     "time": 1613676216000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 11960308,
+     "time": 1614707428000
+    },
+    {
+     "type": "Issue",
+     "amount": "400000000",
+     "block": 12011359,
+     "time": 1615386993000
+    },
+    {
+     "type": "Issue",
+     "amount": "100000000",
+     "block": 12043573,
+     "time": 1615816628000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12048808,
+     "time": 1615886284000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12076085,
+     "time": 1616248756000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12076110,
+     "time": 1616249053000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12193167,
+     "time": 1617805109000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12193233,
+     "time": 1617806046000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12251386,
+     "time": 1618580085000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12251389,
+     "time": 1618580162000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12329285,
+     "time": 1619617317000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12343492,
+     "time": 1619807979000
+    },
+    {
+     "type": "Issue",
+     "amount": "500000000",
+     "block": 12343497,
+     "time": 1619808059000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 12406909,
+     "time": 1620653869000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 12452777,
+     "time": 1621265945000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 12542721,
+     "time": 1622472427000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 12542811,
+     "time": 1622473586000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 12542825,
+     "time": 1622473744000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 13062629,
+     "time": 1629469191000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 13088146,
+     "time": 1629809845000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 13088223,
+     "time": 1629810874000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 13550826,
+     "time": 1636037258000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 13575953,
+     "time": 1636376905000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 13582854,
+     "time": 1636470734000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 13582954,
+     "time": 1636471888000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 13771848,
+     "time": 1639064285000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 13771937,
+     "time": 1639065474000
+    },
+    {
+     "type": "Redeem",
+     "amount": "3000000000",
+     "block": 14773677,
+     "time": 1652532119000
+    },
+    {
+     "type": "Redeem",
+     "amount": "4500000000",
+     "block": 14997399,
+     "time": 1655740338000
+    },
+    {
+     "type": "Redeem",
+     "amount": "2000000000",
+     "block": 16576442,
+     "time": 1675767323000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 16754368,
+     "time": 1677924275000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 16754498,
+     "time": 1677925859000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 16826825,
+     "time": 1678804571000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 16842225,
+     "time": 1678991759000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 16899001,
+     "time": 1679680799000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 17090265,
+     "time": 1682025251000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 17462637,
+     "time": 1686556607000
+    },
+    {
+     "type": "Issue",
+     "amount": "250000000",
+     "block": 17485072,
+     "time": 1686829583000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 17491632,
+     "time": 1686909203000
+    },
+    {
+     "type": "Issue",
+     "amount": "250000000",
+     "block": 17491729,
+     "time": 1686910367000
+    },
+    {
+     "type": "Issue",
+     "amount": "250000000",
+     "block": 17521899,
+     "time": 1687276127000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 18536326,
+     "time": 1699556279000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 18664276,
+     "time": 1701103763000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 18863850,
+     "time": 1703520803000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 18934942,
+     "time": 1704383147000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 18969950,
+     "time": 1704809879000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 19269909,
+     "time": 1708444199000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 19354073,
+     "time": 1709462003000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 19389282,
+     "time": 1709886839000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 19400480,
+     "time": 1710022763000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 19400488,
+     "time": 1710022859000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 19587798,
+     "time": 1712298983000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 19688669,
+     "time": 1713519839000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 19919099,
+     "time": 1716304391000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 20519610,
+     "time": 1723550999000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 20571455,
+     "time": 1724176499000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 20761208,
+     "time": 1726465847000
+    },
+    {
+     "type": "Issue",
+     "amount": "2000000000",
+     "block": 21129428,
+     "time": 1730906003000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21144004,
+     "time": 1731081935000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21153165,
+     "time": 1731192275000
+    },
+    {
+     "type": "Issue",
+     "amount": "2000000000",
+     "block": 21165830,
+     "time": 1731344855000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21179246,
+     "time": 1731506615000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21183679,
+     "time": 1731560099000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21215332,
+     "time": 1731941687000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21215740,
+     "time": 1731946619000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21223914,
+     "time": 1732045007000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21231272,
+     "time": 1732133771000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21244559,
+     "time": 1732294055000
+    },
+    {
+     "type": "Issue",
+     "amount": "2000000000",
+     "block": 21252008,
+     "time": 1732383791000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21293818,
+     "time": 1732888967000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21317354,
+     "time": 1733173043000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21337187,
+     "time": 1733412455000
+    },
+    {
+     "type": "Issue",
+     "amount": "2000000000",
+     "block": 21345838,
+     "time": 1733516819000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21379577,
+     "time": 1733923883000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21387495,
+     "time": 1734019403000
+    },
+    {
+     "type": "Redeem",
+     "amount": "2000000000",
+     "block": 21947671,
+     "time": 1740779747000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 21958889,
+     "time": 1740914915000
+    },
+    {
+     "type": "Redeem",
+     "amount": "1800000000",
+     "block": 22254980,
+     "time": 1744486223000
+    },
+    {
+     "type": "Redeem",
+     "amount": "1500000000",
+     "block": 22316268,
+     "time": 1745225147000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 22376454,
+     "time": 1745950703000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 22376475,
+     "time": 1745950955000
+    },
+    {
+     "type": "Redeem",
+     "amount": "1500000000",
+     "block": 22532889,
+     "time": 1747850171000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 22730234,
+     "time": 1750236047000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 22840980,
+     "time": 1751573279000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 22932142,
+     "time": 1752673595000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 22932143,
+     "time": 1752673607000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 22937839,
+     "time": 1752742271000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 22990385,
+     "time": 1753376675000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 22990385,
+     "time": 1753376675000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23145634,
+     "time": 1755251267000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23182036,
+     "time": 1755689831000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23233326,
+     "time": 1756308203000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23240202,
+     "time": 1756391171000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23257005,
+     "time": 1756593623000
+    },
+    {
+     "type": "Issue",
+     "amount": "2000000000",
+     "block": 23290713,
+     "time": 1757000567000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23344510,
+     "time": 1757650319000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23358693,
+     "time": 1757821247000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23376206,
+     "time": 1758032663000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23376418,
+     "time": 1758035207000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23399504,
+     "time": 1758313643000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23419544,
+     "time": 1758555899000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23437044,
+     "time": 1758766967000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23451195,
+     "time": 1758938075000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23486840,
+     "time": 1759368707000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23486841,
+     "time": 1759368719000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23550396,
+     "time": 1760136371000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23571226,
+     "time": 1760387951000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23581441,
+     "time": 1760511383000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23606873,
+     "time": 1760818823000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23628082,
+     "time": 1761075731000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 23770334,
+     "time": 1762795523000
+    },
+    {
+     "type": "Redeem",
+     "amount": "3000000000",
+     "block": 24276727,
+     "time": 1768920995000
+    },
+    {
+     "type": "Redeem",
+     "amount": "3500000000",
+     "block": 24424067,
+     "time": 1770698663000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 24905740,
+     "time": 1776503111000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 24926944,
+     "time": 1776758267000
+    },
+    {
+     "type": "Issue",
+     "amount": "1000000000",
+     "block": 24944123,
+     "time": 1776965087000
+    },
+    {
+     "type": "Redeem",
+     "amount": "2000000000",
+     "block": 25052310,
+     "time": 1778266955000
+    },
+    {
+     "type": "Redeem",
+     "amount": "2500000000",
+     "block": 25479732,
+     "time": 1783416011000
+    },
+    {
+     "type": "Redeem",
+     "amount": "2500000000",
+     "block": 25483169,
+     "time": 1783457363000
+    },
+    {
+     "type": "Redeem",
+     "amount": "1750000000",
+     "block": 25723152,
+     "time": 1786347515000
+    },
+    {
+     "type": "Redeem",
+     "amount": "2000000000",
+     "block": 25804475,
+     "time": 1787326919000
+    }
+   ]
+  },
+  "usdc": {
+   "complete": true,
+   "requests": 45,
+   "minters": {
+    "0x9c08210cc65b5c9f1961cdbd9ea9bf017522464d": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xe7ab0dd2a069fa115c0d7878af6fd95ba0f9100a": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x5b6122c109b78c6755486966148c1d70a50a47d7": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x19a932fc5a8320939c3575302a8705147a7f27d8": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xd4c1315948125cd20c11c5e9565a3632c1710055": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x24bdd8771b08c2ea6fe0e898126e65bd49021be3": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x55fe002aeff02f77364de339a1292923a15844b8": {
+     "tag": "Circle",
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x895f07957b863f4ab6086035a6990d8366bc3266": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xc4922d64a24675e16e1586e3e3aa56c06fabe907": {
+     "tag": "Circle: Token Minter",
+     "compilation": null,
+     "reports": [],
+     "bridge": true
+    },
+    "0x8967a7ce20043f876e42f8ad696b06bb632f0ca7": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x3005a4c0efe7e66f3f60ef8704983247a5c6ca61": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xe400d09e98a5806bf501e93ed8e7623b78b4646f": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x2322e81db282f22849c2eb0b749c688ea3611946": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x2b52e60c844d7946b6d910d3296940dc889cc785": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x911cb2323c6fb580e39f92a6f58d1cb019e940cd": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xfd78ee919681417d192449715b2594ab58f5d002": {
+     "tag": "Circle CCTP: Token Minter V2",
+     "compilation": null,
+     "reports": [],
+     "bridge": true
+    },
+    "0x504a330327a089d8364c4ab3811ee26976d388ce": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xa1e2481a9cd0cb0447eeb1cbc26f1b3fff3bec20": {
+     "tag": "Sonic Labs: Sonic Gateway",
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x153a69e4bb6fedbbaaf463cb982416316c84b2db": {
+     "tag": "World Chain: Op USDC Bridge Adapter",
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x2222222d7164433c4c09b0b0d809a9b52c04c205": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x77777777dcc4d5a8b6e418fd04d8997ef11000ee": {
+     "tag": "Circle: Gateway Wallet",
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xa5827f373aa4d1a8d3cfb92d29963ee97133d5c7": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x1375c5ff3785850314f5a612a7837cc295075ef1": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x46544d6a546ef97d43a6aaa783db8cefcdd6c202": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x119cc12cb823eb6ee1d2da2b5e5de645af8f3e90": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xf0f3ef1340530a3983e1c510e49319d9bfa8a74f": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x0057f169b9e1e57dd25cab68a23ae79c7b3f6ba5": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xa1ef798a09cea66625a1b0b0ed28fb2732743609": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x08966c2561ef3ac77ac479df4590886b4bfe869a": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x77c923526ec8b93fb8c645cc49a623ade521377e": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x425a4093405dcc888ec7931d57574e0dfe0726c5": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x1971773285a553c2100c97a3a3ad04519f4e2186": {
+     "tag": "Circle: Hot Wallet",
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xec72b99254d5a407b6caed24c1e771377e8eb70b": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x89661a593106ff15b24b8dd25ab8efad63cfeea7": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xe898a5c06c1166178495e0faf27dae8dd4c97096": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x93cb3290185be000afaead63c47c40ebce86bf7e": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0x7bddba3607517a3a06b75c1fad1744d571de9a2d": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    },
+    "0xa669f564133a1612dbd6f5e579863aa0a34448bd": {
+     "tag": null,
+     "compilation": null,
+     "reports": [],
+     "bridge": false
+    }
+   },
+   "mintersConfigured": 38,
+   "bridgeMinters": [
+    "0xc4922d64a24675e16e1586e3e3aa56c06fabe907",
+    "0xfd78ee919681417d192449715b2594ab58f5d002"
+   ],
+   "events": [
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "199231181850000",
+     "block": 25998578,
+     "txid": "0x531e8900af6d11459e9e03f77573091facd59d18999bc9a9abe112b8dfa59cb0",
+     "time": 1789664591000,
+     "amount": "199231181.85",
+     "usd": 199209266.41999647,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99989
+     }
+    },
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "163061311410000",
+     "block": 26077396,
+     "txid": "0xe2bf0fbba108be842b197273edc6a04a9209637c993f2c4a34a31365882c39f5",
+     "time": 1790615903000,
+     "amount": "163061311.41",
+     "usd": 163049897.1182013,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 60,
+      "close": 0.99993
+     }
+    },
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "135000000000000",
+     "block": 25471115,
+     "txid": "0x36583ddb5eeca69cf7bd6f821b55fb68ad29dc80a6e55b35bda407c4d9266c8f",
+     "time": 1783312271000,
+     "amount": "135000000",
+     "usd": 134981100,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 86400,
+      "close": 0.99986
+     }
+    },
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "130724040030000",
+     "block": 25876632,
+     "txid": "0x2ccc020e8488463746810834726ca2c7cd8f3c8a171d54b04d6f5194179e02ff",
+     "time": 1788195791000,
+     "amount": "130724040.03",
+     "usd": 130720118.3087991,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99997
+     }
+    },
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "120000000000000",
+     "block": 25809245,
+     "txid": "0xf5ed3035c9b74050235fee4575b5373f458278df9b2885fbfb91cecfebcac89a",
+     "time": 1787384363000,
+     "amount": "120000000",
+     "usd": 119997600,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99998
+     }
+    },
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "115965275740000",
+     "block": 25840659,
+     "txid": "0x767b3332918710ff2379f0eb8cc391ee486fee273ad86160f5618bc71c736c53",
+     "time": 1787762603000,
+     "amount": "115965275.74",
+     "usd": 115953679.21242599,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.9999
+     }
+    },
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "110819258210000",
+     "block": 25961617,
+     "txid": "0x909b1eb7c3a8a62e4ca66fe50f4a790160972ab9dee6e2ffa1a690ee873c7028",
+     "time": 1789219511000,
+     "amount": "110819258.21",
+     "usd": 110801527.12868638,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99984
+     }
+    },
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "101619206980000",
+     "block": 25883702,
+     "txid": "0x459ccb21f370907582ba9d4964e74a66b0491ca76959397a137c4c7c9e065e4c",
+     "time": 1788280991000,
+     "amount": "101619206.98",
+     "usd": 101604980.2910228,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99986
+     }
+    },
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "100000000000000",
+     "block": 25807426,
+     "txid": "0x947799d87e7d363329a4fd385ef321c38deaa0cb8d795474ac8fb2f46e9be2f5",
+     "time": 1787362451000,
+     "amount": "100000000",
+     "usd": 99971000,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 86400,
+      "close": 0.99971
+     }
+    },
+    {
+     "kind": "Mint",
+     "minter": "0x5b6122c109b78c6755486966148c1d70a50a47d7",
+     "to": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "units": "100000000000000",
+     "block": 25885073,
+     "txid": "0xe662106068c7baf39921ea7e6971a0590a8de342c2cfce9ec2205c709ba08945",
+     "time": 1788297491000,
+     "amount": "100000000",
+     "usd": 99977000,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99977
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "210614493060000",
+     "block": 26089817,
+     "txid": "0x5b390ae88dab918808380d88aa6744a82db570c86c64011b52183c70f7d44863",
+     "time": 1790765543000,
+     "amount": "210614493.06",
+     "usd": 210601856.19041643,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99994
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "192393761730000",
+     "block": 25986418,
+     "txid": "0x9adf7d00056ba6ba2bb87ca973710a3b352f3a683549983f39c82a22fd025c29",
+     "time": 1789518143000,
+     "amount": "192393761.73",
+     "usd": 192374522.353827,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.9999
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "127418527050000",
+     "block": 25891062,
+     "txid": "0x362df18ff5e5086bc70c38569bf897182215042d5c728e010c608a59b344e2f8",
+     "time": 1788369611000,
+     "amount": "127418527.05",
+     "usd": 127381575.6771555,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99971
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "113448008790000",
+     "block": 26027219,
+     "txid": "0xea457ed7a2f260aa869a2c06b34659783616b48476c311be9cbabef832fea7c8",
+     "time": 1790009831000,
+     "amount": "113448008.79",
+     "usd": 113438932.94929682,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99992
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "107083512410000",
+     "block": 25876880,
+     "txid": "0xa2687131de265dd9287b5782d3de3f4955a6932696689a8604d5801958bbe34a",
+     "time": 1788198803000,
+     "amount": "107083512.41",
+     "usd": 107080299.9046277,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99997
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "106210347620000",
+     "block": 25984307,
+     "txid": "0xffff929a784f32d21a6c79348a2ff504fd2c1cb58f1232c9e84e41fe90b4feff",
+     "time": 1789492703000,
+     "amount": "106210347.62",
+     "usd": 106194416.06785701,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99985
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "100645000750000",
+     "block": 25654074,
+     "txid": "0x08cb4f282560002a5cc0de798d88fac0faf91ca68f76d8633b38d156d3a9ffef",
+     "time": 1785515723000,
+     "amount": "100645000.75",
+     "usd": 100618833.049805,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99974
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "100070028240000",
+     "block": 25525285,
+     "txid": "0x7f5b0688bd5fde2ebc18f8f6f7501cd5e9e1a55d836e5e8e8b649bf806a210c6",
+     "time": 1783964711000,
+     "amount": "100070028.24",
+     "usd": 100055017.735764,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99985
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "99500000000000",
+     "block": 25948279,
+     "txid": "0x11b200ee64db1bff35ff35c4a6506186a18e574d83f020d73df030884a999523",
+     "time": 1789058843000,
+     "amount": "99500000",
+     "usd": 99487065,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99987
+     }
+    },
+    {
+     "kind": "Burn",
+     "minter": "0x55fe002aeff02f77364de339a1292923a15844b8",
+     "to": null,
+     "units": "99000014650000",
+     "block": 25998954,
+     "txid": "0x2f9c554f77225e29b5ddc949f088d9f0102392f18f4dcc2e4d91fdcdea6e5e6e",
+     "time": 1789669103000,
+     "amount": "99000014.65",
+     "usd": 98989124.6483885,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 60,
+      "close": 0.99989
+     }
+    }
+   ],
+   "counts": {
+    "mints": 43042,
+    "burns": 19461
+   }
+  },
+  "transfers": {
+   "complete": true,
+   "requests": 18,
+   "wallets": 822,
+   "logs": 19223,
+   "cross": [
+    {
+     "asset": "USDC",
+     "units": "17791095456818",
+     "from": "0xee7ae85f2fe2239e27d9c1e23fffe168d63b4055",
+     "to": "0x0529ea5885702715e83923c59746ae8734c553b7",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "bitpanda",
+      "name": "Bitpanda",
+      "jurisdiction": "AT"
+     },
+     "block": 25855871,
+     "txid": "0xf309cb818b766265b583a66b221f014c446adfb815a7532b920f662fec6d004d",
+     "time": 1787945807000,
+     "amount": "17791095.456818",
+     "usd": 17790027.991090592,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDC/USD",
+      "granularity": 3600,
+      "close": 0.99994
+     },
+     "fromRegistry": {
+      "label": "Binance: Hot Wallet 34",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance: Hot Wallet 34",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Bitpanda 18",
+      "checked": "2026-09-21"
+     },
+     "toTag": {
+      "tag": "Bitpanda 18",
+      "compilation": "hildobby compilation",
+      "reports": [],
+      "alerts": [
+       "This address has been tagged based on hildobby compilation."
+      ]
+     }
+    },
+    {
+     "asset": "USDT",
+     "units": "15000000000000",
+     "from": "0x21a31ee1afc51d94c2efccaa2092ad1028285549",
+     "to": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "wintermute",
+      "name": "Wintermute",
+      "jurisdiction": "GB"
+     },
+     "block": 26027068,
+     "txid": "0xafd91fd7861d69ce043d4c8ad9544951b144d69532758d870dae82700a8d1184",
+     "time": 1790007995000,
+     "amount": "15000000",
+     "usd": 14998800,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99992
+     },
+     "fromRegistry": {
+      "label": "Binance 15",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance 15",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Wintermute 4",
+      "checked": "2026-09-18"
+     },
+     "toTag": {
+      "tag": "Wintermute 4",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "asset": "USDT",
+     "units": "15000000000000",
+     "from": "0x56eddb7aa87536c09ccc2793473599fd21a8b17f",
+     "to": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "wintermute",
+      "name": "Wintermute",
+      "jurisdiction": "GB"
+     },
+     "block": 26027151,
+     "txid": "0xa81d1097acd1011b8ea0c167de5b686803e9cc6d194e80af22986d2066bcb229",
+     "time": 1790009015000,
+     "amount": "15000000",
+     "usd": 15000000,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 1
+     },
+     "fromRegistry": {
+      "label": "Binance 17",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance 17",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Wintermute 4",
+      "checked": "2026-09-18"
+     },
+     "toTag": {
+      "tag": "Wintermute 4",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "asset": "USDT",
+     "units": "15000000000000",
+     "from": "0x9696f59e4d72e237be84ffd425dcad154bf96976",
+     "to": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "wintermute",
+      "name": "Wintermute",
+      "jurisdiction": "GB"
+     },
+     "block": 26027223,
+     "txid": "0xf9be428f092f244154f0ad646127223cf199827b1be517bf3491821e20c16c5e",
+     "time": 1790009879000,
+     "amount": "15000000",
+     "usd": 14998350,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99989
+     },
+     "fromRegistry": {
+      "label": "Binance 18",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance 18",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Wintermute 4",
+      "checked": "2026-09-18"
+     },
+     "toTag": {
+      "tag": "Wintermute 4",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "asset": "USDT",
+     "units": "12500000000000",
+     "from": "0x21a31ee1afc51d94c2efccaa2092ad1028285549",
+     "to": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "wintermute",
+      "name": "Wintermute",
+      "jurisdiction": "GB"
+     },
+     "block": 25500602,
+     "txid": "0x5be95edfcb5518ee84c3d0132fd3609e37866060570c50baac88336d6c3d8190",
+     "time": 1783667375000,
+     "amount": "12500000",
+     "usd": 12488875,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99911
+     },
+     "fromRegistry": {
+      "label": "Binance 15",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance 15",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Wintermute 4",
+      "checked": "2026-09-18"
+     },
+     "toTag": {
+      "tag": "Wintermute 4",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "asset": "USDT",
+     "units": "12000000000000",
+     "from": "0xdfd5293d8e347dfe59e90efd55b2956a1343963d",
+     "to": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "wintermute",
+      "name": "Wintermute",
+      "jurisdiction": "GB"
+     },
+     "block": 25489272,
+     "txid": "0xf678dda2e7e7914f3468d2930c1a453e434960d1a6c7681cc45114f182f95c14",
+     "time": 1783530863000,
+     "amount": "12000000",
+     "usd": 11988240,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99902
+     },
+     "fromRegistry": {
+      "label": "Binance 16",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance 16",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Wintermute 4",
+      "checked": "2026-09-18"
+     },
+     "toTag": {
+      "tag": "Wintermute 4",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "asset": "USDT",
+     "units": "12000000000000",
+     "from": "0x9696f59e4d72e237be84ffd425dcad154bf96976",
+     "to": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "wintermute",
+      "name": "Wintermute",
+      "jurisdiction": "GB"
+     },
+     "block": 25746159,
+     "txid": "0xd036bf38ffdfd1a352d73fe892cd017ae93dea5eb4e169f7ee5cc0aa4d75691c",
+     "time": 1786624847000,
+     "amount": "12000000",
+     "usd": 11987160,
+     "price": {
+      "source": "Bitstamp",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99893
+     },
+     "fromRegistry": {
+      "label": "Binance 18",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance 18",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Wintermute 4",
+      "checked": "2026-09-18"
+     },
+     "toTag": {
+      "tag": "Wintermute 4",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "asset": "USDT",
+     "units": "12000000000000",
+     "from": "0x56eddb7aa87536c09ccc2793473599fd21a8b17f",
+     "to": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "wintermute",
+      "name": "Wintermute",
+      "jurisdiction": "GB"
+     },
+     "block": 25746181,
+     "txid": "0xa2b08f2f9b2050d5fce9ae35072d228ef3fd78b70b4ecbcf8a59316daa3ed631",
+     "time": 1786625111000,
+     "amount": "12000000",
+     "usd": 11984760,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99873
+     },
+     "fromRegistry": {
+      "label": "Binance 17",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance 17",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Wintermute 4",
+      "checked": "2026-09-18"
+     },
+     "toTag": {
+      "tag": "Wintermute 4",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "asset": "USDT",
+     "units": "11000000000000",
+     "from": "0xdfd5293d8e347dfe59e90efd55b2956a1343963d",
+     "to": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "wintermute",
+      "name": "Wintermute",
+      "jurisdiction": "GB"
+     },
+     "block": 25489313,
+     "txid": "0x76d49b772fe2b2833b598c74afc8fa0963717c9ffbda757a8903e6536b7efd73",
+     "time": 1783531355000,
+     "amount": "11000000",
+     "usd": 10986250,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99875
+     },
+     "fromRegistry": {
+      "label": "Binance 16",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance 16",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Wintermute 4",
+      "checked": "2026-09-18"
+     },
+     "toTag": {
+      "tag": "Wintermute 4",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    },
+    {
+     "asset": "USDT",
+     "units": "10000000000000",
+     "from": "0x28c6c06298d514db089934071355e5743bf21d60",
+     "to": "0xf8191d98ae98d2f7abdfb63a9b0b812b93c873aa",
+     "fromEntity": {
+      "id": "binance",
+      "name": "Binance",
+      "jurisdiction": "KY"
+     },
+     "toEntity": {
+      "id": "wintermute",
+      "name": "Wintermute",
+      "jurisdiction": "GB"
+     },
+     "block": 25482990,
+     "txid": "0x6ad9b5bc89b93e0c1df596c195b09b6a642fb0433a61dfc2022153a908640a66",
+     "time": 1783455203000,
+     "amount": "10000000",
+     "usd": 9993300,
+     "price": {
+      "source": "Coinbase Exchange",
+      "pair": "USDT/USD",
+      "granularity": 60,
+      "close": 0.99933
+     },
+     "fromRegistry": {
+      "label": "Binance 14",
+      "checked": "2026-09-18"
+     },
+     "fromTag": {
+      "tag": "Binance 14",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     },
+     "toRegistry": {
+      "label": "Wintermute 4",
+      "checked": "2026-09-18"
+     },
+     "toTag": {
+      "tag": "Wintermute 4",
+      "compilation": null,
+      "reports": [],
+      "alerts": []
+     }
+    }
+   ],
+   "internalShareTop20": 1,
+   "top20Internal": 20
+  }
+ }
+}

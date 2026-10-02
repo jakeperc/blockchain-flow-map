@@ -54,7 +54,10 @@ export const RULE = 'A route is drawn only when both ends of a transfer are publ
 const TEMPLATE = 'live-lite/llms.txt.tpl';
 const METHODOLOGY = 'docs/METHODOLOGY.md';
 const INDEX = 'live-lite/index.html';
-const BUILT_NAMES = ['index.html', 'llms.txt', `methodology${METHOD_EXT}`];
+/** The second page (HANDOFF section 19): static story text, so it gets its own canonical and og tags and no <noscript>. */
+const LANDMARKS = 'live-lite/landmarks.html';
+export const LANDMARKS_PAGE = 'landmarks.html';
+const BUILT_NAMES = ['index.html', 'llms.txt', `methodology${METHOD_EXT}`, LANDMARKS_PAGE];
 
 /* ------------------------------------------------------------------------------------------ text helpers */
 
@@ -196,11 +199,11 @@ function currentState(f) {
 /* ------------------------------------------------------------------------------------------ the source checks */
 
 /** Where each hand-written sentence of the template may be quoted from: the page, the client and the methodology. */
-const QUOTE_SOURCES = ['components/atlas.tsx', 'lib/atlas/live-client.ts', METHODOLOGY, INDEX, 'components/map-fallback.tsx'];
+const QUOTE_SOURCES = ['components/atlas.tsx', 'lib/atlas/live-client.ts', METHODOLOGY, INDEX, 'components/map-fallback.tsx', LANDMARKS, 'scripts/landmarks/html.mjs'];
 
 /** Terms the prose names without quoting them. Each must still be in the file; a rename there fails the build here. */
 const TERMS = {
-  'components/atlas.tsx': ['Unmapped', 'Methodology', 'Playback', 'Raw events', 'Largest unplaced counterparties', 'EQUAL EARTH PROJECTION', 'Bounded logarithmic USD value', 'Direction only; constant speed', 'One-sided evidenced activity at a jurisdiction; never a route', "timeZone:'UTC'", 'BLOCKCHAIN FLOW MAP BY JAKE PERCY'],
+  'components/atlas.tsx': ['Unmapped', 'Methodology', 'Playback', 'Raw events', 'Largest unplaced counterparties', 'EQUAL EARTH PROJECTION', 'Bounded logarithmic USD value', 'Direction only; constant speed', 'One-sided evidenced activity at a jurisdiction; never a route', "timeZone:'UTC'", 'BLOCKCHAIN FLOW MAP BY JAKE PERCY', 'href="./landmarks.html"'],
   // The second line is how a transfer reaches the page: the node is asked about the watched list in the sender position and
   // again in the receiver position; the headline totals are built from the filtered buffer only (the sample has its own
   // buffer); the sample is attached to a snapshot only for the live windows.
@@ -216,6 +219,8 @@ const TERMS = {
   'lib/atlas/engine.ts': ['admissible(t.senderEntity,t.blockTime)', 'admissible(t.receiverEntity,t.blockTime)'],
   'lib/atlas/history-store.ts': ['indexedDB'],
   'HANDOFF.md': ['formerly Ledger Atlas'],
+  // The second page's names rest on the rule the prose describes (the map's link to it is pinned with atlas.tsx above).
+  'scripts/landmarks/build.mjs': ['credits this tag to a third party', 'a person is named only on their own statement', 'exactly one matches'],
 };
 
 /** Every sentence the template quotes (12 or more characters) must be in a source, ASCII-folded and whitespace-collapsed.
@@ -261,7 +266,7 @@ function liveSources(root) {
     const rel = `${dir}/${n}`;
     return statSync(join(root, rel)).isDirectory() ? walk(rel) : [rel];
   }) : []);
-  return [...walk('components'), ...walk('hooks'), ...walk('live-lite'), ...walk('lib/atlas').filter((f) => !skip.has(f.split('/').pop()))].filter((f) => /\.(?:tsx?|html)$/.test(f));
+  return [...walk('components'), ...walk('hooks'), ...walk('live-lite'), ...walk('lib/atlas').filter((f) => !skip.has(f.split('/').pop())), ...walk('lib/landmarks')].filter((f) => /\.(?:tsx?|html)$/.test(f));
 }
 const URL_STATE = /URLSearchParams|\blocation\.(?:search|hash|href|pathname)\b|\bhistory\.(?:push|replace)State\b|\bhashchange\b|\bpopstate\b/;
 const DEBUG_FLAG = /new URLSearchParams\(location\.search\)\.get\('(?:debug|fallback)'\)===/g;
@@ -339,12 +344,34 @@ export function publicMethodology(source) {
 
 /* ------------------------------------------------------------------------------------------ page surfaces */
 
-function indexFacts(root) {
-  const html = read(root, INDEX);
+function indexFacts(root, rel = INDEX) {
+  const html = read(root, rel);
   const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1];
   const description = (html.match(/<meta\s+name="description"\s+content="([^"]*)"/) || [])[1];
-  if (!title || !description) throw new Error(`${INDEX} needs a <title> and a meta description`);
+  if (!title || !description) throw new Error(`${rel} needs a <title> and a meta description`);
   return {title: title.trim(), description};
+}
+
+/** Head tags for the Landmarks page: its own canonical and og tags, the llms.txt alternate, no <noscript> (its stories
+ *  are static HTML). Built from the page's own title and meta description. */
+export function landmarksSurfaces({title, description}) {
+  const url = `${SITE}${LANDMARKS_PAGE}`;
+  const head = [
+    `<link rel="canonical" href="${escapeAttr(url)}" />`,
+    `<link rel="alternate" type="text/markdown" href="llms.txt" title="llms.txt" />`,
+    `<meta property="og:type" content="article" />`,
+    `<meta property="og:title" content="${escapeAttr(title)}" />`,
+    `<meta property="og:description" content="${escapeAttr(description)}" />`,
+    `<meta property="og:url" content="${escapeAttr(url)}" />`,
+  ];
+  return {head: head.join('\n    '), noscript: '', markers: [head[0], head[1], head[5]]};
+}
+
+/** Surfaces for every page the build writes, keyed by the built file name. */
+function pagesOf(root) {
+  const pages = {'index.html': pageSurfaces(indexFacts(root))};
+  if (existsSync(join(root, LANDMARKS))) pages[LANDMARKS_PAGE] = landmarksSurfaces(indexFacts(root, LANDMARKS));
+  return pages;
 }
 
 /** Head tags and the <noscript> block, built from the same strings as llms.txt. */
@@ -450,7 +477,7 @@ function renderChecked(root, atlas) {
   errors.push(...checkContract(llms, outputs).map((e) => `llms.txt: ${e}`));
 
   const surfaces = pageSurfaces(index);
-  return {files: {'llms.txt': llms, [`methodology${METHOD_EXT}`]: methodology}, head: surfaces.head, noscript: surfaces.noscript, markers: surfaces.markers, warnings, errors, trace, facts};
+  return {files: {'llms.txt': llms, [`methodology${METHOD_EXT}`]: methodology}, head: surfaces.head, noscript: surfaces.noscript, markers: surfaces.markers, pages: pagesOf(root), warnings, errors, trace, facts};
 }
 
 /** Render everything. `opts.atlas` is the compiled lib/atlas modules (loadCompiled / loadAtlasFor). In STRICT mode a
@@ -463,11 +490,11 @@ export function renderAll(opts = {}) {
     r = renderChecked(root, opts.atlas);
   } catch (e) {
     if (strict) throw e;
-    return {files: {}, head: '', noscript: '', markers: [], warnings: [`llms: skipped, ${e.message}`], errors: [], trace: [], facts: null};
+    return {files: {}, head: '', noscript: '', markers: [], pages: {}, warnings: [`llms: skipped, ${e.message}`], errors: [], trace: [], facts: null};
   }
   if (r.errors.length) {
     if (strict) throw new Error(`llms: ${r.errors.length} problem(s)\n  - ${r.errors.join('\n  - ')}`);
-    return {...r, files: {}, head: '', noscript: '', markers: [], warnings: [...r.warnings, ...r.errors.map((e) => `llms: skipped, ${e}`)]};
+    return {...r, files: {}, head: '', noscript: '', markers: [], pages: {}, warnings: [...r.warnings, ...r.errors.map((e) => `llms: skipped, ${e}`)]};
   }
   return r;
 }
@@ -482,9 +509,17 @@ export function verifyBuilt(dir, root = ROOT) {
   errors.push(...checkContract(llms, (rel) => existsSync(file(rel || 'index.html'))).map((e) => `llms.txt: ${e}`));
   const bad = readFileSync(file(`methodology${METHOD_EXT}`), 'utf8').match(/[^\x00-\x7F]|\{\{/);
   if (bad) errors.push(`methodology${METHOD_EXT} has ${JSON.stringify(bad[0])}`);
-  const html = readFileSync(file('index.html'), 'utf8');
-  for (const m of pageSurfaces(indexFacts(root)).markers) if (!html.includes(m)) errors.push(`index.html is missing ${m}`);
-  if (/<base\s/i.test(html)) errors.push('index.html has a <base> tag, which would change how href="llms.txt" resolves');
+  for (const [name, surfaces] of Object.entries(pagesOf(root))) {
+    if (!existsSync(file(name))) {
+      errors.push(`${name} is missing from ${dir}`);
+      continue;
+    }
+    const html = readFileSync(file(name), 'utf8');
+    for (const m of surfaces.markers) if (!html.includes(m)) errors.push(`${name} is missing ${m}`);
+    if (/<base\s/i.test(html)) errors.push(`${name} has a <base> tag, which would change how href="llms.txt" resolves`);
+    // Each page carries only its own surfaces: the map's canonical and <noscript> must not leak into another page.
+    for (const [other, s] of Object.entries(pagesOf(root))) if (other !== name && s.markers[0] && html.includes(s.markers[0])) errors.push(`${name} carries the canonical link of ${other}`);
+  }
   return errors;
 }
 

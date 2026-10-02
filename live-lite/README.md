@@ -21,6 +21,10 @@ The folder also holds `llms.txt` and `methodology.md`, written by the build for 
 `llms.txt` is `llms.txt.tpl` in this folder; everything that moves is stamped from the code; `methodology.md` is
 `docs/METHODOLOGY.md`. The build fails if a sentence the template quotes has left the page. See `HANDOFF.md` section 18.
 
+The folder also holds a second page, `landmarks.html` (landmark transactions, `landmarks.tsx` and `landmarks.html` in this
+folder are its entry). Its stories are static HTML rendered at build time from `scripts/landmarks/`; upload it with the
+`assets/` folder like the rest. See `HANDOFF.md` section 19.
+
 ## How it works
 
 - `live-lite/main.tsx` mounts the same `Atlas` component the main app uses, passing it an in-browser

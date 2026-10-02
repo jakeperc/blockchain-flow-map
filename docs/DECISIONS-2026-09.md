@@ -1,7 +1,8 @@
 # Decisions from the September 2026 runs
 
 D1 to D3 came out of the 2026-09-21 "more flows and countries" run. **D4 and D5 were decided on 2026-09-25**,
-when two new chains and the longer time frames were added; they are recorded at the end of this file.
+when two new chains and the longer time frames were added; they are recorded at the end of this file, followed by
+D6 (Tronscan tags, 2026-09-29) and **D7 (who the Landmarks page may name, 2026-10-02)**.
 
 | | Answer | What changed |
 |---|---|---|
@@ -314,3 +315,65 @@ Tron addresses never derive from EVM rows (section 4). The feed plan and budget 
 
 **Reopen if** Tronscan starts sourcing its tags from third-party compilations without saying so, or the tag API
 disappears behind a paid tier.
+
+## D7. Who the Landmarks page may name, and on what evidence (2026-10-02)
+
+**Decision (Jake, 2026-10-02), with two refinements he chose after the red-team review.** The Landmarks page
+(`landmarks.html`, HANDOFF section 19) names the sender or receiver of a transaction only on one of three kinds of
+evidence. Anything else stays unnamed: the page shows the party's role and a shortened address.
+
+1. **Tag.** The public name tag on the address's own block explorer, stored verbatim with its read date, and only
+   when the explorer credits no outside source. A tag the explorer says was "tagged based on" a researcher
+   compilation, that carries a "Reported by ..." or "reported to be involved in ..." banner, or that was
+   "Submitted by" a curation service (for example Kleros Curate) names nobody on this page.
+   `scripts/registry/tag-reader.mjs` reads both the tag and those banners.
+2. **Named in a document.** A primary document prints the address (equal to the chain's, or the mismatch is
+   disclosed with the paragraph cited) or the transaction id. Primary means a court filing, a government release
+   (for example DOJ, FBI or the Treasury's OFAC), or the party's own statement.
+3. **Matched to a description** (Jake's refinement). A primary document describes a transaction without printing
+   its id. The description identifies it only when a complete read of the stated window finds exactly one matching
+   transaction; the proof (window, transactions read, matches) is stored with the entry and shown on the page,
+   which says "identified by matching". When more than one transaction matches, nobody is named from it.
+
+**People** (Jake's refinement). Organisations and governments are named under the three kinds above. A natural
+person is named only when they publicly tied themselves to the transaction (their own statement) or a court record
+shows their conviction or plea. An alleged, unconvicted individual is never named.
+
+Two further rules follow from the review:
+- **Who did it is a separate claim.** A court or government document's statement of who was responsible may be
+  quoted as that document's claim, with its date ("the FBI attributed the theft to ..."). It never labels an
+  address on its own.
+- **News and analytics firms never name anyone.** They may be cited as the source that prints a transaction id,
+  because the chain itself then verifies every fact about the transaction.
+
+These names never enter the map's registry, and the map's rule 3 (no treasuries, bridges or deposit addresses)
+governs what may anchor a route, not what this page may name. Chains with one keyless source (Tron, Solana,
+Liquid) are allowed with a visible "one public source" badge.
+
+**Found while applying it** (2026-10-02). The rule changed two pilot stories. Laszlo's pizza posts describe a
+payment of 10,000 BTC; a complete read of the week found two such payments on the same day, so the posts identify
+neither, and the paying address is not named (the transaction is the one reporting identifies). Bybit's cold
+wallet tag on Etherscan is credited to the hildobby compilation, so it cannot name the wallet.
+
+Writing the full set of stories found five more cases, each settled by the rule as written:
+- **Bybit's receiver** carries "Reported by ZachXBT", so neither side of the theft is named. The FBI's attribution
+  to North Korea is quoted as the FBI's claim, with its date.
+- **Poly Network's receiver** carries a "reported to be involved" banner. It is named instead from Poly Network's
+  own notice, which prints the address.
+- **DeversiFi's deposit contract** is tagged "Submitted by Kleros Curate". The gate did not catch that credit until
+  this session; it now rejects it, and the contract is named from DeversiFi's own post, which prints the
+  transaction.
+- **Silk Road.** The complaint says the United States took custody of the coins from the address on 3 November
+  2020. Two transactions left it that day, both to one address. A description identifies a transaction only when
+  exactly one matches, so the receiving address stays unnamed, though every coin that left that day went to it.
+- **Liquid.** Blockstream's report prints the reserve's release and SideSwap's same-block forward. The release's
+  receiver is therefore named SideSwap from the document, and the forward's receiver stays "the attacker's address".
+
+**A complete set is not a match.** A scan that reads every event of one kind from one contract in a window (USDT's
+Redeem events), or every spend from one address in a window, identifies each member when the story shows all of
+them. No description is being matched, so nobody is named by it; the members are shown because the set is
+complete. The gate fails a story that leaves a member out.
+
+**Reopen if** an explorer starts crediting tags inconsistently, Jake wants analytics attributions admitted with a
+"reported" label, or he wants a complete set whose every member pays one address (the Silk Road case) to identify
+that address.
