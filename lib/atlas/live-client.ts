@@ -31,6 +31,7 @@ import {aggregate,selectUnattributed,type TotalsInput} from './engine';
 import {CONTRACTS,ERC20_TRANSFER_TOPIC,type EvmLog} from './evm';
 import {EXPLORERS} from './geography';
 import {FEEDS,type FeedConfig} from './feeds';
+import {rpcAddress} from './tron';
 import {knownAttribution,isDerived,watchedAddresses,dormancyInfo,registryHealth,ENTITIES} from './known-entities';
 import {addressKey,classifyRec,decodeTransferLog,inferDeposits,makeBlockTimeFn,planChunks,priceAt,pruneRecords,addSample,type Rec,type Sample} from './live-core';
 import {BUCKET_MS,bucketOf,sealSpan,mergeRollups,mergeUnmapped,coverageOf,partsForChains,applyBaselines,registryVersionsOf,toStored,fromStored,type Rollup} from './rollup';
@@ -150,8 +151,8 @@ const COVERAGE_ALARM=.1;
 /** Chains this build reads, their endpoints and chunking: measured limits live in feeds.ts. */
 const CHAIN_CONFIG=FEEDS;
 const LIVE_CHAINS=Object.keys(CHAIN_CONFIG) as Chain[];
-/** A chain's WATCHED addresses (evidenced minus the dormant tier, decision D2) as 32-byte topic values, for the indexed sender/receiver positions of Transfer. */
-const topicsFor=(chain:Chain)=>watchedAddresses(chain).map(a=>'0x'+a.slice(2).padStart(64,'0'));
+/** A chain's WATCHED addresses (evidenced minus the dormant tier, decision D2) as 32-byte topic values, for the indexed sender/receiver positions of Transfer. Tron's base58 rows go through their 20-byte hex form. */
+const topicsFor=(chain:Chain)=>watchedAddresses(chain).map(a=>'0x'+rpcAddress(chain,a).slice(2).padStart(64,'0'));
 
 type State='CONNECTING'|'BACKFILLING'|'LIVE'|'CATCHING UP'|'RECONNECTING';
 type Header={timestamp:string}|null;
@@ -269,7 +270,8 @@ export function createLiveSource():LiveSource{
   };
   /** Spans that have taken new records since they were last sealed, so sealing re-does only what changed. */
   const dirty=new Set<number>();
-  const tokens=CONTRACTS[chain]??{};
+  // Keyed by the contract's RPC form (lowercase 0x hex), which is what logs carry; CONTRACTS keeps Tron's base58 key.
+  const tokens=Object.fromEntries(Object.entries(CONTRACTS[chain]??{}).map(([a,t])=>[rpcAddress(chain,a),t]));
   const contracts=Object.keys(tokens);
   const topics=topicsFor(chain);
 
@@ -571,7 +573,7 @@ export function createLiveSource():LiveSource{
     :'The 5M and 1H windows read the transfers still held in memory. 24H and 7D are offered once this browser has recorded enough of them itself.',
    long&&mixedRegistry?'Part of this window was recorded under an earlier version of the evidence registry, which attributed fewer wallets than the current one. The figures are what this browser could attribute at the time.':'',
    long?'Baselines compare this corridor with the four preceding windows of the same length from the same recorded history, and are shown only where each of those windows was observed too.':'',
-   'Routes are drawn only between evidenced wallets in different jurisdictions. On Base and Arbitrum most evidence is DERIVED from an Ethereum label on the same plain key-controlled account, is marked as such in the evidence panel, and never exceeds HIGH.',
+   'Routes are drawn only between evidenced wallets in different jurisdictions. On Base and Arbitrum most evidence is DERIVED from an Ethereum label on the same plain key-controlled account, is marked as such in the evidence panel, and never exceeds HIGH. Tron evidence is first-party only: a Tronscan public name tag on the address itself, never derived.',
    inferred.size?`${inferred.size} exchange deposit address${inferred.size===1?' is':'es are'} currently INFERRED from observed sweeps into labelled hot wallets and marked as such in the evidence panel.`:'',
    'Single-evidenced activity lights up its jurisdiction without drawing a route.',
    reg.expired?`WARNING: ${reg.expired} of ${reg.total} registry addresses have passed the 180-day re-verification horizon and can no longer draw routes. The evidence registry needs re-verifying.`:''

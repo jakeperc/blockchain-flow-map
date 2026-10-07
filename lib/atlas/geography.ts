@@ -21,7 +21,7 @@ export const EXPLORERS:Record<string,{name:string;address:(a:string)=>string;tx:
  Polygon:{name:'Polygonscan',address:a=>`https://polygonscan.com/address/${a}`,tx:h=>`https://polygonscan.com/tx/${h}`},
  Optimism:{name:'Optimistic Etherscan',address:a=>`https://optimistic.etherscan.io/address/${a}`,tx:h=>`https://optimistic.etherscan.io/tx/${h}`},
  Avalanche:{name:'Snowscan',address:a=>`https://snowscan.xyz/address/${a}`,tx:h=>`https://snowscan.xyz/tx/${h}`},
- Tron:{name:'Tronscan',address:a=>`https://tronscan.org/#/address/${a}`,tx:h=>`https://tronscan.org/#/transaction/${h}`},
+ Tron:{name:'Tronscan',address:a=>`https://tronscan.org/#/address/${a}`,tx:h=>`https://tronscan.org/#/transaction/${h.replace(/^0x/i,'')}`},
  Solana:{name:'Solscan',address:a=>`https://solscan.io/account/${a}`,tx:h=>`https://solscan.io/tx/${h}`}
 };
 export const ASSET_COLORS:Record<string,string>={USDC:'#81b9d1',USDT:'#9bc9a7'};

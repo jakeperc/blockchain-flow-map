@@ -8,8 +8,8 @@
 import {UNKNOWN,type Attribution,type Asset,type Chain,type Transfer} from './model';
 import {classify,type TotalsInput} from './engine';
 import {ERC20_TRANSFER_TOPIC,type EvmLog} from './evm';
+import {isZeroAddress,recordAddress} from './tron';
 
-export const ZERO=/^0x0{40}$/;
 export type Sample={at:number;usd:number;source:string};
 /** Compact per-event record: enough to rebuild a Transfer when evidence changes, plus the TotalsInput fields aggregate() reads. */
 export interface Rec extends TotalsInput {
@@ -103,7 +103,7 @@ export function makeTransfer(r:Rec,attributionFor:(chain:Chain,address:string)=>
   economicClass:known?'exchange flow':'unknown',adjustment:'unresolved',
   classificationRationale:known?`Transfer touches a publicly documented exchange wallet (${evidenced.join(', ')}). Classified as exchange flow; the cited evidence is attached to each endpoint.`:'Economic purpose is unverified.',
   classificationVersion:'1.0',
-  flags:{mintBurn:ZERO.test(r.sender)||ZERO.test(r.receiver),bridge:false,internalTransfer:false,crossBorderCandidate:false,bot:false},
+  flags:{mintBurn:isZeroAddress(r.chain,r.sender)||isZeroAddress(r.chain,r.receiver),bridge:false,internalTransfer:false,crossBorderCandidate:false,bot:false},
  };
  return classify(tx);
 }
@@ -116,7 +116,11 @@ export function classifyRec(r:Rec,attributionFor:(chain:Chain,address:string)=>A
  r.tx=tx.flags.crossBorderCandidate?tx:undefined;
 }
 
-/** Decode one ERC-20 Transfer log into a record, or null if it is not an allowlisted, well-formed transfer. */
+/**
+ * Decode one ERC-20 Transfer log into a record, or null if it is not an allowlisted, well-formed transfer. `token` is
+ * keyed by the log's own (lowercase hex) contract address. Addresses in the record take the chain's registry form:
+ * lowercase 0x hex on EVM chains, base58check on Tron, so evidence lookups and Tronscan links work unchanged.
+ */
 export function decodeTransferLog(
  chain:Chain,log:EvmLog,blockTime:number,
  token:(address:string)=>TokenInfo|null,
@@ -136,9 +140,9 @@ export function decodeTransferLog(
  return {
   id:`${chain}:${log.transactionHash}:${eventIndex}`,chain,transactionId:log.transactionHash,eventIndex:String(eventIndex),
   blockNumber:parseInt(log.blockNumber,16),blockHash:log.blockHash,blockTime,
-  asset:info.asset,tokenContract:log.address.toLowerCase(),amount,amountAtomic:amountAtomic.toString(),
+  asset:info.asset,tokenContract:recordAddress(chain,log.address.slice(2)),amount,amountAtomic:amountAtomic.toString(),
   usdValue:p?Number(amount)*p.usd:null,usdPrice:p?.usd??null,priceTime:p?.at??null,priceSource:p?.source??null,
-  sender:'0x'+log.topics[1].slice(-40).toLowerCase(),receiver:'0x'+log.topics[2].slice(-40).toLowerCase(),
+  sender:recordAddress(chain,log.topics[1].slice(-40)),receiver:recordAddress(chain,log.topics[2].slice(-40)),
   economicClass:'unknown',adjustment:'unresolved',senderEntity:UNKNOWN,receiverEntity:UNKNOWN,feed
  };
 }
@@ -172,8 +176,8 @@ export function inferDeposits(records:Rec[],opts:InferOptions):Map<string,Attrib
   return f;
  };
  for(const r of records){
-  if(!opts.known(r.chain,r.sender)&&!ZERO.test(r.sender))touch(r.chain,r.sender).outs.push(r);
-  if(!opts.known(r.chain,r.receiver)&&!ZERO.test(r.receiver))touch(r.chain,r.receiver).ins.push(r);
+  if(!opts.known(r.chain,r.sender)&&!isZeroAddress(r.chain,r.sender))touch(r.chain,r.sender).outs.push(r);
+  if(!opts.known(r.chain,r.receiver)&&!isZeroAddress(r.chain,r.receiver))touch(r.chain,r.receiver).ins.push(r);
  }
  const out=new Map<string,Attribution>();
  for(const [key,f] of byAddr){

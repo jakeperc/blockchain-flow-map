@@ -1,6 +1,9 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-02 after **a second page, Landmarks (`landmarks.html`): sixteen landmark transactions, each
+Last updated 2026-10-06/07: **Tron is live.** A keyless feed carries 21 Tronscan-tagged wallets (Binance, OKX, Kraken,
+Bitfinex, KuCoin, Bitget, MEXC, Coinone, Bithumb and Coins.ph) at about 1.2 MB per visitor-hour (section 23). Earlier the
+same day Jake supplied the free Tronscan API key and `read-tag.mjs` learned to read Tron tags (section 22). Before that,
+2026-10-02 brought **a second page, Landmarks (`landmarks.html`): sixteen landmark transactions, each
 read from its own chain, with analysis, under the new naming decision D7** (section 19). On 2026-10-01 **the build
 began publishing `llms.txt` and `methodology.md` beside the page, and a plain-text summary inside it for readers that
 run no JavaScript** (section 18); earlier that day came **Polygon and Optimism going live on keyless endpoints, a
@@ -45,8 +48,8 @@ public evidence. The map deliberately shows only a small fraction of onchain vol
 number is a feature, not a bug to be "improved" by loosening rules.
 
 1. **Never guess an address-to-entity mapping.** An address enters the registry only when
-   its own explorer page (Etherscan, Basescan, Arbiscan, Snowscan, Polygonscan, Optimistic Etherscan) shows a
-   public name tag for it.
+   its own explorer page (Etherscan, Basescan, Arbiscan, Snowscan, Polygonscan, Optimistic Etherscan, and Tronscan's
+   `publicTag` under decision D6) shows a public name tag for it.
    The tag text is stored verbatim in the `label` column. Researcher compilations,
    Dune spellbooks, Arkham, Nansen, blog posts and memory are not admissible sources.
    **Exchange-published address lists are not admissible either** (decision D1, 2026-09-21).
@@ -269,7 +272,7 @@ dormant row is not free. The diagnostics are read-only and never shipped:
   for re-scanning the unlabelled and excluded lists are in `label-scan-terms.txt`.
 - `node scripts/registry/screen-activity.mjs <Chain> <days> <candidates.txt>`: RPC activity
   screen for candidates before spending explorer requests or filter slots on them.
-- `node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz|polygonscan.com|optimistic.etherscan.io> <addr>...`:
+- `node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz|polygonscan.com|optimistic.etherscan.io|tronscan.org> <addr>...`:
   the admissible read. Optimistic Etherscan, like Arbiscan, answers 403 on address pages, so its `/txs?a=`
   page header is read instead. It prints the tag verbatim and any "tagged based on ... compilation"
   disclosure, which goes into the row's note. **The header page carries no banner, so on Arbiscan and Optimistic
@@ -362,8 +365,8 @@ corepack pnpm build:live
 `.claude/launch.json` has a `dist-check` entry: `node scripts/serve-dist.cjs dist-live`
 serves the build on port 5180 under a nested path (`/ledger-atlas-live/`) to mimic the
 FTP folder. Look for: no 404s (including the `world-110m.json` preload), reaches LIVE,
-corridors appear on All chains, Ethereum, Base, Arbitrum, Avalanche, Polygon and Optimism, Tron and
-Solana say Not connected, no blank map on any option, and the layout holds at 375x812.
+corridors appear on All chains, Ethereum, Base, Arbitrum, Avalanche, Polygon, Optimism and Tron, only
+Solana says Not connected, Tron addresses show in base58 with bare-hash Tronscan links, no blank map on any option, and the layout holds at 375x812.
 For recorded history (section 12): on a fresh profile **24H and 7D are disabled** and hovering one
 explains how much more history is needed; after about an hour the Data & coverage panel shows sealed
 spans (expect one per chain per quarter hour) and a span recorded; **reload and confirm the count
@@ -486,11 +489,9 @@ integrity rules in section 2 (free does not relax the evidence standard).
      assumed (section 12).** BNB is inadmissible (D4); **Avalanche** shipped and **Polygon** is parked, chosen by
      measured evidenced activity over Celo and Optimism. A first Snowscan label wave shipped on
      2026-09-28 (section 13); **Polygonscan labels remain unresearched** while Polygon is parked.
-   - **Tron**: still the single largest coverage jump. Measured 2026-10-01 (section 17): the feed needs
-     **no TronGrid key and no Worker**, and 17 lead wallets moved $3.70B of USDT in one day. It is blocked on
-     evidence, not transport: Jake needs one free Tronscan API key so tags can be read offline under D6, and
-     must choose how much bandwidth a Tron feed may cost visitors. India is not solved by it (CoinDCX's lead
-     wallets moved $5k).
+   - ~~**Tron**~~ **Done 2026-10-06/07 (section 23):** live with 21 Tronscan-tagged wallets. India and LatAm are
+     still not reached: no tagged Tron wallet exists for CoinDCX, Bitso, Lemon Cash or Mercado Bitcoin. Next on Tron,
+     D3 research for the 19 unregistered tagged brands (Bybit, Gate and others) in `docs/measurements/2026-10-06/`.
    - ~~**Longer in-browser history via IndexedDB.**~~ **Done 2026-09-25 (section 12, decision D5):**
      15-minute sealed spans, measured coverage, 24H/7D unlocking at 80% observed, and real baselines.
      Tunable: `UNLOCK_SHARE` in `live-client.ts`.
@@ -508,8 +509,8 @@ integrity rules in section 2 (free does not relax the evidence standard).
 5. More first-party L2 labels: done on 2026-09-21 for every entity measured as active on
    Base or Arbitrum. The unregistered market-maker, Upbit and Bithumb wallets were idle, so
    they were not pursued.
-6. Tron: transport is keyless (section 17). Waiting on a free Tronscan API key from Jake for tag evidence, and on
-   his bandwidth decision. Then model work: Tron must not join `EVM_CHAINS`, and the registry needs base58 keys.
+6. **Done 2026-10-06/07 — Tron live** (section 23). Follow-ups: D3 operator research for the unregistered tagged brands
+   (Bybit first), and re-run the Tronscan lead sweep monthly with the dormancy run.
 7. Solana needs a paid indexer; same.
 8. Phase-2 backend (Workers + D1): the registry loader is trivial now that keys are
    `chain:address`, but nothing has been started.
@@ -1304,3 +1305,129 @@ of the globe.
   run `corepack pnpm build:live` before the next FTP upload.
 - **Open:** Chain mode shows no dots in the closed trigger (eight is too wide); its key is only in the open list.
 
+## 22. Tronscan API key wired in; Tron lead wallets read (2026-10-06)
+
+Jake added a free Tronscan API key as `TRONSCAN_API_KEY` in `.env.local`, which Git ignores. It is for offline research
+only (D6) and never ships. The live build is unchanged and still needs no key.
+
+- **`scripts/registry/tag-reader.mjs`** accepts `tronscan.org`. It reads `publicTag` from
+  `apilist.tronscanapi.com/api/accountv2` with the `TRON-PRO-API-KEY` header, because tronscan.org pages sit behind a
+  bot challenge. It loads `.env.local` itself if the variable is unset and stops on any non-200 reply. `redTag` and
+  `greyTag` are printed as explorer alerts and are never the tag. **`read-tag.mjs tronscan.org <T…>`** takes base58
+  addresses and does not lowercase them. **`.env.example`** lists the variable.
+- **Result** (`docs/measurements/2026-10-06/tron-tronscan-tags.md`): **9 of the 17 Dune lead wallets that moved USDT in
+  the 2026-10-01 screen carry a Tronscan tag, and those 9 moved $3.59B of the $3.70B.** That is six Binance wallets
+  ("Binance-Hot 3/4/5/6/7", "Binance 2"), plus "Bitfinex", "Kucoin 4" and "MXC". Bitso, Lemon Cash, CoinDCX, and one
+  wallet each for Binance, Bitfinex and KuCoin have no tag and are not admissible, so Tron does not yet reach LatAm or
+  India. The Dune names do not match Tronscan's (Dune "Binance 10" is "Binance-Hot 7"), so labels must be the Tronscan
+  tag verbatim. "MXC" (MEXC's old name) and the bare brand tag "Bitfinex" need a rule-3 check before admission.
+- **Nothing was added to the registry.** Tron rows need the model work first: base58 keys, and Tron kept out of
+  `EVM_CHAINS`.
+- **Verification:** the key returned real tags (also `Binance-Cold 2` on a test address); 17 reads, no block; bad
+  addresses are refused; `node scripts/verify-all.mjs` passed. No UI change, so no build or zip.
+- **Bandwidth measured, same day:** one hour of all nine wallets is 8,400 logs. That is 5.29 MB from TronGrid, which does
+  not compress, but **0.67 MB in 4.4 s from `tron-evm-rpc.publicnode.com`**, which sends brotli. Use publicnode as the
+  primary endpoint and TronGrid as the fallback, and watch all nine. No log in that hour ran between two watched wallets,
+  so Tron corridors depend on deposit inference. All four brands are offshore (KY, VG, SC), so expect mostly unplaced flow.
+- **Next:** the Tron model work, a `feeds.ts` entry, Tron in `measure-dormancy.mjs`, then a lead hunt for local-exchange
+  Tron wallets, which are what would reach India and LatAm.
+
+## 23. Tron live: 21 Tronscan-tagged wallets on a keyless feed (2026-10-06 evening, reads dated 2026-10-07 UTC)
+
+Jake's decisions on 2026-10-06:
+- "MXC" tags count as MEXC, with a note on each row.
+- The Tron feed may cost up to about 2 MB per visitor-hour.
+- Registered brands only tonight.
+- The §20/§21 work ships too. It is committed separately as `e9eb6ec`.
+
+Full research record: `docs/measurements/2026-10-06/tron-tronscan-tags.md`, with raw data in `tron-screen.json`.
+
+**Registry.** 21 Tron rows were added to `addresses.txt`. All carry a Tronscan `publicTag` read through
+`read-tag.mjs tronscan.org`. All are normal accounts with no risk flag, and all moved at least $100k (1 to 7 days):
+
+| Entity | Rows |
+|---|---|
+| Binance (KY) | 10: Binance-Hot 3–11, Binance 2 |
+| OKX (SC) | 1: OKX Hot Wallet 8 |
+| Kraken (US) | 1: Kraken: Hot Wallet |
+| Bitfinex (VG) | 1 |
+| KuCoin (SC) | 2 |
+| Bitget (SC) | 1 |
+| MEXC (SC) | 2: MXC, MXC 2 |
+| Coinone (KR) | 1 |
+| Bithumb (KR) | 1: Bithumb Exchange Hot Wallet |
+| Coins.ph (PH) | 1 |
+
+Registry totals: 1,210 first-party rows across 64 entities.
+
+The leads came from Tronscan's `search/v2` and from the USDT holders list. Those are lead sources only:
+- 90 tagged addresses were found.
+- 4 were rejected under rule 3 or as the wrong operator ("Bithumb Global").
+- 46 tags of registered brands moved nothing in 7 days.
+- 19 tags name unregistered brands (Bybit, Gate, MaskEX and others). They need D3 research first.
+
+**Code.**
+- **`lib/atlas/tron.ts`** is new and synchronous:
+  - base58check ⇄ 20-byte hex, with its own small SHA-256 because `crypto.subtle` is async.
+  - `rpcAddress`, `recordAddress`, `isZeroAddress`, `TRON_ZERO`.
+- **`feeds.ts` `Tron`:**
+  - Endpoints: `tron-evm-rpc.publicnode.com` (brotli) first, then `api.trongrid.io/jsonrpc`; `tron-rpc.publicnode.com` for small calls only.
+  - `chainId` 728126428, `slotMs` 3000, `chunk` 600, `sampleBlocks` 6.
+  - `maxTopics` 1000, `maxRange` 1200.
+  - `ENDPOINTS_MEASURED` is now 2026-10-06.
+- **`live-client.ts`:** topics and the contract list go through `rpcAddress`. `CONTRACTS.Tron` stays keyed by base58 for
+  the deferred backend.
+- **`live-core.ts`:**
+  - `decodeTransferLog` writes Tron addresses in base58, and EVM output is unchanged.
+  - The `ZERO` regex is replaced by the per-chain `isZeroAddress`.
+- **Tronscan transaction links** strip the `0x` prefix, in `geography.ts` and `lib/landmarks/chains.ts`.
+- **Tools that now handle Tron:**
+  - `gen-addresses.mjs` validates base58check and gives Tron a WATCHED list and a dormancy entry.
+  - `measure-dormancy.mjs` and `rpc-pool.mjs` have Tron endpoints. A "more than 10000 results" reply now counts as too big.
+  - `probe-endpoint-caps.mjs` and `atlas-modules.mjs` (no lowercasing on Tron) are updated.
+  - `tag-reader.mjs` prints the Tron account type.
+- **Verifiers:**
+  - `verify-registry.cjs` gains a Tron checksum and round-trip check (stricter, nothing relaxed).
+  - `verify-live.cjs` gains Tron decoding fixtures.
+- **One verifier correction, `scripts/llms/render.mjs`.** The METHODOLOGY sentence "another EVM chain the build reads (…)"
+  is now compared with the live **EVM** chains minus Ethereum. Comparing it with every live chain would have required
+  naming Tron in a sentence about EVM derivation, and Tron never derives. The meta-description check, which requires
+  every live chain to be named, is unchanged; `live-lite/index.html` now names Tron.
+- **Text:**
+  - `docs/METHODOLOGY.md` gains two sentences: Tron uses Tronscan tags only and never derives, and Tron is USDT only.
+  - Rule 1 above and `known-entities.ts` now name Tronscan.
+  - `live-lite/README.md` and `README.md` are updated.
+
+**Dormancy** was re-measured for all seven chains on 2026-10-07: Ethereum 165/822, Base 58/822, Arbitrum 53/791,
+Avalanche 35/779, Polygon 38/774, Optimism 15/768, Tron 21/21. The next run is due by 2026-11-21.
+
+**Bandwidth.** One hour of the 21-wallet filter on publicnode is 15,773 logs and 1.24 MB on the wire. The largest
+600-block reply was 4,301 logs, against the 10,000-log cap. If visitors fall back to TronGrid (no compression), the same
+hour is roughly 10 MB.
+
+**Expect on the live page:**
+- Tron is the largest chain by volume, about $200M an hour on evidenced wallets.
+- Its flow lands mostly on KY, SC, VG, US, KR and PH. Routes come from deposit inference: in the first hour the top
+  Tron corridor was KY→SC at $6.14M, Binance-Hot 8 paying a deposit address inferred as OKX's.
+- 24H and 7D re-lock on "All chains" until each visitor's browser has recorded Tron history, as they did when Polygon
+  and Optimism joined.
+
+**Verification:**
+- `node scripts/verify-all.mjs` passed. It reports 7 chains and 1,210 addresses stamped in `llms.txt` (9,991 of 10,240
+  bytes).
+- `tsc --noEmit` is clean, and `corepack pnpm build:live` built.
+- Dev server: Tron LIVE. With the filter on Tron alone: $198M observed, $12.15M attributed, 16 corridors. Base58
+  addresses and bare-hash Tronscan links. At 375x812 there is no overflow, the legend is hidden and the corridors card
+  starts collapsed.
+- Built `dist-live` served at `/ledger-atlas-live/`: no local 404s, all seven chains LIVE, only Solana Not connected,
+  $556M observed, $34.1M attributed and 32 routes on All chains in the first hour.
+- Lint was not re-run (45 pre-existing errors).
+
+**Deliverable:** `outputs/ledger-atlas-live-2026-10-07.zip` (ignored by Git). `index.html` and `landmarks.html` are at
+the zip root. Jake FTPs its contents into the existing folder, keeping `assets/`.
+
+**Open:**
+- D3 operator research for Bybit, Gate and the other unregistered tagged brands.
+- India and LatAm still have no tagged Tron wallets.
+- The 46 idle tagged wallets of registered brands should be re-screened when the lead sweep is re-run monthly.
+- The hub upload manifest and the `llms: true` flag (to-do 10) still need Jake's upload.

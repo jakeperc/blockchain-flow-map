@@ -20,12 +20,14 @@ const opt=(n,d)=>{const i=args.indexOf(n);return i>-1?args[i+1]:d;};
 const chain=args[0],tries=Number(opt("--tries",3)),only=opt("--url"),pauseMs=Number(opt("--pause",1200));
 const atlas=loadAtlas();
 const feed=atlas.feeds.FEEDS[chain];
-if(!feed){console.error('usage: node scripts/probe-endpoint-caps.mjs <Ethereum|Base|Arbitrum> [--tries N] [--url U]');process.exit(1);}
+if(!feed){console.error('usage: node scripts/probe-endpoint-caps.mjs <Ethereum|Base|Arbitrum|Avalanche|Polygon|Optimism|Tron> [--tries N] [--url U]');process.exit(1);}
 const TRANSFER='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
-const pad=a=>'0x'+'0'.repeat(24)+a.slice(2).toLowerCase();
+// Tron's base58 rows and contract go through their 20-byte hex form (lib/atlas/tron.ts).
+const rpcForm=a=>a.startsWith('0x')?a:atlas.tron.rpcAddress(chain,a);
+const pad=a=>'0x'+'0'.repeat(24)+rpcForm(a).slice(2).toLowerCase();
 const randomAddr=()=>'0x'+Array.from({length:40},()=>'0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
 const hex=n=>'0x'+n.toString(16);
-const tokens=Object.keys(atlas.evm.CONTRACTS[chain]);
+const tokens=Object.keys(atlas.evm.CONTRACTS[chain]).map(rpcForm);
 const registry=atlas['known-entities'].watchedAddresses(chain); // the live filter (evidenced minus the dormant tier)
 async function post(url,method,params){
  try{

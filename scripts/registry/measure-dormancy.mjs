@@ -49,13 +49,17 @@ const ENDPOINTS={
  // answers "limited to a 10,000 range"; optimism-rpc.publicnode.com refuses archive depth without a token.
  Optimism:[{url:'https://optimism.gateway.tenderly.co',maxSpan:1000000},{url:'https://mainnet.optimism.io',maxSpan:10000}],
  // api.avax.network took 500,000 blocks in one filtered request (11,263 logs in 26 s); publicnode caps at 50,000.
- Avalanche:[{url:'https://api.avax.network/ext/bc/C/rpc',maxSpan:500000},{url:'https://avalanche-c-chain-rpc.publicnode.com',maxSpan:50000}]
+ Avalanche:[{url:'https://api.avax.network/ext/bc/C/rpc',maxSpan:500000},{url:'https://avalanche-c-chain-rpc.publicnode.com',maxSpan:50000}],
+ // Measured 2026-10-06: both serve 90 days back and refuse any reply over 10,000 logs ("query returned more than 10000
+ // results"), so the span is bounded by the busiest wallets' log count; it grows once they have been seen and drop out.
+ Tron:[{url:'https://tron-evm-rpc.publicnode.com',maxSpan:200000},{url:'https://api.trongrid.io/jsonrpc',maxSpan:200000}]
 };
-const FIRST_SPAN={Ethereum:100,Base:500,Arbitrum:5000,Polygon:2000,Avalanche:5000,Optimism:5000},MIN_SPAN=50;
+const FIRST_SPAN={Ethereum:100,Base:500,Arbitrum:5000,Polygon:2000,Avalanche:5000,Optimism:5000,Tron:300},MIN_SPAN=50;
 const SLICE=900; // addresses per topic position; eth.drpc.org and Tenderly refuse 1,024 or more
 const TRANSFER='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const hex=n=>'0x'+n.toString(16);
-const pad=a=>'0x'+'0'.repeat(24)+a.slice(2).toLowerCase();
+/** Topic value for an evidenced address; Tron's base58 rows go through their 20-byte hex form (lib/atlas/tron.ts). */
+const pad=(chain,a)=>'0x'+'0'.repeat(24)+(chain==='Tron'?atlas.tron.rpcAddress(chain,a):a).slice(2).toLowerCase();
 const today=new Date().toISOString().slice(0,10);
 
 /** Transient: back off and try the same endpoint again. */
@@ -70,7 +74,7 @@ const TRANSIENT=/HTTP 429|rate.?limit|too many requests|fetch failed|timeout|abo
  * Halving the range is also the worst possible answer to a load error, since it doubles the request count.
  * So anything not clearly about size is now treated as transient.
  */
-const TOO_BIG=/range|too large|too many results|exceed|limit.*block|block.*limit|response.*(large|big)|max.*results|payload|413|entity too/i;
+const TOO_BIG=/range|too large|too many results|more than \d+ results|exceed|limit.*block|block.*limit|response.*(large|big)|max.*results|payload|413|entity too/i;
 /**
  * A statement that the endpoint refuses to serve blocks this old at all, regardless of span. Found 2026-09-25:
  * base-rpc.publicnode.com answers instantly and correctly for roughly the most recent 5% of a 90-day range,
@@ -172,8 +176,10 @@ const result={
 
 for(const chain of chains){
  if(!ENDPOINTS[chain])throw Error(`${chain}: no endpoints configured for the dormancy scan`);
- const tokens=Object.keys(CONTRACTS[chain]).map(a=>a.toLowerCase());
+ const tokens=Object.keys(CONTRACTS[chain]).map(a=>chain==='Tron'?atlas.tron.rpcAddress(chain,a):a.toLowerCase());
  const all=[...evidenceMap(atlas,chain).keys()];
+ // A log names addresses as 20-byte hex; map them back to the registry's form (base58 on Tron).
+ const keyOfHex=new Map(all.map(a=>[pad(chain,a).slice(-40),a]));
  const pending=new Set(all),lastBlock=new Map();
  const head=parseInt(await call(chain,'eth_blockNumber',[]),16)-10;
  const headTs=await timestamp(chain,head);
@@ -188,15 +194,15 @@ for(const chain of chains){
   const found=new Map();let n=0;
   const list=[...pending];
   for(let i=0;i<list.length;i+=SLICE){
-   const topics=list.slice(i,i+SLICE).map(pad);
+   const topics=list.slice(i,i+SLICE).map(a=>pad(chain,a));
    for(const t of [[TRANSFER,topics,null],[TRANSFER,null,topics]]){
     const logs=await call(chain,'eth_getLogs',[{fromBlock:hex(from),toBlock:hex(to),address:tokens,topics:t}],to-from+1);
     queries++;n+=logs.length;
     for(const l of logs){
      if(l.removed||l.topics.length!==3||!/^0x[0-9a-fA-F]{64}$/.test(l.data)||BigInt(l.data)===0n)continue;
      const bn=parseInt(l.blockNumber,16);
-     for(const a of ['0x'+l.topics[1].slice(26).toLowerCase(),'0x'+l.topics[2].slice(26).toLowerCase()])
-      if(pending.has(a))found.set(a,Math.max(found.get(a)??0,bn));
+     for(const a of [keyOfHex.get(l.topics[1].slice(26).toLowerCase()),keyOfHex.get(l.topics[2].slice(26).toLowerCase())])
+      if(a&&pending.has(a))found.set(a,Math.max(found.get(a)??0,bn));
     }
     await sleep(pauseMs);
    }

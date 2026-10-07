@@ -19,12 +19,26 @@
  * so the browser does not upload or query them. Rows the measurement has not seen are watched by default.
  */
 import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {dirname,join} from 'node:path';
 import {CHAINS as CHAIN_LIST,EVM_CHAINS} from '../chains.mjs';
 const [,,src='scripts/registry/addresses.txt',dst='lib/atlas/known-addresses.ts']=process.argv;
 const probePath=join(dirname(src),'code-probe.json');
 const CHAINS=new Set(CHAIN_LIST);
 const EVM=EVM_CHAINS;
+/** Chains with a registry-filtered live feed, so a WATCHED list and a dormancy entry: the EVM chains plus Tron. Tron rows are
+ * first-party Tronscan tags only (D6) and are never derived, so the derivation loop below stays EVM-only. */
+const FILTER_CHAINS=[...EVM,'Tron'];
+const B58='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+/** base58check with Tron's 0x41 prefix and a valid double-SHA-256 checksum. */
+const isTronAddress=a=>{
+ if(!/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(a))return false;
+ let n=0n;for(const c of a)n=n*58n+BigInt(B58.indexOf(c));
+ const h=n.toString(16).padStart(50,'0');
+ const sha=b=>createHash('sha256').update(b).digest();
+ return h.startsWith('41')&&sha(sha(Buffer.from(h.slice(0,42),'hex'))).subarray(0,4).toString('hex')===h.slice(42);
+};
+const validAddress=(chain,a)=>chain==='Tron'?isTronAddress(a):/^0x[0-9a-f]{40}$/.test(a);
 const KINDS=new Set(['eoa','delegated','contract']);
 const today=new Date().toISOString().slice(0,10);
 
@@ -42,7 +56,7 @@ for(const l of lines){
  const note=rest.join('|').trim();
  if(!CHAINS.has(chain))throw Error(`unknown chain '${chain}': ${l}`);
  const key=EVM.includes(chain)?addr.toLowerCase():addr;
- if(EVM.includes(chain)&&!/^0x[0-9a-f]{40}$/.test(key))throw Error('bad address '+addr);
+ if(FILTER_CHAINS.includes(chain)&&!validAddress(chain,key))throw Error('bad address '+addr);
  if(!/^\d{4}-\d{2}-\d{2}$/.test(checked))throw Error(`'checked' must be an ISO date: ${l}`);
  if(checked>today)throw Error(`'checked' is in the future: ${l}`);
  if((Date.now()-Date.parse(checked))/86400000>150)throw Error(`'checked' ${checked} is close to the 180-day expiry; re-read the explorer page and update the date: ${l}`);
@@ -56,6 +70,7 @@ for(const l of lines){
  // from it and inflows to it are stuck, not settlement. An explorer may still label it. Refuse it.
  if(chain!=='Ethereum'&&EVM.includes(chain)&&probe.Ethereum?.[key]==='contract'&&kind!=='contract'){orphans.push(`${id} (${label})`);continue;}
  if(!groups.has(entity))groups.set(entity,[]);
+ // Tron has no code probe: the research wave admits only accounts Tronscan reports as normal (accountType 0), so 'eoa'.
  const rec={id,chain,key,label,checked,kind:kind??'eoa',note};
  groups.get(entity).push(rec);
  byChainAddr.set(id,rec);
@@ -100,7 +115,7 @@ if(process.argv.includes('--bootstrap')){
  try{existing=JSON.parse(readFileSync(dormancyPath,'utf8'));}catch{/* no file yet */}
  const base=existing??{measuredAt:'1970-01-01',windowDays:90,chains:{}};
  const chains={...(base.chains??{})};
- const added=EVM.filter(c=>!chains[c]);
+ const added=FILTER_CHAINS.filter(c=>!chains[c]);
  for(const c of added)chains[c]={failedQueries:0,dormantAddresses:[],activeLastBlock:{}};
  dormancy={...base,chains};
  console.warn(`--bootstrap: ${added.length?`${added.join(', ')} treated as unmeasured (every address watched)`:'no chain was missing'}; run measure-dormancy.mjs before building`);
@@ -123,14 +138,14 @@ const evidencedOn=chain=>{
 // probe-code.mjs has probed it (which is what lets Ethereum plain accounts derive onto it), and demanding a
 // dormancy entry for an empty chain would block the very first generate. verify-registry.cjs closes the gap
 // from the other side: every chain in FEEDS must have a WATCHED entry, so a live chain cannot end up unfiltered.
-for(const chain of EVM){
+for(const chain of FILTER_CHAINS){
  if(!evidencedOn(chain).length){dormancyNotes.push(`${chain} no evidence yet, no live filter`);continue;}
  const c=dormancy.chains?.[chain];
  if(!c)throw Error(`dormancy.json has no ${chain} entry; run scripts/registry/measure-dormancy.mjs (--chains ${chain} to measure just this one)`);
  if(c.failedQueries!==0)throw Error(`dormancy.json: ${chain} scan had failed queries; an unread range cannot be called dormant`);
  const dormantSet=new Set(c.dormantAddresses),activeSet=new Set(Object.keys(c.activeLastBlock));
  for(const a of dormantSet){
-  if(!/^0x[0-9a-f]{40}$/.test(a))throw Error(`dormancy.json: bad ${chain} address ${a}`);
+  if(!validAddress(chain,a))throw Error(`dormancy.json: bad ${chain} address ${a}`);
   if(activeSet.has(a))throw Error(`dormancy.json: ${chain}:${a} is listed both dormant and active`);
  }
  const evidenced=evidencedOn(chain);

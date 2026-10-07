@@ -30,12 +30,13 @@ folder are its entry). Its stories are static HTML rendered at build time from `
 - `live-lite/main.tsx` mounts the same `Atlas` component the main app uses, passing it an in-browser
   data source instead of letting it call `/api/snapshot`. It opens on the 1-hour window in live mode.
 - `lib/atlas/live-client.ts` is that source, one feed per chain: Ethereum (USDC, USDT), Base (USDC),
-  Arbitrum (USDC, USDT), Avalanche (USDC, USDT), Polygon (USDC) and Optimism (USDC). On load each feed
-  backfills the preceding hour — 300 Ethereum blocks, 1,800 Base, 14,400 Arbitrum, 3,000 Avalanche,
-  2,400 Polygon or 1,800 Optimism —
+  Arbitrum (USDC, USDT), Avalanche (USDC, USDT), Polygon (USDC), Optimism (USDC) and Tron (USDT). On load each
+  feed backfills the preceding hour — 300 Ethereum blocks, 1,800 Base, 14,400 Arbitrum, 3,000 Avalanche,
+  2,400 Polygon, 1,800 Optimism or 1,200 Tron —
   from keyless public RPC endpoints, then polls every ~20 seconds. A contract is only read where its own
   issuer publishes it, which is why BNB Chain is absent entirely (`docs/DECISIONS-2026-09.md`, D4). Polygon
-  and Optimism went live on 2026-10-01 (HANDOFF section 17).
+  and Optimism went live on 2026-10-01 (HANDOFF section 17), Tron on 2026-10-06 (section 23): it is read through
+  its EVM-style JSON-RPC with base58 addresses converted in `lib/atlas/tron.ts`, and its evidence is Tronscan tags only.
   **The feed is filtered**: it asks the node only for transfers that touch a wallet with evidence on that
   chain, using the two indexed address positions of the Transfer event. Measured on 2026-09-20 that is
   about 4 MB down and 2 MB up for one hour across all three chains, against roughly 140 MB unfiltered.
@@ -73,8 +74,8 @@ day presented as "24H" would read as the day's settlement. Coverage accrues only
 so the long windows belong to a tab left running. The history is per browser, never uploaded and never
 shared; "Clear recorded history" is in the Data & coverage panel. What still needs a server:
 the main app's existing Cloudflare Workers + D1 backend, the phase 2 upgrade whenever you want it.
-Tron needs a keyed TronGrid account and Solana a paid indexer, so both stay "Not connected" and the chain
-filter only offers what the build actually reads.
+Solana needs a paid indexer, so it stays "Not connected" and the chain filter only offers what the build
+actually reads.
 
 ## The evidence registry
 

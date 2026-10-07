@@ -177,6 +177,7 @@ export function collectFacts(root, atlas) {
     dormancy: ka.DORMANCY,
     pollMs, priceMs, sampleMs, unlockShare,
     allChains: model.CHAINS,
+    evmChains: model.EVM_CHAINS,
   };
 }
 
@@ -455,7 +456,9 @@ function renderChecked(root, atlas) {
   if (facts) {
     if (facts.windows.join() !== WINDOW_LABELS.join()) errors.push(`${TEMPLATE} names the windows ${WINDOW_LABELS.join(', ')}; WINDOWS in lib/atlas/model.ts is ${facts.windows.join(', ')}`);
     const named = (method.match(/another EVM chain the build reads \(([^)]*)\)/) || [])[1];
-    const want = facts.chains.map((c) => c.name).filter((c) => c !== 'Ethereum').sort();
+    // The sentence is about reusing an Ethereum label on the other EVM chains, so it lists the live EVM chains only. Tron is
+    // read too, but it is never a derivation target, so naming it there would be false.
+    const want = facts.chains.map((c) => c.name).filter((c) => c !== 'Ethereum' && facts.evmChains.includes(c)).sort();
     const got = (named || '').split(/,|\bor\b|\band\b/).map((s) => s.trim()).filter(Boolean).sort();
     if (!named) errors.push(`${METHODOLOGY} no longer has the sentence "another EVM chain the build reads (...)" that scripts/llms/render.mjs checks against FEEDS`);
     else if (want.join() !== got.join()) errors.push(`${METHODOLOGY} lists ${got.join(', ')} as the other chains read; the build reads ${want.join(', ')}. Update the methodology (it is published as methodology${METHOD_EXT})`);

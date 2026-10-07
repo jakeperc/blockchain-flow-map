@@ -30,8 +30,8 @@ export interface FeedConfig{
  /** Unfiltered blocks per denominator sample. Sized to a few hundred logs on each chain. */
  sampleBlocks:number;
 }
-/** Date the maxTopics and maxRange figures below were last measured (Polygon and Optimism on 2026-10-01, Avalanche on 2026-09-25). */
-export const ENDPOINTS_MEASURED='2026-10-01';
+/** Date the maxTopics and maxRange figures below were last measured (Tron on 2026-10-06, Polygon and Optimism on 2026-10-01, Avalanche on 2026-09-25). */
+export const ENDPOINTS_MEASURED='2026-10-06';
 /**
  * Endpoints, all keyless and browser-callable (CORS confirmed 2026-09-21). One hour is 300 Ethereum blocks, 1,800 Base
  * blocks or 14,400 Arbitrum blocks. Measured 2026-09-21 in the live request shape, three tries per size:
@@ -96,5 +96,21 @@ export const FEEDS:Partial<Record<Chain,FeedConfig>>={
   // optimism.drpc.org refuses filtered ranges on its free plan, so it serves only the small calls.
   endpoints:[{url:'https://optimism.gateway.tenderly.co',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://optimism-rpc.publicnode.com',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://mainnet.optimism.io',largeBody:true,maxTopics:1000,maxRange:5000},{url:'https://optimism.drpc.org',largeBody:false}],
   chainId:10,slotMs:2000,blocks:1800,chunk:1500,liveRange:30,catchupRange:1500,pauseMs:0,sampleBlocks:10
+ },
+ /**
+  * Added 2026-10-06 (HANDOFF section 23; docs/measurements/2026-10-06/). Tron speaks EVM-shaped JSON-RPC with no key:
+  * addresses inside topics and logs are the 20-byte hex form of the base58 T-address (tron.ts converts both ways), and
+  * USDT TR7NHq…Lj6t is 0xa614f803b6fd780986a42c78ec9c7f77e6ded13c. USDT only: Circle no longer issues USDC on Tron.
+  * Tron is not an EVM chain in the model, so it is never a derivation target; every Tron row is a Tronscan tag (D6).
+  * Measured 2026-10-06 in the live request shape: eth_chainId 0x2b6653dc on both filter endpoints, block timestamps in
+  * seconds, 3-second blocks, about 44 USDT logs per block unfiltered. Both filter endpoints take 1,000 addresses in a
+  * position and serve 90 days back, and both refuse any reply over 10,000 logs (-32005), so the binding limit is the
+  * busiest wallets' log count, not the block span: 600-block chunks keep a reply well under it.
+  * tron-evm-rpc.publicnode.com sends brotli (one hour of the nine first wallets: 0.67 MB on the wire, against 5.29 MB
+  * from api.trongrid.io, which does not compress), so it comes first and TronGrid is the fallback.
+  */
+ Tron:{
+  endpoints:[{url:'https://tron-evm-rpc.publicnode.com',largeBody:true,maxTopics:1000,maxRange:1200},{url:'https://api.trongrid.io/jsonrpc',largeBody:true,maxTopics:1000,maxRange:1200},{url:'https://tron-rpc.publicnode.com/jsonrpc',largeBody:false}],
+  chainId:728126428,slotMs:3000,blocks:1200,chunk:600,liveRange:20,catchupRange:600,pauseMs:250,sampleBlocks:6
  }
 };

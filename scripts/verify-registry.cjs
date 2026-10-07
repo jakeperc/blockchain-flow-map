@@ -18,6 +18,7 @@ const {join}=require('path');
 const {COUNTRIES,EXPLORERS,CHAIN_COLORS}=load('geography');
 const {admissible,CHAINS,EVM_CHAINS}=load('model');
 const {FEEDS,ENDPOINTS_MEASURED}=load('feeds');
+const {tronToHex,tronFromHex}=load('tron');
 const errors=[],warnings=[];const now=Date.now();
 const hIdx=process.argv.indexOf('--horizon-days');
 const HORIZON_DAYS=hIdx>-1?Number(process.argv[hIdx+1]):60;
@@ -45,6 +46,8 @@ for(const [key,rec] of Object.entries(ADDRESSES)){
  if(!CHAINS.includes(chain))errors.push(`${key}: unknown chain`);
  if(rec.chain!==chain)errors.push(`${key}: record chain '${rec.chain}' does not match the key`);
  if(EVM.has(chain)&&!/^0x[0-9a-f]{40}$/.test(addr))errors.push(`${key}: EVM address must be lowercase 0x hex`);
+ // Tron rows are base58check as Tronscan shows them: the checksum must hold and the hex round trip must return the same text.
+ if(chain==='Tron'){try{if(tronFromHex(tronToHex(addr))!==addr)errors.push(`${key}: Tron address does not round-trip through its hex form`);}catch(e){errors.push(`${key}: ${e.message}`);}}
  if(!['eoa','delegated','contract'].includes(rec.kind))errors.push(`${key}: kind must be eoa, delegated or contract`);
  const ent=ENTITIES[rec.entity];
  if(!ent){errors.push(`${key}: unknown entity '${rec.entity}'`);continue;}

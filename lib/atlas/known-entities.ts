@@ -3,7 +3,8 @@
  * known-addresses.ts. Pure data; safe to ship to the browser.
  *
  * RULES (these are the whole point of the project — do not relax them):
- *  - Only add an address whose own chain explorer page (Etherscan, Basescan, Arbiscan or Snowscan) shows a public name tag.
+ *  - Only add an address whose own chain explorer page (Etherscan, Basescan, Arbiscan, Snowscan, Polygonscan, Optimistic
+ *    Etherscan, or Tronscan's publicTag under decision D6) shows a public name tag.
  *    An exchange's own published address list is NOT admissible (decision D1, 2026-09-21): such lists mix in
  *    customer deposit addresses, go stale or vanish, and never say which legal entity controls a wallet. A
  *    regulator or court filing supports an entity's jurisdiction, never an address.

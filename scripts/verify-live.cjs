@@ -138,6 +138,23 @@ const sweep=(over={})=>[rec({sender:OUTSIDE,receiver:DEP,blockTime:T0,...over.in
  assert.equal(decodeTransferLog('Ethereum',log({data:'0x12'}),T0,tok,px),null,'malformed amount data is dropped');
  assert.equal(decodeTransferLog('Ethereum',log(),T0,tok,()=>null).usdValue,null,'an unpriced transfer keeps a null USD value, never a $1 peg');
 }
+{ // Tron: the RPC speaks 20-byte hex; records, registry keys and Tronscan links use base58check (lib/atlas/tron.ts).
+ const {tronToHex,tronFromHex,rpcAddress,isZeroAddress,TRON_ZERO}=require(root+'/tron.js');
+ const USDT_T='TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',HOT_T='TDqSquXBgUCLYvYC4XZgrprLK589dkhSCf';
+ assert.equal(tronToHex(USDT_T),'a614f803b6fd780986a42c78ec9c7f77e6ded13c','USDT on Tron is the measured 20-byte contract');
+ assert.equal(tronFromHex(tronToHex(HOT_T)),HOT_T,'base58check round-trips through hex');
+ assert.equal(tronFromHex('0'.repeat(40)),TRON_ZERO,'the zero address has its known base58 form');
+ assert.throws(()=>tronToHex('TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6u'),/checksum/,'a mistyped Tron address is refused, not silently converted');
+ assert.equal(rpcAddress('Tron',HOT_T),'0x'+tronToHex(HOT_T));assert.equal(rpcAddress('Ethereum',HOT.toUpperCase().replace('0X','0x')),HOT,'EVM addresses only lowercase');
+ const topic=h=>'0x'+h.padStart(64,'0');
+ const tlog={address:'0x'+tronToHex(USDT_T),transactionHash:'0x'+'c'.repeat(64),logIndex:'0x2',blockNumber:'0x20',blockHash:'0x'+'d'.repeat(64),
+  data:'0x'+(5000000n).toString(16).padStart(64,'0'),topics:[ERC20_TRANSFER_TOPIC,topic(tronToHex(HOT_T)),topic('0'.repeat(40))]};
+ const tr=decodeTransferLog('Tron',tlog,T0,a=>a===tlog.address?{asset:'USDT',decimals:6}:null,()=>({at:T0,usd:1}));
+ assert.ok(tr,'a Tron USDT log decodes');
+ assert.equal(tr.sender,HOT_T,'Tron senders are base58, so registry lookups and Tronscan links work');
+ assert.equal(tr.receiver,TRON_ZERO);assert.equal(tr.tokenContract,USDT_T);assert.equal(tr.amount,'5.000000');
+ assert.ok(isZeroAddress('Tron',tr.receiver)&&!isZeroAddress('Ethereum',tr.receiver),'zero is recognised per chain');
+}
 { // Decimals: the guard against the retired hard-coded 1e6 divisor.
  assert.equal(formatAmount(1n,6),'0.000001');
  assert.equal(formatAmount(1000000n,6),'1.000000');
@@ -174,4 +191,4 @@ const sweep=(over={})=>[rec({sender:OUTSIDE,receiver:DEP,blockTime:T0,...over.in
  assert.equal(pruneRecords(recs,T0-10000).length,3,'an out-of-order record does not stop retention early');
 }
 
-console.log('PASS: inference (evidence, refusals, boundary, chain scoping, expiry, corridor), price selection, decoding, decimals, block times, chunking, retention');
+console.log('PASS: inference (evidence, refusals, boundary, chain scoping, expiry, corridor), price selection, decoding (EVM and Tron), decimals, block times, chunking, retention');

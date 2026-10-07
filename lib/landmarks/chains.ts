@@ -27,7 +27,7 @@ export const CHAIN_INFO: Record<string, ChainInfo> = {
   Polygon: {name: 'Polygon', explorer: 'Polygonscan', tagHost: 'polygonscan.com', tx: (h) => `https://polygonscan.com/tx/${h}`, address: (a) => `https://polygonscan.com/address/${a}`, color: '#c49ad2', native: 'POL'},
   Optimism: {name: 'Optimism', explorer: 'Optimistic Etherscan', tagHost: 'optimistic.etherscan.io', tx: (h) => `https://optimistic.etherscan.io/tx/${h}`, address: (a) => `https://optimistic.etherscan.io/address/${a}`, color: '#c9c77f', native: 'ETH'},
   Avalanche: {name: 'Avalanche', explorer: 'Snowscan', tagHost: 'snowscan.xyz', tx: (h) => `https://snowscan.xyz/tx/${h}`, address: (a) => `https://snowscan.xyz/address/${a}`, color: '#d98fae', native: 'AVAX'},
-  Tron: {name: 'Tron', explorer: 'Tronscan', tagHost: 'tronscan.org', tx: (h) => `https://tronscan.org/#/transaction/${h}`, address: (a) => `https://tronscan.org/#/address/${a}`, color: '#de967d', native: 'TRX'},
+  Tron: {name: 'Tron', explorer: 'Tronscan', tagHost: 'tronscan.org', tx: (h) => `https://tronscan.org/#/transaction/${h.replace(/^0x/i, '')}`, address: (a) => `https://tronscan.org/#/address/${a}`, color: '#de967d', native: 'TRX'},
   Solana: {name: 'Solana', explorer: 'Solscan', tagHost: null, tx: (h) => `https://solscan.io/tx/${h}`, address: (a) => `https://solscan.io/account/${a}`, color: '#b7a0d9', native: 'SOL'},
 };
 
