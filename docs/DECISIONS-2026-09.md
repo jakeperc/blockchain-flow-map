@@ -227,6 +227,15 @@ one deposit address that used to pay BitGo and now correctly resolves to Coinbas
 **Reopen any of the ten removed brands (FalconX, Copper, and these eight) only if** its own documents change to name a
 single custodying entity for all clients, or a regulator register names the entity that holds the tagged wallets.
 
+
+**Re-checked 2026-10-07 on Tron (no change for any brand in the table).** Bybit (two platform terms, "as applicable"),
+WhiteBIT (still no Panamanian registration or licence for Peak Horizon Corp.) and Cobo (the whole Cobo Group) still fail
+their reopen conditions. Brands first met on Tronscan were tested on the same standard:
+- **Ourbit passed:** Ourbit Holdings Ltd., BVI, company no. 2138612, named as custodian in its own terms. Admitted at HIGH.
+- **Gate, UEEx, VIR8, MaskEX and Flipster fail.**
+- **FixedFloat is a non-custodial swap service** and is never attributed.
+- **Well Wallet** (Costa Rica, footer-only entity) and **Swapster** (current agreement unreadable) are held.
+- Details: `docs/measurements/2026-10-07/tron-open-items.md`.
 ## D4. BNB Chain: are Binance-Peg stablecoins admissible? (2026-09-25)
 
 **Answer: no. BNB Chain stays out, and Polygon's bridged USDT with it.**

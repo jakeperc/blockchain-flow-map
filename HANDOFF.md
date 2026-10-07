@@ -1,6 +1,8 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-06/07: **Tron is live.** A keyless feed carries 21 Tronscan-tagged wallets (Binance, OKX, Kraken,
+Last updated 2026-10-07: **the Tron open items were researched** (section 24). India and LatAm have no admissible
+Tron wallet; of the unregistered tagged brands only Ourbit passed D3 and was added (22 Tron wallets now). Before that,
+2026-10-06/07: **Tron is live.** A keyless feed carries 21 Tronscan-tagged wallets (Binance, OKX, Kraken,
 Bitfinex, KuCoin, Bitget, MEXC, Coinone, Bithumb and Coins.ph) at about 1.2 MB per visitor-hour (section 23). Earlier the
 same day Jake supplied the free Tronscan API key and `read-tag.mjs` learned to read Tron tags (section 22). Before that,
 2026-10-02 brought **a second page, Landmarks (`landmarks.html`): sixteen landmark transactions, each
@@ -1431,3 +1433,49 @@ the zip root. Jake FTPs its contents into the existing folder, keeping `assets/`
 - India and LatAm still have no tagged Tron wallets.
 - The 46 idle tagged wallets of registered brands should be re-screened when the lead sweep is re-run monthly.
 - The hub upload manifest and the `llms: true` flag (to-do 10) still need Jake's upload.
+
+## 24. Tron open items researched: India/LatAm and the unregistered tagged brands (2026-10-07)
+
+Jake asked for the two open items from section 23 to be researched. Report: `docs/measurements/2026-10-07/tron-open-items.md`,
+with raw data beside it. The D3 table in `docs/DECISIONS-2026-09.md` gained a dated re-check note.
+
+**India and LatAm: nothing admissible exists on Tron yet.**
+- Tronscan search across 64 brand terms found no tagged address for CoinDCX, Bitso, Lemon Cash, Mercado Bitcoin, Brasil
+  Bitcoin, CoinSwitch, Ripio, Buenbit, Foxbit and others. Bitso and Lemon matches are owner-set names only.
+- The only tagged Indian wallets are idle: "WazirX Exchange Hot Wallet" last moved USDT on 2025-05-15, "Bitbns" on
+  2023-01-02.
+- A counterparty sweep found no regional exchange either: the 400 largest of 106,864 counterparties of the 22 hubs over
+  6 hours had their Tronscan tags read, and only 4 carried a tag.
+
+**Unregistered tagged brands: activity screen, then D3** (three research agents using WebSearch and WebFetch only;
+Ourbit's terms were re-read by the main session).
+- **Ourbit passed:** Ourbit Holdings Ltd., BVI no. 2138612, named as custodian in its own terms dated 2026-05-30. It is
+  admitted at HIGH (`ourbit` entity, VG) with one Tron row, "OURBIT Exchange Reserves" ($888k in 7 days).
+- **Still failing their 2026-09-21 reopen conditions:** Bybit ($2.04B in 7 days on Tron), WhiteBIT ($383M) and Cobo
+  ($212M).
+- **Fail:** Gate ($706M; the global agreement names no entity), UEEx, VIR8, MaskEX (ADGM alert) and Flipster.
+- **Never attributed:** FixedFloat, which is a non-custodial swap service by its own terms.
+- **Held for Jake:**
+  - **Well Wallet** ($396M): Costa Rica entity in the footer only, no registry confirmation, and `CR` would be a new map
+    country. It parallels WhiteBIT.
+  - **Swapster** ($36M): the current agreement PDF could not be read with WebFetch.
+- Idle on Tron: all 13 HTX tags, Bybit Cold, LBank, XT.COM, WhiteBIT 2 and 3.
+
+**Registry:** 1,211 first-party rows across 65 entities. Tron has 22 rows. Tron dormancy was re-measured and merged with
+the same-day parts for the other six chains: 22 of 22 active.
+
+**Verification:**
+- `node scripts/verify-all.mjs` passed (llms.txt stamps 1,211 addresses), and `tsc --noEmit` is clean.
+- `corepack pnpm build:live` built.
+- The built site served at `/ledger-atlas-live/` showed no local 404s, all seven chains LIVE and Solana Not connected.
+
+**Deliverable:** `outputs/ledger-atlas-live-2026-10-07b.zip`. It supersedes `ledger-atlas-live-2026-10-07.zip` and differs
+only by the Ourbit row. Uploading either works.
+
+**Open (Jake):**
+- Decide on Well Wallet.
+- Read Swapster's current user agreement (https://swapster.fi/docs/en_new/USER_AGREEMENT-2.pdf) in a browser to confirm
+  its operator, or leave it out.
+- If Bybit's main terms ever name one custodian for all clients, its 532k transfers a week would add about 0.25 MB per
+  visitor-hour to the Tron feed.
+
