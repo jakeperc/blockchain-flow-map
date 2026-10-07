@@ -65,7 +65,13 @@
 .map-area{top:130px;bottom:118px}
 .map-controls{bottom:158px}
 .route-summary{bottom:130px;width:190px;padding:9px 10px 7px}
-.map-legend{bottom:305px;max-width:118px}
+.map-legend{display:none}
+.key-dots{display:inline-flex;gap:3px;margin-right:6px;vertical-align:middle}
+.key-dots i,.key-row i{width:6px;height:6px;border-radius:50%;display:inline-block}
+.key-item{display:flex;flex-direction:column;gap:3px}
+.key-item b{font-weight:500}
+.key-row{display:flex;flex-wrap:wrap;gap:3px 8px;font-size:9px;opacity:.75}
+.key-row>span{display:inline-flex;align-items:center;gap:4px}
 }
 
 /* Tablets: same idea as phones. The hero and stats become a compact, background-free strip

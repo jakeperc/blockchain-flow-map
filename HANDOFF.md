@@ -272,7 +272,8 @@ dormant row is not free. The diagnostics are read-only and never shipped:
 - `node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz|polygonscan.com|optimistic.etherscan.io> <addr>...`:
   the admissible read. Optimistic Etherscan, like Arbiscan, answers 403 on address pages, so its `/txs?a=`
   page header is read instead. It prints the tag verbatim and any "tagged based on ... compilation"
-  disclosure, which goes into the row's note.
+  disclosure, which goes into the row's note. **The header page carries no banner, so on Arbiscan and Optimistic
+  Etherscan a missing disclosure proves nothing** (section 20).
 - `node scripts/probe-endpoint-caps.mjs <Chain>`: endpoint caps for `feeds.ts`.
 
 Working admission floor since 2026-09-21: a tagged wallet is added only if it moved at
@@ -1253,3 +1254,53 @@ rather than ranking them.
   name that address under "exactly one matches".
 - The research agents could not read PDFs (justice.gov, CourtListener storage, the SEC's DAO report, Verichains' Bybit
   report); the entries avoid them. Court records came from CourtListener's archived HTML text.
+
+## 20. Compilation-disclosure audit of the rows read before the `read-tag.mjs` fix (2026-10-02)
+
+`read-tag.mjs` used to match the "tagged based on ... compilation" banner on raw HTML, and a linked compiler name defeated
+it (fixed 2026-10-02, logic now in `tag-reader.mjs`). The 705 first-party rows whose note did not mention a compilation
+were re-read with the fixed script at its own 2.5 s pace: no block, 705 pages. Report and per-row data:
+`docs/measurements/2026-10-02/compilation-disclosure-audit.md` and `.tsv` (the TSV holds the exact proposed note text).
+(Section 19 is the Landmarks page, written by the other session; this number is not a gap.)
+
+- **106 rows carry a disclosure the registry had not recorded**, all crediting hildobby: Ethereum 74, Polygon 15,
+  Avalanche 13, Base 4. All 705 tags still equal the row's `label`; none lost its tag; no third-party report banner
+  ("Reported by ...") appeared. Four informational banners (Gemini's and Kraken's "Cold Wallet", a HongCoin unclaimed-ETH
+  notice) are unrelated to attribution.
+- **63 rows cannot be audited this way.** The `/txs?a=` header page used for Arbiscan and Optimistic Etherscan carries the
+  tag but not the banner (two Arbitrum rows whose notes record a disclosure print none). Do not read "nothing printed"
+  there as clean. Options: Jake reads those address pages in his browser, or `read-tag.mjs` warns on these hosts (it shares
+  `tag-reader.mjs` with the Landmarks scan, so not changed here). It also means Landmarks entries named from an Arbiscan or
+  Optimistic Etherscan tag cannot show D7's "credited to no outside source".
+- **Registry-wide, 590 of 1,189 rows (49.6%) now carry a recorded compilation origin** (584 of the 1,120 rows on hosts
+  where the banner is visible).
+- **Nothing was applied.** Two decisions wait for Jake: (1) append the proposed note to the 106 rows (it ships: row notes
+  appear in the evidence text), then `gen-addresses.mjs` and `verify-all.mjs`; (2) whether a disclosure lowers an entity
+  to HIGH. The written rules never said so (the sentence lived in the old script comment, now removed) and practice is mixed:
+  GMO Coin, bitbank, Netcoins, NDAX and Bitvavo are VERIFIED with every tag disclosed, Bitpanda, Anchorage and Bullish are
+  HIGH. Recommendation in the report: no confidence change. Five VERIFIED entities newly reach "every readable row
+  disclosed": Bitvavo, Bitcoin Suisse, BitoPro, Digital Surge, Wealthsimple Crypto.
+- **Verification:** `node scripts/verify-all.mjs` passed, `node node_modules/typescript/bin/tsc --noEmit` is clean and
+  `corepack pnpm build:live` built, run on the working tree with the Landmarks work present. No registry, entity or generated
+  file changed. No browser check (no UI change). No new zip: the built page is the same as before this audit.
+- **Open:** the 484 rows that already had a note were not re-read; the `checked` dates of the 705 re-read rows were not
+  bumped (the tags matched, which is real re-verification, but it was not asked for).
+
+## 21. Phone layout: corridors start minimized, colour key moves into the dropdown (2026-10-03)
+
+Jake's request after viewing the live page on a phone: the Leading corridors card and the Dominant asset legend took too much
+of the globe.
+
+- **`components/atlas.tsx`:** `showRoutes` now starts `false` below 650px (the same breakpoint as the `mobile` flag), so the
+  Leading corridors card opens as its one-line heading and expands on tap. Desktop and tablet still start expanded.
+  `Choice` takes an optional `keys` prop; on phones the "Color by" dropdown passes it, which puts the colour dots inside
+  the trigger (shown only when a mode has three entries or fewer: Asset and Confidence) and a labelled key under each mode
+  name in the open list (Asset: USDC, USDT; Chain: all eight; Confidence: Verified, High).
+- **`app/globals.css`:** in the `max-width:650px` block `.map-legend` is `display:none` and `.key-dots`, `.key-row`,
+  `.key-item` style the new key. The legend's width/motion/glow wording remains in "How to read the map". Tablet and
+  desktop keep the floating legend unchanged.
+- **Verification:** previewed at 430px wide: card collapsed on load, legend gone, two dots in the trigger, open list shows the
+  keys. `node scripts/verify-all.mjs` passed and `tsc --noEmit` reports nothing in `atlas.tsx`. Not rebuilt, so no new zip:
+  run `corepack pnpm build:live` before the next FTP upload.
+- **Open:** Chain mode shows no dots in the closed trigger (eight is too wide); its key is only in the open list.
+

@@ -28,6 +28,11 @@ decision D7 in `docs/DECISIONS-2026-09.md`. The recent window and the measured t
 
 API and hosting plan for more coverage (Tron, Solana, Polygon), fitted to the budget: [docs/API-PLAN.md](docs/API-PLAN.md).
 
+Compilation-disclosure audit (2026-10-02): re-reading 705 first-party rows with the fixed tag reader found 106 unrecorded
+hildobby-compilation disclosures, so 590 of 1,189 rows now carry a recorded compilation origin; 63 Arbiscan and Optimistic
+Etherscan rows cannot be audited through the bot-readable page. Nothing in the registry changed pending Jake's decision.
+Report: [docs/measurements/2026-10-02/compilation-disclosure-audit.md](docs/measurements/2026-10-02/compilation-disclosure-audit.md).
+
 **Handing this project to another agent or developer? Start with [HANDOFF.md](HANDOFF.md).**
 
 ChatGPT and Claude share that handoff. Each material change should update it in the
