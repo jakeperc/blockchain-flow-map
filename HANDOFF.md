@@ -1,6 +1,8 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-07: **the Tron open items were researched** (section 24). India and LatAm have no admissible
+Last updated 2026-10-08: **Tronscan's other free lists were harvested for leads** (section 25). One more Ourbit wallet
+was admitted (23 Tron wallets). No new country is reachable without a decision from Jake, and the free Tronscan API is
+close to exhausted for this project. On 2026-10-07 **the Tron open items were researched** (section 24). India and LatAm have no admissible
 Tron wallet; of the unregistered tagged brands only Ourbit passed D3 and was added (22 Tron wallets now). Before that,
 2026-10-06/07: **Tron is live.** A keyless feed carries 21 Tronscan-tagged wallets (Binance, OKX, Kraken,
 Bitfinex, KuCoin, Bitget, MEXC, Coinone, Bithumb and Coins.ph) at about 1.2 MB per visitor-hour (section 23). Earlier the
@@ -1478,4 +1480,62 @@ only by the Ourbit row. Uploading either works.
   its operator, or leave it out.
 - If Bybit's main terms ever name one custodian for all clients, its 532k transfers a week would add about 0.25 MB per
   visitor-hour to the Tron feed.
+
+## 25. Tronscan lead harvest from the untried list endpoints (2026-10-08)
+
+Jake asked whether the Tronscan API could add more wallets or countries. Report: `docs/measurements/2026-10-08/tron-lead-harvest.md`,
+with raw data beside it (`tron-lead-harvest.json`, `tron-lead-screen.json`).
+
+**Sources (leads only).** All 943 requests returned 200. The sources were:
+- `account/list?sort=-balance`: the top 10,000 TRX accounts.
+- `token_trc20/holders`: the first 2,500 holders of 12 non-USDT tokens.
+- `search/v2`: 180 terms.
+
+They gave 186 tagged addresses, 83 of them new. After dropping super-representative, burn, energy-rental, gambling,
+donation and bridge tags, 57 were screened.
+
+**7-day USDT screen** (publicnode, then TronGrid; 84 queries, none failed): 16 moved USDT.
+- **Admitted: OURBIT Exchange Hot Wallet** (TApNqy5BNx11TiNa7oibbBUV63BY5a2sNE, $2.99M, 1,050 transfers). Ourbit already
+  passed D3 on 2026-10-07, and its tag was read through `read-tag.mjs tronscan.org`.
+- **Every new regional tag that could add a country was idle:** Kuna (UA), ONUS (VN), Cryptoforce (IN), Kuantist and
+  Darkex. So were Binance-Cold 3 and the global brands BitMart, Phemex, CoinEx, ProBit, Bitrue and others.
+
+**Operator test (D3) on the active unregistered brands** (one research agent, WebSearch and WebFetch only):
+- **CEX.IO fails:** its entity depends on the client's residence.
+- **Unclear, mostly because their own terms pages were unreadable:**
+  - Urban Crypto Exchange (Brazil), $26M.
+  - CEEX.
+  - WestWallet: its only entity link points at a company being deleted.
+  - Wallib (Colombia).
+- MaskEX's four new hot wallets ($101M) stay out: MaskEX failed D3 on 2026-10-07.
+
+**Held for Jake:**
+- **DTCPay** ($36.6M):
+  - It passes on paper: Digital Treasures Center Pte. Ltd., MAS Major Payment Institution PS20200531.
+  - It is a payment processor, though, and the registry has held only exchange and custodian wallets.
+  - Its terms define the operator as the company "and its Related Parties".
+  - SG is already on the map, so it adds flow but no country.
+- **Cropty** ($1.3M): it is the Well Wallet case again.
+  - Coinscatch (Private) Limited, Sri Lanka, is named only in undated terms.
+  - There is no registration number.
+  - `LK` would be a new country.
+
+**Registry:** 1,212 first-party rows across 65 entities. Tron has 23. Tron dormancy was not re-measured, because
+`--merge` needs every part from the same day. The new row is watched by default, and `verify-all` warns about it until
+the monthly run (due by 2026-11-21).
+
+**Verification:**
+- `node scripts/verify-all.mjs` passed; `llms.txt` stamps 1,212 addresses.
+- `tsc --noEmit` is clean.
+- `corepack pnpm build:live` built.
+
+**Deliverable:** `outputs/ledger-atlas-live-2026-10-08.zip`. It supersedes the 2026-10-07b zip, and it differs only by
+the new Ourbit row.
+
+**Open (Jake):**
+- Decide on DTCPay (payment processors on the map?), Cropty (LK) and Well Wallet (CR, section 24).
+- Optionally read https://urbanexchange.com.br/termos-de-uso and https://www.wallib.com/terms in a browser. Either could
+  pass and is reachable no other way.
+- The free Tronscan API is close to exhausted as a lead source. Re-run this harvest monthly with the lead sweep, since
+  Tronscan adds tags over time. No paid Tron API would add evidence, because admission needs Tronscan's own tag.
 
