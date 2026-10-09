@@ -61,14 +61,25 @@ export function createEngine(host:HTMLElement,io:EngineHost):Engine{
   flyToCorridor:r=>{const [lon,lat]=corridorMidpoint(r.data);rig.flyTo(lon,lat,performance.now()/1000,ctx.reduced);}
  });
 
+ /**
+  * Assigning a canvas's width or height empties its drawing buffer, and the empty buffer is what the compositor
+  * paints if the next frame is still to come: one black frame. So an unchanged size is not re-applied (a
+  * ResizeObserver can fire for layout changes that leave the map's own box alone), and a real change is drawn
+  * again in the same callback, before the browser gets to paint.
+  */
+ let sizedW=0,sizedH=0,sizedPr=0,drawn=false;
+ const redraw=()=>{if(drawn)renderer.render(scene,camera);};
  function resize(){
-  ctx.width=host.clientWidth||1;ctx.height=host.clientHeight||1;
+  const w=host.clientWidth||1,h=host.clientHeight||1,pr=renderer.getPixelRatio(),same=w===sizedW&&h===sizedH&&pr===sizedPr;
+  ctx.width=w;ctx.height=h;
   const cs=getComputedStyle(host),extraTop=Math.max(0,-(parseFloat(cs.top)||0)),extraBottom=Math.max(0,-(parseFloat(cs.bottom)||0));
   ctx.areaHeight=Math.max(1,ctx.height-extraTop-extraBottom);ctx.areaShift=(extraTop-extraBottom)/2;
-  renderer.setSize(ctx.width,ctx.height);camera.aspect=ctx.width/ctx.height;camera.updateProjectionMatrix();
+  if(!same){renderer.setSize(ctx.width,ctx.height);sizedW=w;sizedH=h;sizedPr=pr;}
+  camera.aspect=ctx.width/ctx.height;camera.updateProjectionMatrix();
   shared.uResolution.value.set(ctx.width*renderer.getPixelRatio(),ctx.height*renderer.getPixelRatio());
   shared.uPixelRatio.value=renderer.getPixelRatio();
   quality.suspend(2);update();
+  if(!same)redraw();
  }
  function update(){
   const p=io.props();
@@ -157,13 +168,15 @@ export function createEngine(host:HTMLElement,io:EngineHost):Engine{
   capIdle=motion&&!flying&&!morphing&&!interaction.active()&&performance.now()-interaction.lastInput>1000;
   if(!render){rendered=false;return;}
   invalid=false;
-  renderer.render(scene,camera);
+  renderer.render(scene,camera);drawn=true;
   const frameMs=performance.now()-frameStart;
   // Only a frame that follows a rendered frame has a meaningful interval.
   if(rendered&&quality.sample(Math.max(frameMs,dt*1000),dt)){
+   // The governor's new pixel ratio resized the canvas, which emptied the frame just drawn: draw it again now.
+   sizedPr=renderer.getPixelRatio();
    shared.uPixelRatio.value=renderer.getPixelRatio();shared.uResolution.value.set(ctx.width*renderer.getPixelRatio(),ctx.height*renderer.getPixelRatio());
    if(quality.governor.demoted){land?.setDotBudget(14000);arcs.setParticles(4);anchors.setBeams(false);}
-   report();invalid=true;
+   report();renderer.render(scene,camera);
   }
   rendered=true;
   if(debugEl){cpuEma=cpuEma?cpuEma*.95+frameMs*.05:frameMs;debugEl.textContent=`${renderer.info.render.calls} calls · ${quality.governor.ema.toFixed(1)} ms · cpu ${cpuEma.toFixed(2)} ms · dpr ${renderer.getPixelRatio().toFixed(2)} · ${rig.phase}${capIdle?' · 60 cap':''} · land ${landMs.toFixed(0)} ms`;}

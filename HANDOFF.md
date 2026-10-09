@@ -1,6 +1,6 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-08: **Tronscan's other free lists were harvested for leads** (section 25). One more Ourbit wallet
+Last updated 2026-10-09: **the map no longer blanks for a frame on resize or render-scale changes, and the 20 s update burst is coalesced** (section 26). On 2026-10-08 **Tronscan's other free lists were harvested for leads** (section 25). One more Ourbit wallet
 was admitted (23 Tron wallets). No new country is reachable without a decision from Jake, and the free Tronscan API is
 close to exhausted for this project. On 2026-10-07 **the Tron open items were researched** (section 24). India and LatAm have no admissible
 Tron wallet; of the unregistered tagged brands only Ourbit passed D3 and was added (22 Tron wallets now). Before that,
@@ -1539,3 +1539,41 @@ the new Ourbit row.
 - The free Tronscan API is close to exhausted as a lead source. Re-run this harvest monthly with the lead sweep, since
   Tronscan adds tags over time. No paid Tron API would add evidence, because admission needs Tronscan's own tag.
 
+
+## 26. Map blackout fix: no cleared frame on resize or render-scale change; coalesced updates (2026-10-09)
+
+Jake reported the map blacking out for a split second every few seconds, apparently on updates. A full backup was taken
+first: git tag `backup-before-blackout-fix-2026-10-09` and a copy of the tree (minus `node_modules`) beside the repo as
+`live-blockchain-flows-backup-2026-10-09-pre-blackout-fix`.
+
+**Cause (two mechanisms, found by reading the renderer and measuring the running page):**
+1. Assigning a canvas `width`/`height` empties its drawing buffer. `renderer.setSize` does that even for an unchanged
+   size, and the redraw waited for the next animation frame, so the compositor painted one empty (black) frame. It happened
+   on every `ResizeObserver` callback (which also fires for layout changes that leave the map's box alone) and every time
+   the quality governor stepped the render scale (`quality.sample` → `setPixelRatio`, which ran *after* that frame's
+   render). On a slower GPU the governor steps down, then probes back up after 3, 6, 12 … 48 s, a repeating blink.
+2. Every chain's `poll()` ended with a full-buffer `reinfer()` and a snapshot `emit()`, and the six polls share one 20 s
+   timer. Measured on the dev server: a burst of about seven main-thread tasks of 55–73 ms every 20 s, each also
+   re-rendering the whole React tree.
+
+**Fix:**
+- `components/map/engine.ts`: `resize()` no longer calls `setSize` when width, height and pixel ratio are unchanged; a
+  real resize redraws synchronously via `redraw()` (guarded until the first frame has drawn, so start-up still compiles
+  shaders asynchronously); the governor's pixel-ratio change redraws in the same callback instead of setting `invalid`.
+- `lib/atlas/live-client.ts`: a poll now sets `reinferDue` and calls `emitSoon()`, which coalesces polls finishing within
+  `EMIT_COALESCE_MS` (1500 ms) into one `emit()`. `emit()` always runs a pending `reinfer()` first, so no snapshot is built
+  from unclassified records. Backfill and the 8 s tick still call `emit()` directly. `dispose()` clears the timer.
+
+**Verification:**
+- Dev server before: long-task bursts of about 7 per 20 s cycle. After: 1 per cycle (about 60 ms) at 81.9, 102.4 and
+  121.8 s. The globe renders correctly after resizing to tablet and back to desktop.
+- `node scripts/verify-all.mjs` passed (exit 0); `corepack pnpm build:live` built.
+- **Not measured directly:** the embedded browser pane does not run `requestAnimationFrame` from the debug tool, so a blank
+  frame could not be observed on a live compositor. The fix removes both known ways to present a cleared buffer; Jake
+  should confirm on his own display. If a blink remains, instrument `gl.clear` and canvas width writes per frame
+  (the `HTMLCanvasElement.prototype` width/height setter hook used in this session) and look for another clearing source.
+- Dev-environment note, not a repo change: OneDrive had replaced about 370 pnpm symlinks in `node_modules/.pnpm` with
+  empty directories (the real links survive as `*-JakePowerSpec` copies), which broke vite. They were re-created as
+  junctions. If vite fails with "Cannot find package ... @rolldown/pluginutils", the same OneDrive damage has recurred.
+
+**Deliverable:** `outputs/ledger-atlas-live-2026-10-09.zip` (ignored by Git), `dist-live/` rebuilt with the fix.

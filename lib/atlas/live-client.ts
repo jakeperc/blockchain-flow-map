@@ -126,7 +126,7 @@ const PRICE_PROVIDERS:PriceProvider[]=[
    return v!==null&&Number.isFinite(v)?v:null;
   }},
 ];
-const POLL_MS=20000,PRICE_MS=120000,TICK_MS=8000,SAMPLE_MS=900000;
+const POLL_MS=20000,PRICE_MS=120000,TICK_MS=8000,SAMPLE_MS=900000,EMIT_COALESCE_MS=1500;
 const TIP_LAG=1,BATCH_LIMIT=3,RPC_ATTEMPTS=4,RPC_STRIKES=2;
 const RETENTION_MS=90*60000,PRICE_TOLERANCE_MS=600000;
 /**
@@ -402,10 +402,10 @@ export function createLiveSource():LiveSource{
     // Headers are fetched only for blocks that produced logs, so the range's own bounds are interpolated from
     // the tip and the chain's slot time — the same interpolation the backfilled hour uses.
     noteObserved(Date.now()-(target-from)*cfg.slotMs,Date.now()-(target-to)*cfg.slotMs);
-    lastBlock=to;lastReceived=Date.now();prune();reinfer();
+    lastBlock=to;lastReceived=Date.now();prune();reinferDue=true;
     state=to===target&&!missingBlocks?'LIVE':'CATCHING UP';
    }catch{state=failures>3?'RECONNECTING':'CONNECTING';}
-   finally{polling=false;emit();}
+   finally{polling=false;emitSoon();}
   }
 
   /** Read one small unfiltered slice, so the share of chain activity that is evidenced can be stated. */
@@ -581,7 +581,21 @@ export function createLiveSource():LiveSource{
   if(reg.expired>reg.total*.25)s.health='DELAYED';
   return s;
  }
- function emit(){if(disposed)return;const now=Date.now();for(const l of listeners)l.cb(build(l.window,l.chain,now));}
+ /**
+  * Every chain's poll ends by re-classifying the whole buffer and publishing a snapshot, and the polls all fire on
+  * the same 20 s timer, so six chains meant six full passes and six React renders within a second or two — a
+  * burst of ~60 ms main-thread stalls that the map showed as a hitch. A poll now only marks the buffer stale and
+  * asks for a publish; polls that finish within `EMIT_COALESCE_MS` of each other share one pass. `emit()` always
+  * settles a pending re-classification first, so no snapshot is ever built from unclassified records.
+  */
+ let reinferDue=false,emitTimer:ReturnType<typeof setTimeout>|null=null;
+ function emitSoon(){if(disposed||emitTimer!==null)return;emitTimer=setTimeout(()=>{emitTimer=null;emit();},EMIT_COALESCE_MS);}
+ function emit(){
+  if(disposed)return;
+  if(emitTimer!==null){clearTimeout(emitTimer);emitTimer=null;}
+  if(reinferDue){reinferDue=false;reinfer();}
+  const now=Date.now();for(const l of listeners)l.cb(build(l.window,l.chain,now));
+ }
 
  /** Transfers the map cannot place. The selection itself is pure and lives in engine.ts; this only picks
   * the buffers the chain filter allows. */
@@ -689,6 +703,7 @@ export function createLiveSource():LiveSource{
   registryHealth(){return registryHealth();},
   dispose(){
    disposed=true;
+   if(emitTimer!==null){clearTimeout(emitTimer);emitTimer=null;}
    for(const t of timers)clearInterval(t);
    timers.length=0;
    abort.abort();
