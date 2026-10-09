@@ -1,6 +1,8 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-09: **the map no longer blanks for a frame on resize or render-scale changes, and the 20 s update burst is coalesced** (section 26). On 2026-10-08 **Tronscan's other free lists were harvested for leads** (section 25). One more Ourbit wallet
+Last updated 2026-10-09 (later): **Jake approved payment firms on the map and three held brands were admitted: Urban
+Crypto Exchange (Brazil), Well Wallet (Costa Rica, a new map country) and DTCPay (Singapore, the first `payment` entity);
+Swapster, Wallib and Cropty are recorded as left out** (section 27). Earlier that day **the map stopped blanking for a frame on resize or render-scale changes, and the 20 s update burst was coalesced** (section 26). On 2026-10-08 **Tronscan's other free lists were harvested for leads** (section 25). One more Ourbit wallet
 was admitted (23 Tron wallets). No new country is reachable without a decision from Jake, and the free Tronscan API is
 close to exhausted for this project. On 2026-10-07 **the Tron open items were researched** (section 24). India and LatAm have no admissible
 Tron wallet; of the unregistered tagged brands only Ourbit passed D3 and was added (22 Tron wallets now). Before that,
@@ -514,8 +516,14 @@ integrity rules in section 2 (free does not relax the evidence standard).
    Base or Arbitrum. The unregistered market-maker, Upbit and Bithumb wallets were idle, so
    they were not pursued.
 6. **Done 2026-10-06/07 — Tron live** (section 23). Follow-ups: D3 operator research for the unregistered tagged brands
-   (Bybit first), and re-run the Tronscan lead sweep monthly with the dormancy run.
-7. Solana needs a paid indexer; same.
+   (Bybit first), and re-run the Tronscan lead sweep monthly with the dormancy run. The brands held for Jake in sections
+   24 and 25 were resolved on 2026-10-09 (section 27); CEEX and WestWallet remain unclear and unresearched.
+6b. **Holder CSV exports from Jake** (USDC on Etherscan; USDC and USDT on Polygonscan, Snowscan, Optimistic Etherscan):
+   process them like the 2026-09-29 USDT wave (section 16) when they arrive. Thin first-party coverage is why Polygon,
+   Optimism and Avalanche show few routes.
+6c. **`measure-corridors.mjs` knows only Ethereum, Base and Arbitrum** (section 27); teach it the `FEEDS` chains.
+7. Solana needs a keyed indexer: a free Helius key plus a Cloudflare Worker on the free tier (`docs/API-PLAN.md`), and a
+   decision on whether Solscan tags are admissible. Jake has been reminded (2026-10-09).
 8. Phase-2 backend (Workers + D1): the registry loader is trivial now that keys are
    `chain:address`, but nothing has been started.
 9. Pre-existing lint failures.
@@ -1577,3 +1585,58 @@ first: git tag `backup-before-blackout-fix-2026-10-09` and a copy of the tree (m
   junctions. If vite fails with "Cannot find package ... @rolldown/pluginutils", the same OneDrive damage has recurred.
 
 **Deliverable:** `outputs/ledger-atlas-live-2026-10-09.zip` (ignored by Git), `dist-live/` rebuilt with the fix.
+
+## 27. Three held brands admitted: Urban (BR), Well Wallet (CR) and DTCPay (SG); payment firms allowed (2026-10-09)
+
+Jake asked for the brands held in sections 24 and 25 to be resolved. The evidence is in the 2026-10-09 follow-up note under
+D3 in `docs/DECISIONS-2026-09.md`.
+
+**Decisions (Jake, 2026-10-09):**
+- **Payment firms are admissible.** The map is about cross-border stablecoin settlement, so a licensed payment or settlement
+  company's own hot wallet belongs on it under the same operator test. New entity category `payment` in `known-entities.ts`,
+  whose header now states the rule. Merchant or customer deposit addresses stay out (rule 3).
+- **Admitted:** Urban Crypto Exchange, Well Wallet and DTCPay.
+- **Left out, with the reasons written into the `known-entities.ts` header and DECISIONS so a future lead sweep skips them:**
+  Swapster, Wallib and Cropty (with Gate, UEEx, VIR8, MaskEX, Flipster, CEX.IO and FixedFloat from earlier passes).
+
+**Research done this session (main session, plus one research agent for Well Wallet; no downloads):**
+- **Urban:** the new terms (v9.0, 2026-08-05, a PDF linked from the site footer; the old `/termos-de-uso` URL is a 404) name
+  one São Paulo company, CNPJ 34.278.950/0001-02. Receita Federal (via publica.cnpj.ws) records the trade name as
+  "URBAN CRYPTO EXCHANGE", matching the Tronscan tag.
+- **Well Wallet:** its own public-wallets page lists the tagged Tron and Ethereum addresses. Costa Rica's Ministerio de
+  Hacienda confirms the footer company and its legal ID. Caveat in the entity note: the terms' party clause is an unfilled
+  placeholder. Jake may still search the ID on SUGEF's register to strengthen it.
+- **DTCPay:** terms say "we hold the private keys"; MAS licence PS20200531 confirmed through press coverage. The terms
+  themselves do not cite the licence number.
+- **Swapster:** the full 2026-03-24 agreement names no company at all. **Wallib:** its coins sit with an unnamed, replaceable
+  US provider. **Cropty:** Jake's call to leave it out.
+
+**Applied:**
+- `geography.ts`: Costa Rica (`CR`, numeric 188) added; 30 jurisdictions. No `MAP_LABELS` entry: it labels itself when active.
+- Entities `urban` (BR, exchange), `wellwallet` (CR, exchange), `dtcpay` (SG, payment), all HIGH, verified 2026-10-09.
+- Six rows, tags read through `read-tag.mjs` on 2026-10-09:
+  - Tron: Urban Crypto Exchange Hot Wallet ($26.0M a week), Well Wallet Hot 2 ($396M), DTCPay Hot Wallets 2 and 3
+    ($33.9M and $2.6M). DTCPay Hot Wallet 1 is idle and left out.
+  - Ethereum: Well Wallet: Hot 1, `0x9dab…13b0` ($50.2M of USDC/USDT in 7 days). It is a plain account, so it derives onto
+    the five other EVM chains.
+- Registry: 1,217 first-party rows (Tron 27, Ethereum 823), 3,572 derived, 68 entities.
+
+**Verification:**
+- `node scripts/verify-all.mjs` passed. Its only warnings are the expected "added since the dormancy measurement" ones (one
+  new row per EVM chain, five on Tron); the next dormancy run, due by 2026-11-21, clears them. `llms.txt` is 9,991 of
+  10,240 bytes, so the next wave that adds prose may hit the cap (the fix is shorter prose).
+- `tsc --noEmit` is clean; `corepack pnpm build:live` built.
+- Built site served from `/ledger-atlas-live/` (dist-check): all chains LIVE; with the Tron filter, Costa Rica and Brazil
+  are labelled on the globe and 13 corridors show in the first hour.
+- `scripts/measure-corridors.mjs` only knows Ethereum, Base and Arbitrum (it crashes on `cfg.slotMs` for the newer chains),
+  so per-chain corridor counts for Avalanche, Polygon, Optimism and Tron were not measured. Worth fixing before the next
+  methodology change.
+
+**Deliverable:** `outputs/ledger-atlas-live-2026-10-09b.zip` (ignored by Git). It supersedes `ledger-atlas-live-2026-10-09.zip`.
+
+**Open (Jake):**
+- Upload the zip, then set `llms: true` in the hub (section 8, item 10).
+- Holder CSV exports of USDC and USDT from Etherscan (USDC), Polygonscan, Snowscan and Optimistic Etherscan: the best
+  source of first-party wallets on the thin chains, which is what lets routes form there.
+- Optionally search Well Wallet's cédula 3-102-913956 on https://www.sugef.fi.cr/Sipo.Reportes/.
+- Solana: a free Helius key plus a Cloudflare Worker on the free tier (`docs/API-PLAN.md`), and a decision on Solscan tags.

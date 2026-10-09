@@ -236,6 +236,47 @@ their reopen conditions. Brands first met on Tronscan were tested on the same st
 - **FixedFloat is a non-custodial swap service** and is never attributed.
 - **Well Wallet** (Costa Rica, footer-only entity) and **Swapster** (current agreement unreadable) are held.
 - Details: `docs/measurements/2026-10-07/tron-open-items.md`.
+
+**2026-10-09 follow-up on the brands held on 2026-10-07 and 2026-10-08** (main session; terms read on the brands' own sites):
+- **Cropty: left out by Jake's decision.** Tronscan tag "Cropty Wallet Hot Wallet" (TVCEYdpK6o8hBt71h82aUVbgfyyxJNMYfe,
+  `docs/measurements/2026-10-08/tron-lead-screen.json`), $1.32M of USDT and 1,307 transfers in the
+  7 days to 2026-10-08. Its undated Terms of Service (https://www.cropty.io/terms-of-services) say it is operated by
+  Coinscatch (Private) Limited (Sri Lanka), with no registration number and no register record. It would add `LK`.
+  It already clears the $100k-a-week activity floor; it is out because the entity is unconfirmed and the flow is small.
+  **Reopen if** its weekly USDT flow grows to tens of millions, and then look first for a Sri Lankan registry entry or
+  licence for Coinscatch.
+- **Swapster fails.** The current user agreement (https://swapster.fi/docs/en_new/USER_AGREEMENT-2.pdf, last updated
+  24.03.2026) was read in full. It is a public offer under the Kyrgyz Civil Code and calls the operator only "the Company";
+  no company name, registration or licence number appears anywhere in it, and the website names none either. Earlier
+  versions named Kyrgyz LLCs and the operator changed in 2025. Same verdict as UEEx: no named entity. **Reopen if** the
+  agreement names the licensed Kyrgyz entity.
+- **Urban Crypto Exchange: passes on documents; held only on the payment-business question.** Terms of Use v9.0 dated
+  2026-08-05 (https://urbanexchange.com.br/docs/termos-de-uso-urban.pdf; the old `/termos-de-uso` URL is now a 404) name
+  URBAN SOCIEDADE PRESTADORA DE SERVIÇOS DE ATIVOS VIRTUAIS LTDA, CNPJ 34.278.950/0001-02, São Paulo, operating under
+  Law 14.478/2022 and BCB Resolutions 520 and 521/2025. Receita Federal's record (via publica.cnpj.ws, read 2026-10-09):
+  trade name "URBAN CRYPTO EXCHANGE", active, founded 2019-07-22, which matches the Tronscan tag. One entity, no affiliates,
+  no residence-based contracting. Its terms say it intermediates and does not custody client assets, and holds the crypto
+  "in its custody until payment is confirmed", so the hot wallet is Urban's own settlement wallet. Its business is
+  institutional OTC and cross-border stablecoin settlement ("Global Payments").
+- **Wallib: fails.** Terms (https://www.wallib.com/legal-pages/privacy-policy, titled "Terminos y condiciones", read
+  2026-10-09) name Wallib S.A.S., NIT 901.384.917-4, Bogotá. But custody of digital assets is "with third parties or
+  through Wallib"; purchased stablecoins sit in a "Subcuenta Wallib" inside an unnamed US infrastructure provider (FinCEN
+  MSB) that Wallib may replace at any time, and the site footer says some services come from third-party partners in
+  Mexico and Colombia. Nothing says who controls the tagged Tron wallet. Its 7-day flow was $0.29M.
+- **Well Wallet: still held, for Jake (who wants it added).** One research agent (WebSearch and WebFetch only), with the
+  two decisive points re-read by the main session on 2026-10-09:
+  - Brand link closed: https://wellwallet.io/en/public-wallets lists TRC20 `TQgxyP1jDXGBvmgwqnJ7jKkEqWEogfRM5V`, the exact
+    Tronscan "Well Wallet Hot 2" address, as one of the "official public crypto wallets used by our bot". (The page
+    corroborates the tag; it is not the admission source, per D1.)
+  - Entity exists: Ministerio de Hacienda (api.hacienda.go.cr, cédula 3102913956) returns WELL CORE TECHNOLOGIES SOCIEDAD
+    DE RESPONSABILIDAD LIMITADA, a company, status "Inscrito de Oficio", with only the generic activity code 960113. Every
+    page of the site names this one entity in its footer; no other entity and no residence split appears anywhere.
+  - New weakness: the Terms of Use (effective 29/08/2025) say they bind "you and [WellWallet Operator Entity]", an unfilled
+    placeholder, and have no governing-law clause. They describe "custodial storage" but name no licence.
+  - Unreachable: SUGEF's Art. 15/15 bis search (server error), Registro Nacional (login). Costa Rica's VASP law (Law 10961)
+    took effect 2026-09-19 and its register may not exist yet.
+  - Against WhiteBIT: WhiteBIT's entity is named in its agreement but has no government record; Well Wallet's has a
+    government record but is named only in footers. HIGH at most, with the placeholder recorded as a caveat.
 ## D4. BNB Chain: are Binance-Peg stablecoins admissible? (2026-09-25)
 
 **Answer: no. BNB Chain stays out, and Polygon's bridged USDT with it.**
