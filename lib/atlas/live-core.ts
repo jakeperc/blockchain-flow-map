@@ -83,6 +83,37 @@ export function planChunks(start:number,end:number,size:number):[number,number][
  return out;
 }
 
+/**
+ * The block-time interval a successful read of blocks [from,to] observed, and where it leaves the next read. Reading block n
+ * observes the chain over (time(n-1), time(n)], so a read that starts at the block after the previous read claims the time
+ * since that read ended, and consecutive reads tile with no gap. Until 2026-10-12 each read claimed time(to)-time(from),
+ * one block short: on Ethereum, with 12 s blocks polled every 20 s, a poll often reads a single block and claimed nothing,
+ * so a tab left running recorded about 40% of the time it actually watched, and 24H, which needs 80% on its least-covered
+ * chain, could never unlock. A read that does not follow the previous one (the first, or after a failed range) claims one
+ * block's time before `from`, never the gap.
+ */
+export function readInterval(prev:{block:number;time:number}|null,from:number,to:number,timeOf:(n:number)=>number):{from:number;to:number;next:{block:number;time:number}}{
+ const start=prev&&prev.block===from-1?prev.time:timeOf(from-1);
+ const end=Math.max(start,timeOf(to));
+ return {from:start,to:end,next:{block:to,time:end}};
+}
+
+/**
+ * The inclusive range a live poll reads next, null when there is nothing new, or 'rejoin' when the feed has fallen
+ * more than its backfilled hour behind. A sleeping computer, a tab the browser froze or a lost network stops every
+ * poll, and on waking the feed can be days behind. Crawling forward one catch-up range per poll then takes hours on
+ * Arbitrum or Ethereum, and every block it reads is older than the buffer keeps, so each transfer is pruned the
+ * moment it lands and the map shows nothing until the crawl ends. Rejoining re-reads the latest hour the way a page
+ * load does; the skipped stretch was never observed and recorded history counts it as the gap it was.
+ */
+export function nextPollRange(lastBlock:number,target:number,cfg:{blocks:number;liveRange:number;catchupRange:number}):[number,number]|'rejoin'|null{
+ if(target<=lastBlock)return null;
+ const behind=target-lastBlock;
+ if(behind>cfg.blocks)return 'rejoin';
+ const from=lastBlock+1;
+ return [from,Math.min(target,from+(behind>cfg.liveRange?cfg.catchupRange:cfg.liveRange)-1)];
+}
+
 /** Records at or after the cutoff. Returns a new array: a filter rather than a head-walk, so one out-of-order insert cannot stop retention forever. */
 export function pruneRecords(records:Rec[],cutoff:number):Rec[]{
  return records.filter(r=>r.blockTime>=cutoff);

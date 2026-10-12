@@ -8,7 +8,7 @@
  */
 const assert=require('node:assert/strict');
 const root=process.argv[2]||'/tmp/ledger-atlas-check';
-const {inferDeposits,priceAt,decodeTransferLog,formatAmount,makeBlockTimeFn,planChunks,pruneRecords,addressKey,classifyRec}=require(root+'/live-core.js');
+const {inferDeposits,priceAt,decodeTransferLog,formatAmount,makeBlockTimeFn,planChunks,nextPollRange,readInterval,pruneRecords,addressKey,classifyRec}=require(root+'/live-core.js');
 const {aggregate}=require(root+'/engine.js');
 const {UNKNOWN,admissible}=require(root+'/model.js');
 const {ERC20_TRANSFER_TOPIC}=require(root+'/evm.js');
@@ -183,6 +183,56 @@ const sweep=(over={})=>[rec({sender:OUTSIDE,receiver:DEP,blockTime:T0,...over.in
  for(let i=1;i<wide.length;i++)assert.equal(wide[i][0],wide[i-1][1]+1,'no gaps and no overlaps between chunks');
 }
 
+/* ---------- Polling after a pause ---------- */
+{
+ // Arbitrum's measured config: an hour is 14,400 blocks, a caught-up poll reads 200 and a catch-up poll 1,200.
+ const ARB={blocks:14400,liveRange:200,catchupRange:1200};
+ assert.equal(nextPollRange(1000,1000,ARB),null,'nothing new at the tip');
+ assert.equal(nextPollRange(1000,990,ARB),null,'a node behind our last block reads nothing');
+ assert.deepEqual(nextPollRange(1000,1080,ARB),[1001,1080],'a small gap is read in one live poll');
+ assert.deepEqual(nextPollRange(1000,1500,ARB),[1001,2200].map((n,i)=>i?Math.min(1500,n):n),'a gap past the live range is read in catch-up ranges, clipped to the tip');
+ assert.deepEqual(nextPollRange(1000,5000,ARB),[1001,2200],'a long gap inside the hour is crawled one catch-up range at a time');
+ assert.deepEqual(nextPollRange(1000,1000+14400,ARB),[1001,2200],'exactly one hour behind is still crawled');
+ assert.equal(nextPollRange(1000,1000+14401,ARB),'rejoin','more than an hour behind rejoins at the latest hour');
+ // A weekend asleep: 60 hours of Arbitrum is 864,000 blocks, 772 catch-up polls (over four hours at one poll per 20 s) of blocks the buffer would prune on arrival.
+ assert.equal(nextPollRange(1000,1000+864000,ARB),'rejoin','a weekend asleep rejoins instead of crawling');
+ const ETH={blocks:300,liveRange:6,catchupRange:50};
+ assert.deepEqual(nextPollRange(100,105,ETH),[101,105]);
+ assert.deepEqual(nextPollRange(100,400,ETH),[101,150]);
+ assert.equal(nextPollRange(100,401,ETH),'rejoin');
+}
+
+/* ---------- Observed time: consecutive reads tile ---------- */
+{
+ /** Merged length of [from,to] intervals, as live-client's observedMsIn measures it. */
+ const merged=xs=>{let ms=0,cur=null;for(const x of [...xs].sort((a,b)=>a.from-b.from)){if(!cur||x.from>cur.to){if(cur)ms+=cur.to-cur.from;cur={...x};}else cur.to=Math.max(cur.to,x.to);}return cur?ms+cur.to-cur.from:ms;};
+ /** A tab polling every `pollMs`, reading every new block up to the tip less one, block times estimated from the poll time as poll() does. */
+ const simulate=(slotMs,pollMs,hours)=>{
+  const out=[];let prev=null,last=null,first=null,end=0;
+  for(let t=pollMs;t<=hours*3600000;t+=pollMs){
+   const target=Math.floor(t/slotMs)-1;
+   if(last===null){last=target;continue;}
+   if(target<=last)continue;
+   const r=readInterval(prev,last+1,target,n=>t-(target-n)*slotMs);
+   out.push({from:r.from,to:r.to});prev=r.next;last=target;if(first===null)first=r.from;end=r.to;
+  }
+  return merged(out)/(end-first);
+ };
+ // Ethereum is the hard case: 12 s blocks polled every 20 s, so two polls in five read a single block.
+ assert.ok(simulate(12000,20000,24)>.999,'a day of Ethereum polls records the whole day, not the 40% the per-read formula recorded');
+ assert.ok(simulate(12000,60000,24)>.999,'a hidden tab polled once a minute still records the whole day');
+ for(const slot of [250,1200,1500,2000,3000])assert.ok(simulate(slot,20000,2)>.999,`${slot} ms blocks: polls tile`);
+ const t=n=>n*1000;
+ const a=readInterval(null,10,12,t);
+ assert.deepEqual([a.from,a.to],[9000,12000],'a first read claims its own blocks, from the end of the block before');
+ const b=readInterval(a.next,13,13,t);
+ assert.deepEqual([b.from,b.to],[12000,13000],'a one-block read that follows the last one claims the time since it');
+ const c=readInterval(a.next,20,22,t);
+ assert.deepEqual([c.from,c.to],[19000,22000],'a read after a gap claims none of the gap');
+ const d=readInterval({block:12,time:15000},13,13,t);
+ assert.ok(d.to>=d.from&&d.next.time===15000,'an estimate behind the previous end never moves time backwards');
+}
+
 /* ---------- Retention ---------- */
 {
  const recs=[rec({blockTime:T0-1000}),rec({blockTime:T0+1000}),rec({blockTime:T0-5000})];
@@ -191,4 +241,4 @@ const sweep=(over={})=>[rec({sender:OUTSIDE,receiver:DEP,blockTime:T0,...over.in
  assert.equal(pruneRecords(recs,T0-10000).length,3,'an out-of-order record does not stop retention early');
 }
 
-console.log('PASS: inference (evidence, refusals, boundary, chain scoping, expiry, corridor), price selection, decoding (EVM and Tron), decimals, block times, chunking, retention');
+console.log('PASS: inference (evidence, refusals, boundary, chain scoping, expiry, corridor), price selection, decoding (EVM and Tron), decimals, block times, chunking, polling after a pause, observed time, retention');

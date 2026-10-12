@@ -1,6 +1,9 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-09 (later): **Jake approved payment firms on the map and three held brands were admitted: Urban
+Last updated 2026-10-12: **24H and 7D could never unlock on all chains, because each poll recorded one block's time too
+little (Ethereum logged about 40% of the time watched); fixed. A tab left open also recovers now after the computer sleeps,
+the browser freezes it or the network drops, instead of crawling through the gap with an empty map, and transfers left
+unpriced by a price gap are re-priced** (section 28). On 2026-10-09 (later) **Jake approved payment firms on the map and three held brands were admitted: Urban
 Crypto Exchange (Brazil), Well Wallet (Costa Rica, a new map country) and DTCPay (Singapore, the first `payment` entity);
 Swapster, Wallib and Cropty are recorded as left out** (section 27). Earlier that day **the map stopped blanking for a frame on resize or render-scale changes, and the 20 s update burst was coalesced** (section 26). On 2026-10-08 **Tronscan's other free lists were harvested for leads** (section 25). One more Ourbit wallet
 was admitted (23 Tron wallets). No new country is reachable without a decision from Jake, and the free Tronscan API is
@@ -246,6 +249,11 @@ that Jake chose explicitly:
 - **Retry policy**: transient errors (429/5xx/code 12) retry the same endpoint with
   strikes; hard errors rotate immediately; attempts = max(4, pool size + 1). Failed chunks
   are counted in `missingBlocks` and surface as Partial/Delayed, never swallowed.
+- **After a pause** (the computer slept, the browser froze the tab, the network dropped) a feed more than its backfilled
+  hour behind re-reads the latest hour instead of crawling through blocks the buffer would prune, and any transfer left
+  unpriced makes the next price tick fetch the series again (`nextPollRange`, `refreshPriceGaps`; section 28).
+- **Observed time** for recorded history comes from `readInterval()`: consecutive reads tile, a read after a gap claims
+  none of it. Do not go back to `time(to) - time(from)` per read; on Ethereum that recorded 40% of the time watched.
 - **Health states**: LIVE / Backfilling / Partial / Delayed / Reconnecting / Connecting /
   Misconfigured, per chain. `registryHealth()` flips the whole page to DELAYED with an
   explanatory message if more than 25% of the registry has expired.
@@ -1640,3 +1648,82 @@ D3 in `docs/DECISIONS-2026-09.md`.
   source of first-party wallets on the thin chains, which is what lets routes form there.
 - Optionally search Well Wallet's cédula 3-102-913956 on https://www.sugef.fi.cr/Sipo.Reportes/.
 - Solana: a free Helius key plus a Cloudflare Worker on the free tier (`docs/API-PLAN.md`), and a decision on Solscan tags.
+
+## 28. A tab left running: 24H could never unlock, and the map emptied after a sleep (2026-10-12)
+
+Jake left the live site open over the weekend of 10-11 October to unlock 24H. When he came back every route had gone and
+the header figures read $0. The site was then running the 8 October build (`assets/index-DTYJbPu9.js`, uploaded
+2026-10-09 03:49 UTC, so before sections 26 and 27), but every fault below is older and was in later builds too.
+
+**Causes (read from `live-client.ts`, then reproduced in the dev server):**
+1. **24H and 7D could never unlock on "All chains".** A window's coverage is its least-covered chain (section 12), and each
+   poll recorded `time(to) - time(from)` for the blocks it read: one block's time short per read. Ethereum has 12 s blocks
+   and is polled every 20 s, so two polls in five read one block and recorded nothing. A simulation of a day of polls gives
+   Ethereum 40.0%, Tron 85.0%, Base and Optimism 90.0%, Polygon 92.5%, Avalanche 94.0% and Arbitrum 98.8%, and the spans
+   this machine had recorded on 2026-10-09 (20:30 to 21:45 UTC, a tab left polling) show the same: Ethereum 39-40%, Tron
+   85%, Base and Optimism 90%. Against an 80% bar, Ethereum alone kept both long windows locked however long the page ran.
+2. **The feed crawled through a pause.** A computer that sleeps, a background tab Chrome freezes or a lost network stops every
+   timer. On waking, each chain's poll resumed at the block after the last one it had read and moved forward one catch-up
+   range per 20 s poll. After 60 hours that is 864,000 Arbitrum blocks: 772 polls, about 4.3 hours in a visible tab and about
+   15 hours at the one poll a minute Chrome allows a hidden tab (Ethereum: about 2 and 7 hours). Every block read on the way
+   was older than the 90-minute buffer, so each transfer was pruned the moment it landed. Until the crawl ended the map
+   showed no routes, $0 and the Delayed state. This is the most likely cause of what Jake saw.
+3. **Prices did not recover after a gap.** The price series is fetched once at start; after that only a spot price is
+   sampled, every two minutes, and a transfer is priced only from a sample within 10 minutes of its block time. Transfers
+   from before the first new sample after a pause had no sample near them, and nothing fetched the series again
+   (`fetchPriceSeries` re-ran only while a series had never loaded). They stayed unpriced, outside every USD figure and every
+   route, until they aged out, while the health badge said LIVE.
+4. Two smaller faults that matter only to a long-running tab: one backfill chunk that failed kept that chain at Partial for
+   the rest of the session (`missingBlocks` was never reset), and a sealed span whose last seconds were read after it was
+   sealed kept its short coverage unless a new transfer happened to land in it.
+
+**Fix:**
+- `readInterval()` in `live-core.ts` (pure, tested): reading block n observes the chain over (time(n-1), time(n)], so a read
+  that starts at the block after the previous read claims the time since that read ended, and consecutive reads tile. A read
+  after a gap (the first one, or after a failed range) claims one block's time before its first block, never the gap. Every
+  backfill chunk and every poll records its interval through it (`noteRead`).
+- `nextPollRange()` in `live-core.ts` (pure, tested) decides each poll's range. When a feed is more than its backfilled hour
+  behind (`cfg.blocks`) it returns `'rejoin'`, and `poll()` runs `backfill()` again: the latest hour, read the way a page load
+  reads it, with the loading progress shown. The skipped stretch is never marked observed, so recorded history counts it as
+  a gap. Gaps of an hour or less are still crawled as before.
+- `refreshPriceGaps()` runs on every two-minute price tick and after a rejoin. Any asset with an unpriced transfer in the
+  buffer has its series fetched again (`seriesBusy` stops overlapping fetches), and `repriceUnpriced()` now marks the
+  transfer's span dirty so its sealed summary is corrected too.
+- `missingAt` records the block time of the newest range that failed to load; once it is older than the buffer the gap is in
+  no live window, `missingBlocks` resets and the chain can be LIVE again.
+- `noteObserved()` marks every span it touches dirty, so a span sealed before its last seconds were read is re-sealed with
+  its real coverage. `sealDue()` drops dirty marks for spans that have left the buffer.
+
+**Verification (dev server, 2026-10-12, with a temporary harness page that wrapped `fetch`; deleted afterwards):**
+- `verify-live.cjs` now simulates a day of polls: Ethereum at 20 s and at the 60 s a hidden tab gets, and five other block
+  times, each above 99.9% observed (the old formula gives the percentages in cause 1).
+- Coverage, live: the same quarter hour (19:00 to 19:15 UTC) sealed in two tabs at once. The built tab, still on
+  the old formula: Ethereum 40.0%, Tron 85.0%, Base 90.0%, Optimism 90.0%, Arbitrum 92.2%, Polygon 92.5%, Avalanche 94.2%.
+  The dev tab with the fix (about 4 minutes of start-up backfill, then polls): 100.0% on all seven chains.
+- Rejoin: Base's first tip was faked 4,000 blocks low, so the start-up backfill read an hour that ended 2.2 hours ago. The
+  first poll logged "Base is 4,001 blocks behind ... re-reading the latest hour" and re-read it; within 15 s Base was LIVE and
+  its four latest spans were sealed at 100% coverage with real transfers and no unpriced ones.
+- Price gap: the first series for each asset was cut 30 minutes short. Fixed code: 6,171 unpriced transfers at 45 s; the series
+  was fetched again at the 120 s tick, unpriced fell to 0, observed value rose from $217M to $289M, and the next seal rewrote
+  the two affected spans with no unpriced transfers. Old code (stashed, same harness): 5,671 unpriced at 62 s and still 5,671
+  at 142 s, with no second series request, health LIVE throughout.
+- Normal page with the fix while CoinGecko was answering 429 to this machine (repeated reloads): Coinbase and Kraken priced
+  everything, all seven chains LIVE, 41 corridors, 0 unpriced. The built `dist-live/` (dist-check) was LIVE on every chain.
+- `node scripts/verify-all.mjs` passed (same dormancy warnings as section 27); project `tsc --noEmit` clean.
+
+**What this does not change:** history still accrues only while the page runs. Hours the computer sleeps are unobserved,
+honestly, and 24H needs 19.2 of the last 24 hours watched (7D needs 134.4 of 168). To unlock them the computer must stay
+awake and the tab should have its own visible window: Chrome treats a minimized or fully covered window as hidden, throttles
+it, and with Energy Saver or Memory Saver on may freeze or discard it. History lives in that browser profile's site storage
+for jakepercy.com, so uploading a new build and reloading keeps it; clearing site data or switching browser loses it. Spans
+recorded before this build keep their under-recorded coverage (they are summaries; the reads cannot be replayed), so the
+first 24H unlock needs roughly 16 to 20 hours of this build running with the computer awake.
+
+**Also found:** `outputs/ledger-atlas-live-2026-10-09.zip` is a tar archive with a `.zip` name (its first bytes are `./`), so
+Windows cannot open it. It was superseded by `2026-10-09b`, which is a real zip.
+
+**Deliverable:** `outputs/ledger-atlas-live-2026-10-12.zip` (ignored by Git), built from this commit. It also carries
+sections 26 and 27, which the live site does not have yet.
+
+**Open (Jake):** upload it and reload the open tab; keep the computer awake while recording. An optional "keep this screen
+awake" switch on the page (the Screen Wake Lock API) was considered and not built; it holds only while the tab is visible.

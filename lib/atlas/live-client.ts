@@ -33,7 +33,7 @@ import {EXPLORERS} from './geography';
 import {FEEDS,type FeedConfig} from './feeds';
 import {rpcAddress} from './tron';
 import {knownAttribution,isDerived,watchedAddresses,dormancyInfo,registryHealth,ENTITIES} from './known-entities';
-import {addressKey,classifyRec,decodeTransferLog,inferDeposits,makeBlockTimeFn,planChunks,priceAt,pruneRecords,addSample,type Rec,type Sample} from './live-core';
+import {addressKey,classifyRec,decodeTransferLog,inferDeposits,makeBlockTimeFn,nextPollRange,planChunks,priceAt,pruneRecords,readInterval,addSample,type Rec,type Sample} from './live-core';
 import {BUCKET_MS,bucketOf,sealSpan,mergeRollups,mergeUnmapped,coverageOf,partsForChains,applyBaselines,registryVersionsOf,toStored,fromStored,type Rollup} from './rollup';
 import {createHistoryStore,type HistoryStatus} from './history-store';
 
@@ -187,21 +187,36 @@ export function createLiveSource():LiveSource{
  /** Each provider's public API rate-limits or drops bursts of its own accord; walk the provider list in
   * order per asset, with retries on each, and move to the next provider only once the current one has
   * exhausted its retries. Re-price anything left unpriced once a series arrives. */
+ let seriesBusy=false;
  async function fetchPriceSeries(){
-  for(const asset of Object.keys(COINGECKO_IDS) as Asset[]){
-   if(seriesLoaded[asset]||disposed)continue;
-   for(const provider of PRICE_PROVIDERS){
-    if(seriesLoaded[asset]||disposed)break;
-    for(let attempt=0;attempt<3&&!seriesLoaded[asset]&&!disposed;attempt++){
-     try{
-      const rows=await provider.series(asset,signal(10000));
-      for(const {at,usd} of rows)addSample(series[asset],{at,usd,source:provider.name},Date.now()-RETENTION_MS-3600000);
-      seriesLoaded[asset]=rows.length>0;
-     }catch{if(!disposed)await sleep(1500*(attempt+1));}
+  if(seriesBusy)return;seriesBusy=true;
+  try{
+   for(const asset of Object.keys(COINGECKO_IDS) as Asset[]){
+    if(seriesLoaded[asset]||disposed)continue;
+    for(const provider of PRICE_PROVIDERS){
+     if(seriesLoaded[asset]||disposed)break;
+     for(let attempt=0;attempt<3&&!seriesLoaded[asset]&&!disposed;attempt++){
+      try{
+       const rows=await provider.series(asset,signal(10000));
+       for(const {at,usd} of rows)addSample(series[asset],{at,usd,source:provider.name},Date.now()-RETENTION_MS-3600000);
+       seriesLoaded[asset]=rows.length>0;
+      }catch{if(!disposed)await sleep(1500*(attempt+1));}
+     }
     }
    }
-  }
+  }finally{seriesBusy=false;}
   repriceUnpriced();
+ }
+ /**
+  * The series is fetched once at start, and after that only the spot price is sampled, every two minutes. A pause
+  * in sampling — the computer slept, the browser froze the tab, the network dropped or every provider failed for a
+  * while — leaves transfers with no sample within PRICE_TOLERANCE_MS of their block time, and the spot price only
+  * covers the present, so they would stay unpriced (out of every USD total and every route) until they aged out.
+  * Fetch the series again for any asset with an unpriced transfer in the buffer, then re-price.
+  */
+ function refreshPriceGaps(){
+  for(const f of feeds.values())for(const r of f.buffer)if(r.usdValue===null)seriesLoaded[r.asset]=false;
+  if(!seriesLoaded.USDT||!seriesLoaded.USDC)void fetchPriceSeries();
  }
  /** First provider to answer wins for this tick; the others are only consulted when it fails, so a
   * healthy CoinGecko never pays for three round trips every poll. */
@@ -223,6 +238,8 @@ export function createLiveSource():LiveSource{
    const p=priceFor(r.asset,r.blockTime);if(!p)continue;
    r.usdValue=Number(r.amount)*p.usd;r.usdPrice=p.usd;r.priceTime=p.at;r.priceSource=p.source;
    if(r.tx){r.tx.usdValue=r.usdValue;r.tx.usdPrice=r.usdPrice;r.tx.priceTime=r.priceTime;r.tx.usdPriceSource=p.source;}
+   // A span already sealed counted this transfer as unpriced; re-seal it. Sample records are never sealed.
+   if(r.feed!=='sample')feed.dirty.add(bucketOf(r.blockTime));
    changed++;
   }
   if(changed&&!anyBackfilling()){reinfer();emit();}
@@ -241,21 +258,34 @@ export function createLiveSource():LiveSource{
   let lastBlock:number|null=null,tip=0,state:State='CONNECTING',lastReceived:number|null=null,polling=false,misconfigured=false;
   let backfillState:{done:number;total:number}|null=null;
   let plannedBlocks=0,missingBlocks=0,coverageStart:number|null=null,sampledMs=0;
+  /** Block time of the newest block that could not be loaded. Once it leaves the buffer the gap is in no live window, and the feed may report LIVE again. */
+  let missingAt:number|null=null;
   const buffer:Rec[]=[];
   const sampleBuffer:Rec[]=[];
   const ids=new Set<string>();
+  /** Spans that have taken new records or new observed time since they were last sealed, so sealing re-does only what changed. */
+  const dirty=new Set<number>();
   /**
    * Block-time ranges this feed actually read, which is what "observed" means for a sealed span. Only a
    * successful request appends: a chunk that failed after its retry is counted in missingBlocks and leaves no
    * interval, so a gap lowers the coverage of the spans it touches instead of being assumed away. Intervals
-   * older than the buffer can no longer describe a sealable span and are dropped.
+   * older than the buffer can no longer describe a sealable span and are dropped. A span sealed before its last
+   * seconds were read (a poll lands up to 20 s after the span closes, and a quiet chain may bring no transfer to
+   * re-seal it) is marked dirty, so its coverage is corrected rather than frozen short.
    */
   const observed:{from:number;to:number}[]=[];
   const noteObserved=(from:number,to:number)=>{
    if(!(to>from))return;
    observed.push({from,to});
+   for(let b=bucketOf(from);b<to;b+=BUCKET_MS)dirty.add(b);
    const cutoff=Date.now()-RETENTION_MS-BUCKET_MS;
    while(observed.length>1&&observed[0].to<cutoff)observed.shift();
+  };
+  /** Where the last successful read ended, so the next read of the following block claims the time in between (readInterval). */
+  let readEnd:{block:number;time:number}|null=null;
+  const noteRead=(from:number,to:number,timeOf:(n:number)=>number)=>{
+   const r=readInterval(readEnd,from,to,timeOf);
+   noteObserved(r.from,r.to);readEnd=r.next;
   };
   /** Milliseconds of `[start,end]` this feed actually held. Overlaps are merged, so a re-read never inflates it. */
   const observedMsIn=(start:number,end:number)=>{
@@ -268,8 +298,6 @@ export function createLiveSource():LiveSource{
    if(cur)ms+=cur.to-cur.from;
    return ms;
   };
-  /** Spans that have taken new records since they were last sealed, so sealing re-does only what changed. */
-  const dirty=new Set<number>();
   // Keyed by the contract's RPC form (lowercase 0x hex), which is what logs carry; CONTRACTS keeps Tron's base58 key.
   const tokens=Object.fromEntries(Object.entries(CONTRACTS[chain]??{}).map(([a,t])=>[rpcAddress(chain,a),t]));
   const contracts=Object.keys(tokens);
@@ -357,22 +385,22 @@ export function createLiveSource():LiveSource{
    const endTime=times?.get(end)??Date.now();
    const timeOf=makeBlockTimeFn(bounds,times,end,endTime,cfg.slotMs);
    const chunks=planChunks(start,end,cfg.chunk);
-   plannedBlocks=end-start+1;missingBlocks=0;
+   plannedBlocks=end-start+1;missingBlocks=0;missingAt=null;
    backfillState={done:0,total:plannedBlocks};state='BACKFILLING';emit();
    for(const [from,to] of chunks){
     if(disposed)return;
     try{
      ingest(await getEvidencedLogs(from,to),timeOf);
-     noteObserved(timeOf(from),timeOf(to));
+     noteRead(from,to,timeOf);
     }catch{
      // One retry at half width. A chunk that still fails is a real gap in the hour: it is counted and
      // reported, never silently turned into an empty result.
      const mid=Math.floor((from+to)/2);
      let recovered=false;
      if(mid>from){
-      try{ingest([...await getEvidencedLogs(from,mid),...await getEvidencedLogs(mid+1,to)],timeOf);recovered=true;noteObserved(timeOf(from),timeOf(to));}catch{/* counted below */}
+      try{ingest([...await getEvidencedLogs(from,mid),...await getEvidencedLogs(mid+1,to)],timeOf);recovered=true;noteRead(from,to,timeOf);}catch{/* counted below */}
      }
-     if(!recovered){missingBlocks+=to-from+1;console.warn(`[ledger-atlas live] ${chain} blocks ${from}-${to} could not be loaded; the window is short by ${to-from+1} blocks`);}
+     if(!recovered){missingBlocks+=to-from+1;missingAt=Math.max(missingAt??0,timeOf(to));console.warn(`[ledger-atlas live] ${chain} blocks ${from}-${to} could not be loaded; the window is short by ${to-from+1} blocks`);}
     }
     backfillState={done:to-start+1,total:plannedBlocks};emit();
     if(cfg.pauseMs)await sleep(cfg.pauseMs);
@@ -390,8 +418,16 @@ export function createLiveSource():LiveSource{
     tip=parseInt(await rpc<string>('eth_blockNumber',[]),16);
     const target=tip-TIP_LAG;
     if(lastBlock===null)lastBlock=Math.max(0,target-cfg.liveRange);
-    if(target<=lastBlock){if(!missingBlocks)state='LIVE';return;}
-    const from=lastBlock+1,to=Math.min(target,from+((target-lastBlock)>cfg.liveRange?cfg.catchupRange:cfg.liveRange)-1);
+    if(missingBlocks&&missingAt!==null&&missingAt<Date.now()-RETENTION_MS){missingBlocks=0;missingAt=null;}
+    const next=nextPollRange(lastBlock,target,cfg);
+    if(next===null){if(!missingBlocks)state='LIVE';return;}
+    if(next==='rejoin'){
+     console.info(`[ledger-atlas live] ${chain} is ${(target-lastBlock).toLocaleString()} blocks behind (the page was asleep, frozen or offline); re-reading the latest hour instead of crawling through the gap`);
+     await backfill();
+     refreshPriceGaps();
+     return;
+    }
+    const [from,to]=next;
     const logs=await getEvidencedLogs(from,to);
     const blockIds=[...new Set(logs.map(l=>l.blockNumber))],times=new Map<string,number>();
     if(blockIds.length){
@@ -401,7 +437,8 @@ export function createLiveSource():LiveSource{
     ingest(logs,n=>times.get(hex(n))??Date.now());
     // Headers are fetched only for blocks that produced logs, so the range's own bounds are interpolated from
     // the tip and the chain's slot time — the same interpolation the backfilled hour uses.
-    noteObserved(Date.now()-(target-from)*cfg.slotMs,Date.now()-(target-to)*cfg.slotMs);
+    const now=Date.now();
+    noteRead(from,to,n=>now-(target-n)*cfg.slotMs);
     lastBlock=to;lastReceived=Date.now();prune();reinferDue=true;
     state=to===target&&!missingBlocks?'LIVE':'CATCHING UP';
    }catch{state=failures>3?'RECONNECTING':'CONNECTING';}
@@ -484,6 +521,8 @@ export function createLiveSource():LiveSource{
   const first=bucketOf(now-RETENTION_MS)+BUCKET_MS;
   const fresh:Rollup[]=[];
   for(const [chain,feed] of feeds){
+   // Spans that left the buffer can no longer be sealed (a rejoin after a long pause can mark some), so stop tracking them.
+   for(const b of feed.dirty)if(b<first)feed.dirty.delete(b);
    for(let b=first;b+BUCKET_MS<=now;b+=BUCKET_MS){
     const key=partKey(b,chain);
     if(sealed.has(key)&&!feed.dirty.has(b))continue;
@@ -642,7 +681,7 @@ export function createLiveSource():LiveSource{
  })();
  timers.push(setInterval(()=>{for(const f of feeds.values())void f.poll();},POLL_MS));
  timers.push(setInterval(()=>{sealDue();},SEAL_MS));
- timers.push(setInterval(()=>{void fetchPrices();if(!seriesLoaded.USDT||!seriesLoaded.USDC)void fetchPriceSeries();},PRICE_MS));
+ timers.push(setInterval(()=>{void fetchPrices();refreshPriceGaps();},PRICE_MS));
  timers.push(setInterval(()=>{for(const f of feeds.values())void f.sample();},SAMPLE_MS));
  timers.push(setInterval(emit,TICK_MS));
  const onVisible=()=>{if(!document.hidden)emit();};
