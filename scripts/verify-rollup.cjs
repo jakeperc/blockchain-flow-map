@@ -211,6 +211,23 @@ const fullDay=chains=>chains.map(chain=>({chain,observedMs:BUCKET_MS}));
  const snap=mergeRollups(short,window,at);
  applyBaselines(snap,short,['Ethereum'],.8);
  for(const c of snap.corridors)assert.equal(c.baseline,null,'no baseline is better than a guessed one');
+ // An unaligned live moment: the prior windows are anchored to the last sealed quarter-hour, so each is still tiled
+ // by whole spans and the mean is still 1000. Ending them at `at` itself left one span of four straddling the
+ // boundary and out of the sum, a mean of 750. The gap between the last prior window and the live window is the
+ // unsealed stretch since that quarter-hour, under one span.
+ const later=at+7*60_000;
+ const unaligned=baselineFor(parts,'US-GB',window,later,['Ethereum'],.8,3000);
+ assert.ok(unaligned,'an unaligned live moment still has a baseline');
+ close(unaligned.mean,1000,'prior windows are tiled by whole spans whatever the live moment');
+ assert.ok(later-Math.floor(later/BUCKET_MS)*BUCKET_MS>0&&later-Math.floor(later/BUCKET_MS)*BUCKET_MS<BUCKET_MS,'the gap to the live window is under one span');
+ // A window that is not a whole number of spans cannot have tiled prior windows.
+ assert.equal(baselineFor(parts,'US-GB','5M',at,['Ethereum'],.8,10),null,'5M gets no baseline');
+ // The live hour, aggregated from raw records rather than merged from spans, takes a baseline from sealed history.
+ const live=aggregate([transfer({blockTime:at-60_000,usdValue:3000,senderEntity:US,receiverEntity:GB})],window,at);
+ assert.equal(live.corridors[0].baseline,null,'aggregate() alone has no baseline');
+ applyBaselines(live,parts,['Ethereum'],.8);
+ close(live.corridors[0].baseline,1000,'the live 1H window is compared with four sealed prior hours');
+ close(live.corridors[0].anomalyRatio,3,'and the ratio is against that history');
 }
 
 /* ---------- The persisted projection keeps the accounting and drops per-transfer detail ---------- */

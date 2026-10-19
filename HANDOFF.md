@@ -1,6 +1,8 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-18 (late): **both pages now name and link their author and the source code, carry a link-preview
+Last updated 2026-10-18 (late): **the 1H window has corridor baselines from sealed history, and a bias in how prior
+windows were cut (a 1H mean 25% low at any moment off the quarter-hour) is fixed** (section 32). Before that: **both pages
+now name and link their author and the source code, carry a link-preview
 image and the card tags, and `llms.txt` links the repository** (section 31). Earlier: **the page's first minute is honest: LOADING and PARTIAL states by cause instead of a blanket DELAYED,
 the first headline figure always labelled as evidenced wallets, the chain list in the pill, and the registry's size and
 freshness on the Data & coverage panel** (section 30). Earlier that day **the tree was pruned for a public GitHub
@@ -862,7 +864,8 @@ reasoning in D5; the short version:
   a stored citation would freeze evidence the registry may since have corrected. So a long window has no
   transfer list, no counterparty ranking and no evidence cards, and the UI says so in each place.
 - **Baselines finally work**, from four preceding windows that each clear the same coverage bar. The
-  corridor panel's anomaly UI had never been reachable before.
+  corridor panel's anomaly UI had never been reachable before. Since 2026-10-18 the prior windows are anchored to
+  the last quarter-hour boundary and the 1H window has them too (section 32).
 - A registry change does **not** discard history (the span records what could be attributed at the
   time, and mixing is disclosed); a change to the stored *shape* does, via `SCHEMA` in
   `history-store.ts`.
@@ -1894,3 +1897,39 @@ viewport emulation was reset afterwards.
 step 5 creates it; the hub's upload manifest must list `og.jpg` (week 3).
 
 **Next:** step 4 (1H baselines), then step 5 (history rewrite, NOTICE, README, CI, push on Jake's go-ahead).
+
+## 32. Baselines on the 1H window, and a bias in how prior windows were cut (2026-10-18)
+
+Week 1 step 4 of the plan in section 29. The corridor panel's anomaly line ("N.N x this corridor's baseline") could
+only ever appear on 24H and 7D (`applyBaselines` ran in the long-window branch of `build()` alone), and 7D can never
+have one with seven days of retention, so a visitor on the default window never saw it fire.
+
+**The bias found on the way.** `baselineFor()` cut the four prior windows to end at `at`, the live moment, which is
+almost never on a quarter-hour. `partsInWindow()` keeps only spans wholly inside a window, so the span straddling
+each prior window's start was left out of its sum while `coverageOf()`, which credits proportional overlap, still
+passed it. On a 1H window that is one span of four missing, a mean biased low by 25%; on 24H one of 96. Measured
+against the committed module with the verifier's own fixture (four complete prior hours at $1,000): aligned moment
+1,000, seven minutes past the quarter-hour **750**. The fix anchors the prior windows to the last quarter-hour
+boundary at or before `at` (`Math.floor(at/BUCKET_MS)*BUCKET_MS`), so each is tiled by whole spans, and refuses a
+window whose length is not a whole number of spans (5M). The cost is an unsealed gap of under one span between the
+last prior window and the live window, which is honest: that stretch is not sealed yet.
+
+**1H baselines.** `build()` now calls `applyBaselines()` for the short windows too, over the sealed spans alone
+(`partsFor(chains, at, false)`, no live tail, because the comparison windows must be whole and sealed). The message
+gains a 1H sentence, and a second one when any of that history was sealed under an earlier registry version
+(`baselineMixed`), since on 1H the mixing is in the baseline, not in the window. **Consequence disclosed:** `rank()`
+weights `anomalyRatio` at 5% (`engine.ts`), so two browsers with different recorded history can order the leading
+corridors differently on 1H; `docs/METHODOLOGY.md` says so in the Baselines paragraph, which also states the
+anchoring and the 5M exclusion. Published findings (plan week 3) cite corridors in USD order, never the page's.
+
+**Verifier (`verify-rollup.cjs`, baselines block):** the unaligned moment gives a mean of 1,000 (the old formula's
+750 is recorded in the comment), the gap to the live window is under one span, 5M gets no baseline, and a live 1H
+snapshot from `aggregate()` takes its baseline (1,000, ratio 3) from four sealed prior hours.
+
+**Verification:** `node scripts/verify-all.mjs` passed (the sealed-history group now carries the four new cases);
+`corepack pnpm build:live` built; lint unchanged. The dev page runs with no console error on reload. Not seen live:
+a 1H baseline needs four complete recorded hours in the visitor's own browser, which this machine's pane profile
+does not yet have; on a cold load the panel still says "Baseline unavailable", and after about five hours of a
+running tab, or for a returning visitor, the anomaly line appears on the default window.
+
+**Next:** step 5 (history rewrite, NOTICE, README, CI, push on Jake's go-ahead).

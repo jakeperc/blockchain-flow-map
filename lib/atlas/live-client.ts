@@ -567,7 +567,7 @@ export function createLiveSource():LiveSource{
   // browser's sealed spans plus the un-sealed tail; the two paths share no arithmetic beyond engine.ts itself.
   const long=LONG_WINDOWS.includes(window);
   const chains=resolvedChains(chain);
-  let recorded:ReturnType<typeof coverageOf>|null=null,mixedRegistry=false;
+  let recorded:ReturnType<typeof coverageOf>|null=null,mixedRegistry=false,baselineMixed=false;
   let s:Snapshot;
   if(long){
    const parts=partsFor(chains,at);
@@ -577,6 +577,12 @@ export function createLiveSource():LiveSource{
    mixedRegistry=registryVersionsOf(parts).length>1;
   }else{
    s=aggregate(events(chain),window,at);
+   // The live hour gets baselines from the sealed spans alone (no tail: the comparison windows must be whole and
+   // already sealed). baselineFor() anchors them to the last quarter-hour and refuses 5M. Because the anomaly term
+   // enters rank(), the order of the leading corridors on 1H depends on this browser's own recorded history.
+   const sealedParts=partsFor(chains,at,false);
+   applyBaselines(s,sealedParts,chains,UNLOCK_SHARE);
+   baselineMixed=registryVersionsOf(sealedParts).some(v=>v!==REGISTRY_VERSION);
   }
   const active=[...feeds.values()].filter(f=>chain==='All chains'||chain===f.chain);
   // The page-level state, worst first. RECONNECTING: an endpoint pool is failing. DELAYED: a feed is behind the chain
@@ -626,7 +632,8 @@ export function createLiveSource():LiveSource{
     ?`This ${window} window is assembled from ${window==='7D'?'a week':'24 hours'} of history THIS BROWSER recorded: each completed 15 minutes was reduced to its exact accounting and kept locally, never uploaded and never shared. It covers ${hms(recorded.observedMs)} of the ${hms(recorded.windowMs)} window${recorded.perChain.length>1?` (least-covered chain: ${recorded.perChain.reduce((a,b)=>a.share<b.share?a:b).chain})`:''}. Transfer-level evidence and the unfiltered sample stay on the 5M and 1H windows, where the raw records are still held.`
     :'The 5M and 1H windows read the transfers still held in memory. 24H and 7D are offered once this browser has recorded enough of them itself.',
    long&&mixedRegistry?'Part of this window was recorded under an earlier version of the evidence registry, which attributed fewer wallets than the current one. The figures are what this browser could attribute at the time.':'',
-   long?'Baselines compare this corridor with the four preceding windows of the same length from the same recorded history, and are shown only where each of those windows was observed too.':'',
+   long?'Baselines compare this corridor with the four preceding windows of the same length from the same recorded history, and are shown only where each of those windows was observed too.':'Baselines on the 1H window compare this corridor with the four preceding complete hours this browser recorded, aligned to the quarter-hour, and are shown only where each of those hours was observed too; because they enter the ranking, the order of the leading corridors can differ between browsers with different recorded history.',
+   !long&&baselineMixed?'Some of that history was recorded under an earlier version of the evidence registry, which attributed fewer wallets than the current one; the baselines are what this browser could attribute at the time.':'',
    'Routes are drawn only between evidenced wallets in different jurisdictions. On Base and Arbitrum most evidence is DERIVED from an Ethereum label on the same plain key-controlled account, is marked as such in the evidence panel, and never exceeds HIGH. Tron evidence is first-party only: a Tronscan public name tag on the address itself, never derived.',
    inferred.size?`${inferred.size} exchange deposit address${inferred.size===1?' is':'es are'} currently INFERRED from observed sweeps into labelled hot wallets and marked as such in the evidence panel.`:'',
    'Single-evidenced activity lights up its jurisdiction without drawing a route.',

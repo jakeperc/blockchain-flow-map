@@ -272,11 +272,20 @@ export interface Baseline {mean:number;samples:number;ratio:number|null;z:number
  * baseline is never computed against a window the browser mostly missed — that would read as a collapse in
  * volume when it was really a gap in watching. A corridor absent from a covered window contributes a real
  * zero, which is why absence is not the same as a missing sample.
+ *
+ * The prior windows are anchored to the last quarter-hour boundary at or before `at`, not to `at` itself, so
+ * each one is tiled exactly by whole spans. Ending them at `at` left the window's first span straddling the
+ * boundary and therefore out of the sum (see partsInWindow): one span short of four on a 1H window, a 25%
+ * bias, and one of 96 on 24H. The cost is a gap of under one span between the last prior window and the
+ * live window, which is honest: that stretch is not sealed yet. A window whose length is not a whole
+ * number of spans (5M) gets no baseline, because no prior window could be tiled.
  */
 export function baselineFor(parts:readonly Rollup[],corridorId:string,window:WindowKey,at:number,chains:readonly Chain[],minShare:number,current:number):Baseline|null{
  const duration=WINDOWS[window],values:number[]=[];
+ if(duration%BUCKET_MS!==0)return null;
+ const anchor=Math.floor(at/BUCKET_MS)*BUCKET_MS;
  for(let i=1;i<=BASELINE_SAMPLES;i++){
-  const endOfPrior=at-i*duration;
+  const endOfPrior=anchor-i*duration;
   if(coverageOf(parts,window,endOfPrior,chains).share<minShare)return null;
   let sum=0;
   for(const p of partsInWindow(parts,endOfPrior-duration,endOfPrior))
