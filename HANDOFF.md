@@ -1,6 +1,7 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-19 (later): **on phones a pinch could fling the flat map off the screen; fixed, and the flat map now
+Last updated 2026-10-19 (latest): **every push to `main` now publishes the map to GitHub Pages at
+https://jakeperc.github.io/blockchain-flow-map/, through the same gated build** (section 35). Before that: **on phones a pinch could fling the flat map off the screen; fixed, and the flat map now
 opens on the whole world (desktop a little wider, phones much wider)** (section 34). Earlier that day: **the repository is
 public at https://github.com/jakeperc/blockchain-flow-map and its CI is green** (section 33, part 4). Before that, 2026-10-18 (latest): **the repository is prepared for GitHub: MIT licence and a NOTICE on the data, a
 README that reads as a method summary, a CI workflow, the bulk explorer-scan outputs kept offline, and the history rewrite
@@ -46,15 +47,17 @@ SVG fallback). It started as a demo with synthetic data. It now has a **LIVE mod
 reads USDC and USDT `Transfer` logs straight from free public JSON-RPC endpoints in the
 visitor's browser. There is no backend for the live build.
 
-- **Deploy path is manual and must stay simple.** `corepack pnpm build:live` writes a
+- **Deploy paths must stay simple.** `corepack pnpm build:live` writes a
   static site to `dist-live/`. Jake unzips it and FTPs the contents (keeping the
   `assets/` folder) into a folder under `public_html` on jakepercy.com. The build uses
   relative asset paths so it works from any nested folder. Do not introduce anything that
-  needs a server, runtime environment variables, or an API key.
+  needs a server, runtime environment variables, or an API key. Since 2026-10-19 `.github/workflows/pages.yml` also
+  publishes the same gated build to https://jakeperc.github.io/blockchain-flow-map/ on every push to `main` (section 35);
+  jakepercy.com stays the canonical home and is still uploaded by hand.
 - `pnpm build:live` is **gated**: it runs `node scripts/verify-all.mjs` first and refuses
   to build if any verifier fails. Never remove that gate and never "fix" a failing
   verifier by weakening the assertion.
-- GitHub hosting of the code is in progress (section 29). The Next.js/Cloudflare Workers/D1 scaffold that was
+- The code is public on GitHub since 2026-10-19 (sections 29 to 33). The Next.js/Cloudflare Workers/D1 scaffold that was
   the deferred "phase 2 backend" (`app/`, `db/`, `drizzle/`, `lib/atlas/store.ts`, `production.ts`,
   `connectors.ts`) left the tree on 2026-10-18: it is at git tag `backend-deferred-2026-10` and its design note is
   `docs/archive/OPERATIONS-2026-09-backend-design.md`. Any future proxy (`docs/API-PLAN.md`) is written fresh as a
@@ -546,7 +549,8 @@ integrity rules in section 2 (free does not relax the evidence standard).
    `docs/API-PLAN.md`); and a new decision record beside D5, because a server-recorded window is not "what this browser
    recorded": it needs its own coverage disclosure, the same 80% bar, the same "never scaled" rule, and the llms
    template and methodology rewritten to match. The pure accounting (`rollup.ts`, `engine.ts`) already runs in plain
-   Node, which is what a Worker needs. Agents remind Jake of this (memory).
+   Node, which is what a Worker needs. Agents remind Jake of this (memory). First static step done 2026-10-19: GitHub
+   Pages serves the map from `main` at https://jakeperc.github.io/blockchain-flow-map/ (section 35).
 5. More first-party L2 labels: done on 2026-09-21 for every entity measured as active on
    Base or Arbitrum. The unregistered market-maker, Upbit and Bithumb wallets were idle, so
    they were not pursued.
@@ -2120,3 +2124,35 @@ emulates the viewport, and its touches arrive as mouse clicks, so the pinch was 
 folder, keeping `assets/`.
 
 **Pushed 2026-10-19 on Jake's go-ahead** (`9ae8d68`); the CI run on it passed.
+
+## 35. GitHub Pages publishes the map from `main` (2026-10-19)
+
+Jake turned GitHub Pages on for the repository and asked that it update whenever the project does. Until then Pages
+served the README as a Jekyll page (GitHub's automatic "pages build and deployment" run on `110d1be`), not the map.
+
+**What changed.** `.github/workflows/pages.yml`, modelled on the one in Jake's freeze-ledger repository: on every push
+to `main`, and by hand, it installs, runs `pnpm build:live` (which runs `verify-all`, the eight verifiers and `tsc`,
+before Vite), uploads `dist-live/` as the Pages artifact and deploys it to the `github-pages` environment. A commit
+that fails the gate is never published; the copy stays on the last commit that passed. No schedule, for the same reason
+as `verify.yml`. `verify.yml` changed only in its comment, and the README badge still points at it alone.
+
+**What the copy is.** The same static build Jake uploads, served at https://jakeperc.github.io/blockchain-flow-map/. jakepercy.com stays
+the canonical home: the canonical link, `og:url`, `og:image` and `llms.txt` name it, so a link preview of the github.io
+address shows jakepercy.com's `og.jpg`, which exists there only once Jake uploads the 2026-10-19 zip. Each origin keeps
+its own recorded history in the visitor's browser (IndexedDB is per origin), so 24H and 7D unlock separately on each.
+No rule changes: no server, no key, no new visitor bandwidth. This is the first, static half of section 8 item 4; the
+history Worker and moving jakepercy.com itself are still to come.
+
+**Checked before the first deploy.** The build's asset paths are relative (`base:'./'`), so it works under
+`/blockchain-flow-map/`. The page sets no content-security policy. All 25 RPC endpoints in `lib/atlas/feeds.ts` answered
+a CORS preflight and an `eth_blockNumber` POST from origin `https://jakeperc.github.io` exactly as they answered
+`https://jakepercy.com` (`*` or the echoed origin); `eth-pokt.nodies.app` sends no preflight header to either origin, so
+it behaves the same on both. CoinGecko and both Coinbase price endpoints answer `*`.
+
+**The calendar gate.** From 2026-11-21 the dormancy measurement is older than 45 days and `build:live` fails until the
+monthly scan is re-run (section 6), so pushes stop publishing and the github.io copy keeps the last good build. That is
+the gate working, not a Pages fault.
+
+**The repository sidebar.** The freeze-ledger repository shows its Pages address as the repository's website (About box)
+and a Deployments box. The Deployments box appears here with the first workflow deploy. The website link is a repository
+setting, not a file: About, the gear, "Use your GitHub Pages website", Save (or `gh repo edit --homepage`).

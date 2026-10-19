@@ -1,7 +1,8 @@
 # The build gate, run on every push and pull request: the eight integrity verifiers (model, map maths, evidence
 # registry, live path, sealed history, import graphs, Landmarks, llms.txt), a whole-project type check, and the
-# static build itself. Everything after the install is offline. The built site is kept as an artifact for review;
-# deployment stays manual (HANDOFF.md section 1).
+# static build itself. Everything after the install is offline. The built site is kept as an artifact for review.
+# pages.yml publishes the same gated build to GitHub Pages on a push to main; jakepercy.com is still uploaded by
+# hand (HANDOFF.md section 35).
 #
 # Never add a schedule here: verify-registry.cjs fails by the calendar on purpose (a dormancy measurement older
 # than 45 days, or evidence due to expire within 60 days), so a cron-triggered run would turn red with no change.

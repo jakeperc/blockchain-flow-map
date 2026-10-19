@@ -10,12 +10,16 @@
 [llms.txt](https://jakepercy.com/global-blockchain-flow/llms.txt) ·
 [methodology](https://jakepercy.com/global-blockchain-flow/methodology.md)
 
+**Built from `main` on every push:** [jakeperc.github.io/blockchain-flow-map](https://jakeperc.github.io/blockchain-flow-map/) (GitHub Pages, the same
+gated build)
+
 A live, evidence-only map of cross-border stablecoin settlement. The visitor's browser reads USDC and USDT
 `Transfer` logs straight from free public RPC endpoints on seven chains (Ethereum, Base, Arbitrum, Avalanche, Polygon,
 Optimism, Tron), attributes each transfer against a registry of exchange and custodian wallets whose evidence is a
 public name tag on the address's own explorer page plus a regulator or company document for the operator's
 jurisdiction, and draws a route only when both ends of a transfer are evidenced wallets in different jurisdictions.
-There is no server, no database and no API key: a static folder, uploaded by FTP. The map deliberately shows only a
+There is no server, no database and no API key: a static folder, uploaded by FTP to jakepercy.com and published to
+GitHub Pages by CI. The map deliberately shows only a
 small fraction of on-chain volume and says exactly how small.
 
 ## What you are looking at
@@ -165,11 +169,11 @@ project's engineering log and the first thing to read before changing anything.
 
 ## Status
 
-Updated 2026-10-18. Seven chains live; 1,217 first-party wallets (plus 3,572 derived) across 68 entities and 30
+Updated 2026-10-19. Seven chains live; 1,217 first-party wallets (plus 3,572 derived) across 68 entities and 30
 jurisdictions; Solana not connected (it needs a keyed indexer). The repository was prepared for publication on
 2026-10-18 and went public on 2026-10-19 (HANDOFF sections 29 to 33): the deferred backend scaffold and the unused template code left the tree,
 the gate type-checks the whole project, the page's first minute reads honestly, both pages name and link their
-author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world (HANDOFF section 34).
+author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world (HANDOFF section 34). Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build (HANDOFF section 35).
 The current deliverable is `outputs/ledger-atlas-live-<date>.zip`, built from `dist-live/`.
 
 ## Repository map

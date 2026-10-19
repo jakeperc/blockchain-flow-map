@@ -51,7 +51,9 @@ Hard rules, in short:
 - The repository is public (`github.com/jakeperc/blockchain-flow-map`, branch `main`) since 2026-10-19, so a push
   publishes: never push `work/`, `outputs/` or tags (only `backend-deferred-2026-10` is published), never commit the
   bulk scan outputs `.gitignore` lists, and expect `.github/workflows/verify.yml` to run `pnpm verify`, `pnpm typecheck`
-  and `pnpm build:live` on every push.
+  and `pnpm build:live` on every push, and `.github/workflows/pages.yml` to publish that build to
+  https://jakeperc.github.io/blockchain-flow-map/ on every push to `main`: a push to `main` is a deploy. Never add a
+  schedule to either workflow (the registry gate fails by the calendar).
 - The project's own links (author, site, repository, LinkedIn) live in `lib/site/links.ts`; the page, the Landmarks
   renderer and the llms build all read them from there. The link-preview image `public/og.jpg` is cartography only and
   is re-captured with `scripts/og/capture-snippet.js` on the dev server after a design change to the globe (HANDOFF
@@ -59,4 +61,4 @@ Hard rules, in short:
 - Commit as `git -c user.email="223131039+jakeperc@users.noreply.github.com" -c user.name="Jake Percy"`.
 
 Deliverable for Jake is a zip of `dist-live/` that he FTPs into a folder under
-`public_html` on jakepercy.com.
+`public_html` on jakepercy.com, the canonical home. The GitHub Pages copy publishes itself from `main`.
