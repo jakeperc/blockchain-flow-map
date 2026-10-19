@@ -48,6 +48,10 @@ Hard rules, in short:
 - Add as much real data and as many sources as free APIs and public endpoints allow. When
   free sources are running out (rate limits, key-only chains, exhausted labels), stop and
   tell Jake which free/paid APIs to get and what each unlocks. He signs up himself.
+- The repository is public (`github.com/jakeperc/blockchain-flow-map`, branch `main`) since 2026-10-19, so a push
+  publishes: never push `work/`, `outputs/` or tags (only `backend-deferred-2026-10` is published), never commit the
+  bulk scan outputs `.gitignore` lists, and expect `.github/workflows/verify.yml` to run `pnpm verify`, `pnpm typecheck`
+  and `pnpm build:live` on every push.
 - The project's own links (author, site, repository, LinkedIn) live in `lib/site/links.ts`; the page, the Landmarks
   renderer and the llms build all read them from there. The link-preview image `public/og.jpg` is cartography only and
   is re-captured with `scripts/og/capture-snippet.js` on the dev server after a design change to the globe (HANDOFF

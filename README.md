@@ -167,7 +167,7 @@ project's engineering log and the first thing to read before changing anything.
 
 Updated 2026-10-18. Seven chains live; 1,217 first-party wallets (plus 3,572 derived) across 68 entities and 30
 jurisdictions; Solana not connected (it needs a keyed indexer). The repository was prepared for publication on
-2026-10-18 (HANDOFF sections 29 to 33): the deferred backend scaffold and the unused template code left the tree,
+2026-10-18 and went public on 2026-10-19 (HANDOFF sections 29 to 33): the deferred backend scaffold and the unused template code left the tree,
 the gate type-checks the whole project, the page's first minute reads honestly, both pages name and link their
 author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline.
 The current deliverable is `outputs/ledger-atlas-live-<date>.zip`, built from `dist-live/`.

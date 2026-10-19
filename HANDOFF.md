@@ -1,6 +1,7 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-18 (latest): **the repository is prepared for GitHub: MIT licence and a NOTICE on the data, a
+Last updated 2026-10-19: **the repository is public at https://github.com/jakeperc/blockchain-flow-map and its CI is green**
+(section 33, part 4). Before that, 2026-10-18 (latest): **the repository is prepared for GitHub: MIT licence and a NOTICE on the data, a
 README that reads as a method summary, a CI workflow, the bulk explorer-scan outputs kept offline, and the history rewrite
 that follows** (section 33). Before that: **the 1H window has corridor baselines from sealed history, and a bias in how prior
 windows were cut (a 1H mean 25% low at any moment off the quarter-hour) is fixed** (section 32). Before that: **both pages
@@ -2028,9 +2029,27 @@ publication; nothing in the repository named the branch. The tags are not pushed
 **Fresh clone of the rewritten repository** (a scratch folder, the project-local store reused through
 `SITES_PNPM_SHARED_STORE`, `pnpm install --frozen-lockfile --offline`, `pnpm verify`, `pnpm build:live`): offline install in 5 s, all integrity checks passed, built in 3 s, and dist-live/ holds index.html, landmarks.html, llms.txt, methodology.md, og.jpg and the assets.
 
-**Open (Jake):** the push itself, which creates the public repository `jakeperc/blockchain-flow-map` (the name is
-the plan's proposal); the LinkedIn URL for `lib/site/links.ts`; after the push, the CI badge in the README goes green
-on the first run or says why not.
+**Part 4: published (2026-10-19).** Jake created the empty-looking repository `jakeperc/blockchain-flow-map` on GitHub
+(public); it held one auto-generated commit, a 21-byte README titled with the repository name. `main` was pushed over
+it with `git push --force-with-lease=main:<that commit>`, so only that placeholder could be replaced, and
+`origin` is now `https://github.com/jakeperc/blockchain-flow-map.git`. **Published:** the 50 rewritten commits and
+one tag, `backend-deferred-2026-10` (the two backup tags stay local; they are safety nets, not documentation). Checked
+first: one identity in every commit, none of the eighteen scan paths in history, no key or env file tracked (the only
+hit was the intended `.env.example` with an empty `TRONSCAN_API_KEY`).
+- **CI:** the first run (workflow `verify`, push event) passed from a clean Linux checkout in 25 seconds: Node 24,
+  `pnpm install --frozen-lockfile`, `pnpm verify`, `pnpm typecheck`, `pnpm build:live`, artifact upload. That is the
+  first time the gate has run off this machine; it is offline after the install, as the design pass predicted. One
+  annotation remains: the three actions run on Node 20 and GitHub forces them to 24 (a warning, not a failure; the
+  `@v4` pins can move to the next major when one is published).
+- **Rendering fix:** the README's first Mermaid diagram used unquoted labels with pipes and literal `\n`; GitHub marked
+  its container `render-error`. Labels are now quoted and broken with `<br/>`, and the registry flow is corrected
+  (the generated `known-addresses.ts` feeds `known-entities.ts`, which the live path and the verifiers use). After the
+  fix the container renders an SVG with no error flag. It is wide (left to right), so the text is small in a narrow
+  window; GitHub's zoom control opens it larger.
+- **Not set yet:** the repository's About box (description, website, topics) is empty, and the LinkedIn address in
+  `lib/site/links.ts` is still blank. Both are one-line changes once Jake chooses the words.
+- **From here the repository is public:** a push publishes. Never push `work/`, `outputs/` or a tag other than the one
+  above, never commit a scan output (the `.gitignore` lists them), and keep the identity `223131039+jakeperc@users.noreply.github.com`.
 
 **Next:** week 2 of the plan: the seven-chain replay (overnight run), the history export, the provenance split
 (`SCHEMA` bump after Jake exports), the About page skeleton.
