@@ -1,28 +1,33 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+import reactHooks from "eslint-plugin-react-hooks";
+import globals from "globals";
 
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-  ]),
+export default defineConfig([
+  globalIgnores(["dist-live/**", "outputs/**", "work/**", "node_modules/**", ".sites-runtime/**", ".next/**", ".vinext/**", ".wrangler/**"]),
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  reactHooks.configs.flat.recommended,
   {
-    files: ["components/ui/**/*.{ts,tsx}", "hooks/use-mobile.ts"],
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+  },
+  {
+    files: ["components/ui/**/*.{ts,tsx}"],
     rules: {
-      // These files are vendored verbatim from shadcn@4.17.0. Keep the
-      // registry source intact while applying the stricter rules to Site code.
+      // These five files are vendored verbatim from shadcn. Keep the registry
+      // source intact while applying the stricter rules to the project's own code.
       "@typescript-eslint/no-unused-vars": "off",
       "react-hooks/purity": "off",
       "react-hooks/set-state-in-effect": "off",
     },
   },
+  {
+    files: ["scripts/**/*.cjs"],
+    rules: {
+      // The verifiers are plain CommonJS on purpose: they load the modules
+      // verify-all.mjs compiles to CommonJS in a scratch directory.
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ]);
-
-export default eslintConfig;

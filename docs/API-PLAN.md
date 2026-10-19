@@ -7,6 +7,9 @@
   filtered request the other chains use, with CORS, from a browser. The only key Tron needs is a
   **free Tronscan API key**, used offline to read name tags (decision D6). It never ships.
 - Solana is unchanged: Helius through a Worker.
+- **2026-10-18:** the Next.js/D1 scaffold that was the deferred phase-2 backend left the repository (git tag
+  `backend-deferred-2026-10`). A Solana proxy, if ever needed, is written fresh as the cron Worker described below;
+  nothing in this plan depends on the old scaffold.
 
 The tables below are the 2026-09-29 plan, kept for the reasoning. Where they disagree with the three
 points above, the points above win.

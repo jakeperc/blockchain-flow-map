@@ -1,5 +1,5 @@
 /*
- * The Landmarks page (live-lite/landmarks.html). Imported only by its own entry, after app/globals.css, so it shares
+ * The Landmarks page (live-lite/landmarks.html). Imported only by its own entry, after globals.css, so it shares
  * the map's tokens, type and controls. Group colours (#199e70, #d95926, #3987e5) were validated with the dataviz
  * skill for an all-pairs scatter on the #111a1e surface; text never wears them.
  */

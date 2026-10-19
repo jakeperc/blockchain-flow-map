@@ -1,6 +1,8 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-12: **24H and 7D could never unlock on all chains, because each poll recorded one block's time too
+Last updated 2026-10-18: **the tree was pruned for a public GitHub repository: the deferred backend scaffold, 44 unused
+UI files and 26 unused packages left, `verify-all` now type-checks the whole project, and lint is re-based at 34 errors**
+(section 29). On 2026-10-12 **24H and 7D could never unlock on all chains, because each poll recorded one block's time too
 little (Ethereum logged about 40% of the time watched); fixed. A tab left open also recovers now after the computer sleeps,
 the browser freezes it or the network drops, instead of crawling through the gap with an empty map, and transfers left
 unpriced by a price gap are re-priced** (section 28). On 2026-10-09 (later) **Jake approved payment firms on the map and three held brands were admitted: Urban
@@ -43,9 +45,11 @@ visitor's browser. There is no backend for the live build.
 - `pnpm build:live` is **gated**: it runs `node scripts/verify-all.mjs` first and refuses
   to build if any verifier fails. Never remove that gate and never "fix" a failing
   verifier by weakening the assertion.
-- GitHub/Cloudflare hosting is a noted future to-do, not started. The Next.js/Cloudflare
-  Workers/D1 files (`app/`, `db/`, `drizzle/`, `lib/atlas/store.ts`, `production.ts`) are
-  the deferred "phase 2 backend" and are not used by the live build.
+- GitHub hosting of the code is in progress (section 29). The Next.js/Cloudflare Workers/D1 scaffold that was
+  the deferred "phase 2 backend" (`app/`, `db/`, `drizzle/`, `lib/atlas/store.ts`, `production.ts`,
+  `connectors.ts`) left the tree on 2026-10-18: it is at git tag `backend-deferred-2026-10` and its design note is
+  `docs/archive/OPERATIONS-2026-09-backend-design.md`. Any future proxy (`docs/API-PLAN.md`) is written fresh as a
+  Worker; nothing in the live build ever depended on the scaffold.
 
 Commits are made with `git -c user.email="223131039+jakeperc@users.noreply.github.com" -c user.name="Jake Percy"`.
 
@@ -134,8 +138,8 @@ live-lite/llms.txt.tpl              the hand-written prose of the published llms
 scripts/llms/render.mjs             llms.txt, methodology.md, head tags and <noscript>; run by vite.live.config.ts and verify-llms.mjs
 ```
 
-Registry keys are `${chain}:${address}` (lowercase on EVM). This matches the deferred
-backend's `store.ts addressKey`, so keep it.
+Registry keys are `${chain}:${address}` (lowercase on EVM, base58 on Tron). Keep that shape: the generator, the
+verifiers, the rollup registry version and the llms stamp all key on it.
 
 Current registry (2026-10-01): **1,189 first-party rows** (Ethereum 822, Base 262, Arbitrum 63, Avalanche 16,
 Polygon 20, Optimism 6) across 64 entities and 29 jurisdictions, plus **3,567 derived** (Base 560, Arbitrum 728,
@@ -356,8 +360,7 @@ sweeps, so they were not pursued.
 ### Verifying
 
 ```
-node scripts/verify-all.mjs
-node node_modules/typescript/bin/tsc --noEmit
+node scripts/verify-all.mjs        # ends with tsc --noEmit over the whole project since 2026-10-18 (pnpm typecheck runs that alone)
 corepack pnpm build:live
 ```
 
@@ -401,7 +404,8 @@ frame times and hover measured there mean nothing.
 
 ### Lint
 
-`pnpm lint` has **45 pre-existing errors** (recounted 2026-09-25 after the renderer rewrite;
+**Re-based 2026-10-18: 34 errors and 6 warnings under the typescript-eslint and react-hooks presets (section 29).** Before
+that, `pnpm lint` had **45 pre-existing errors** (recounted 2026-09-25 after the renderer rewrite;
 the same figure as 2026-09-21) in `components/atlas.tsx`, the SVG fallback, the deferred
 backend files and the CommonJS verifiers. The new renderer under `components/map/` and the new
 pure modules are lint-clean; `scripts/verify-map.cjs` carries a file-level disable for the
@@ -532,8 +536,9 @@ integrity rules in section 2 (free does not relax the evidence standard).
 6c. **`measure-corridors.mjs` knows only Ethereum, Base and Arbitrum** (section 27); teach it the `FEEDS` chains.
 7. Solana needs a keyed indexer: a free Helius key plus a Cloudflare Worker on the free tier (`docs/API-PLAN.md`), and a
    decision on whether Solscan tags are admissible. Jake has been reminded (2026-10-09).
-8. Phase-2 backend (Workers + D1): the registry loader is trivial now that keys are
-   `chain:address`, but nothing has been started.
+8. Phase-2 backend: the Next.js/D1 scaffold left the tree on 2026-10-18 (tag `backend-deferred-2026-10`, section 29).
+   If a proxy is ever needed for Solana it is written fresh as the cron Worker in `docs/API-PLAN.md`; the registry
+   loader is trivial because keys are `chain:address`.
 9. Pre-existing lint failures.
 10. **Upload, then flip the hub flag (Jake).** `dist-live/` now carries `llms.txt` and `methodology.md` (section 18). Once
    they are on the host, `JakePercy.com/content/llms/sites.json` can set `llms: true` for `global-blockchain-flow`
@@ -1395,8 +1400,8 @@ The leads came from Tronscan's `search/v2` and from the USDT holders list. Those
   - `chainId` 728126428, `slotMs` 3000, `chunk` 600, `sampleBlocks` 6.
   - `maxTopics` 1000, `maxRange` 1200.
   - `ENDPOINTS_MEASURED` is now 2026-10-06.
-- **`live-client.ts`:** topics and the contract list go through `rpcAddress`. `CONTRACTS.Tron` stays keyed by base58 for
-  the deferred backend.
+- **`live-client.ts`:** topics and the contract list go through `rpcAddress`. `CONTRACTS.Tron` stays keyed by base58, the
+  registry's own key shape.
 - **`live-core.ts`:**
   - `decodeTransferLog` writes Tron addresses in base58, and EVM output is unchanged.
   - The `ZERO` regex is replaced by the per-chain `isZeroAddress`.
@@ -1727,3 +1732,65 @@ sections 26 and 27, which the live site does not have yet.
 
 **Open (Jake):** upload it and reload the open tab; keep the computer awake while recording. An optional "keep this screen
 awake" switch on the page (the Screen Wake Lock API) was considered and not built; it holds only while the tab is visible.
+
+## 29. Public-repository preparation, part 1: the tree pruned, the gate type-checks, lint re-based (2026-10-18)
+
+Jake asked how to make the project impress the companies he is applying to (data/research analyst, product and
+investigations/compliance roles at on-chain analytics, exchange, stablecoin-issuer and infra companies). The approved
+three-week plan is `~/.claude/plans/any-ideas-on-how-swift-toucan.md`, with a plain-English summary at its end and a
+red-team table of what it must not bend (no data licence on the explorer tags, bulk scan outputs kept offline, `SCHEMA`
+bumped rather than worked around, no Prettier pass, `og.png` cartography only, phones unchanged). Week 1 makes the
+project findable and credible; this section is its first step.
+
+**Removed from the tree** (git history keeps everything; the pre-prune commit `b35900c` is tagged
+`backend-deferred-2026-10` once the history rewrite in a later step lands):
+- The Next.js / Cloudflare Workers / D1 scaffold that was the deferred phase-2 backend: `app/api/**`, `app/layout.tsx`,
+  `app/page.tsx`, `app/chatgpt-auth.ts`, `db/`, `drizzle/`, `drizzle.config.ts`, `examples/`, `build/`,
+  `next.config.ts`, `vite.config.ts`, `cloudflare-env.d.ts`, `.openai/`, `lib/atlas/{store,production,connectors}.ts`,
+  `scripts/collector.mjs` and the template installer scripts (`run-framework`, `sites-env`, `install-ci`,
+  `install-pnpm`, `pnpm-install`, `execution-profile`, `build-verified.sh`).
+- 44 unused shadcn files under `components/ui/` (`sheet`, `select`, `tabs`, `switch` and `slider` stay: the only five
+  `atlas.tsx` imports, and none of them imports another), `hooks/use-mobile.ts`, `components.json`, the three Next.js
+  starter SVGs in `public/`.
+- 18 dependencies and 8 devDependencies nothing imported (`next`, `drizzle-orm`, `zod`, `recharts`, `wrangler`,
+  `vinext`, ...); `@types/*` moved to devDependencies; the lockfile shrank by about 3,200 lines. `eslint-config-next`
+  had to go too: it loads `next` at runtime. Lint now runs on `@eslint/js`, `typescript-eslint` and
+  `eslint-plugin-react-hooks` 7 (the same React Compiler rules as before).
+- `docs/OPERATIONS.md` moved to `docs/archive/OPERATIONS-2026-09-backend-design.md` with a banner: it described the
+  scaffold's demo mode in the present tense.
+
+**Moved:** `app/globals.css` and `app/landmarks.css` to `live-lite/styles/` (the only live files under `app/`);
+`main.tsx`, `landmarks.tsx` and the vendor import follow. `render.mjs liveSources()` no longer skips the deleted
+backend files or walks `hooks/`.
+
+**Changed:** `package.json` is `blockchain-flow-map` with `dev:live`, `build:live`, `verify`, `typecheck` and `lint`,
+and `engines.node >=22.18.0`, because the build-time renderers import `.ts` from `.mjs` through Node's type stripping
+(this machine runs Node 24). `tsconfig.json` lost the Next plugin, the `.next` includes and the Workers types;
+`.env.example` holds only `TRONSCAN_API_KEY`; `pnpm-workspace.yaml` keeps the project-local store (changing it would
+purge and re-download `node_modules`; a first attempt did exactly that and was reverted) and drops the `sharp` and
+`workerd` entries; `.claude/launch.json` lost the `start` entry. **`verify-all.mjs` now ends with `tsc --noEmit` over
+the whole project**, so a type error in `atlas.tsx` or `live-client.ts` fails `pnpm build:live`; the manual `tsc` step
+in section 6 is folded into the gate.
+
+**Lint re-based.** The old count (46 errors, 16 warnings on the morning of 2026-10-18; the documented 45 had drifted)
+was under the Next config. Under the new presets, with a config override for `require()` in the CommonJS verifiers
+(their two file-level disables removed) and a stale local `.next/` folder deleted: **34 errors, 6 warnings**. New in
+the count are `@eslint/js` rules the Next config never ran: `no-control-regex` on the deliberate `\x00-\x7F` ASCII
+checks in `render.mjs`, `no-irregular-whitespace` on the deliberate thin-space character class in
+`scripts/landmarks/readers.mjs:277` (a regex that normalises non-breaking and thin spaces, not a stray character),
+`preserve-caught-error` and `no-empty` in the scripts. Gone are the eleven in deleted files. The rule stands: do not
+add to the count, do not spend time fixing it unless asked.
+
+**Verification:** `node scripts/verify-all.mjs` passes with the new `tsc` step (the only warnings are the expected
+"added since the dormancy measurement" ones); `corepack pnpm build:live` builds, `llms.txt` still 9,991 bytes;
+`corepack pnpm install --frozen-lockfile` exits 0, as CI will run it; `pnpm lint` gives the count above. No UI change,
+so no browser check and no new zip.
+
+**Documents updated in this commit:** sections 1, 3, 6, 8 (item 8) and 23 where they named the deferred backend;
+`README.md`; `docs/API-PLAN.md`; `AGENTS.md` (tsc in the gate, Node floor, scripts, the lint baseline, and the
+sentence that called `engine.ts` a demo slated for removal, which was wrong); `live-lite/README.md` (the backend
+sentence only; its registry figures are still the 2026-09-21 ones and are refreshed in week 1 step 5).
+
+**Next (plan week 1):** step 2 first-minute fixes (a LOADING health state, the pill naming every chain, the headline
+label of to-do 11, an Evidence registry section in Data & coverage), step 3 author links and `og:image`, step 4 1H
+baselines, step 5 the history rewrite, NOTICE, README, CI and the push to GitHub on Jake's go-ahead.

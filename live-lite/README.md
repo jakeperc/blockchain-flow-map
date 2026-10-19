@@ -1,8 +1,8 @@
 # Blockchain Flow Map · Live (static, backend-free build)
 
 The full Blockchain Flow Map interface — the Three.js Equal Earth map, corridor panels, evidence inspector,
-playback, the lot — built as plain static files with an **in-browser live Ethereum data source**
-instead of the server API. Deploy it exactly like `jakepercy.com/bitcoin-battlefield`: upload a folder
+playback, the lot — built as plain static files with an **in-browser live data source for seven chains**
+and no server at all. Deploy it exactly like `jakepercy.com/bitcoin-battlefield`: upload a folder
 via FTP and open it. No server, no database, no environment variables.
 
 ## Build and deploy
@@ -27,8 +27,8 @@ folder are its entry). Its stories are static HTML rendered at build time from `
 
 ## How it works
 
-- `live-lite/main.tsx` mounts the same `Atlas` component the main app uses, passing it an in-browser
-  data source instead of letting it call `/api/snapshot`. It opens on the 1-hour window in live mode.
+- `live-lite/main.tsx` mounts the `Atlas` component with an in-browser data source. It opens on the 1-hour
+  window in live mode.
 - `lib/atlas/live-client.ts` is that source, one feed per chain: Ethereum (USDC, USDT), Base (USDC),
   Arbitrum (USDC, USDT), Avalanche (USDC, USDT), Polygon (USDC), Optimism (USDC) and Tron (USDT). On load each
   feed backfills the preceding hour — 300 Ethereum blocks, 1,800 Base, 14,400 Arbitrum, 3,000 Avalanche,
@@ -73,8 +73,8 @@ observed at least 80% of them, with a tooltip saying how much more is needed, be
 day presented as "24H" would read as the day's settlement. Coverage accrues only while the page is open,
 so the long windows belong to a tab left running. The history is per browser, never uploaded and never
 shared; "Clear recorded history" is in the Data & coverage panel. What still needs a server:
-the main app's existing Cloudflare Workers + D1 backend, the phase 2 upgrade whenever you want it.
-Solana needs a paid indexer, so it stays "Not connected" and the chain filter only offers what the build
+a keyed Solana indexer behind a small proxy (`docs/API-PLAN.md`); the Workers + D1 scaffold that was the
+deferred phase 2 left the tree on 2026-10-18 (tag `backend-deferred-2026-10`). Solana needs that indexer, so it stays "Not connected" and the chain filter only offers what the build
 actually reads.
 
 ## The evidence registry

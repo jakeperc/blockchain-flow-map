@@ -260,14 +260,14 @@ export function handTypedNumbers(text) {
   return [...prose.matchAll(/[A-Za-z]*\d[\w.,%-]*/g)].map((m) => m[0].replace(/[.,;:]+$/, '')).filter((w) => !ALLOWED_NUMBERS.includes(w));
 }
 
-/** Source files whose behaviour is the live page's. Backend files and the generated registry are not. */
+/** Source files whose behaviour is the live page's. The generated registry is not. */
 function liveSources(root) {
-  const skip = new Set(['known-addresses.ts', 'production.ts', 'store.ts', 'connectors.ts']);
+  const skip = new Set(['known-addresses.ts']);
   const walk = (dir) => (existsSync(join(root, dir)) ? readdirSync(join(root, dir)).flatMap((n) => {
     const rel = `${dir}/${n}`;
     return statSync(join(root, rel)).isDirectory() ? walk(rel) : [rel];
   }) : []);
-  return [...walk('components'), ...walk('hooks'), ...walk('live-lite'), ...walk('lib/atlas').filter((f) => !skip.has(f.split('/').pop())), ...walk('lib/landmarks')].filter((f) => /\.(?:tsx?|html)$/.test(f));
+  return [...walk('components'), ...walk('live-lite'), ...walk('lib/atlas').filter((f) => !skip.has(f.split('/').pop())), ...walk('lib/landmarks')].filter((f) => /\.(?:tsx?|html)$/.test(f));
 }
 const URL_STATE = /URLSearchParams|\blocation\.(?:search|hash|href|pathname)\b|\bhistory\.(?:push|replace)State\b|\bhashchange\b|\bpopstate\b/;
 const DEBUG_FLAG = /new URLSearchParams\(location\.search\)\.get\('(?:debug|fallback)'\)===/g;

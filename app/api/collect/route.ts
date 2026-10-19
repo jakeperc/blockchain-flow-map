@@ -1,3 +1,0 @@
-import {pollEvm,pollTron,configured} from '@/lib/atlas/connectors';
-import {authorized,database} from '@/lib/atlas/store';
-export async function POST(request:Request){if(!await authorized(request))return Response.json({error:'Unauthorized'},{status:401});const results=[];for(const chain of configured()){if(chain==='Solana')continue;try{results.push(chain==='Tron'?await pollTron():await pollEvm(chain as 'Ethereum'|'Base'|'Arbitrum'));}catch{await database().prepare("INSERT INTO feeds (chain,state,error) VALUES (?,'RECONNECTING','Provider unavailable or malformed response') ON CONFLICT(chain) DO UPDATE SET state='RECONNECTING',error=excluded.error").bind(chain).run();results.push({chain,status:'RECONNECTING'});}}return Response.json({results});}

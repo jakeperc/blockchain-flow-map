@@ -29,6 +29,8 @@ try{
   if(script==='verify-registry.cjs'&&horizon)args.push('--horizon-days',horizon);
   run(process.execPath,args);
  }
+ // The whole project, UI included: a type error in atlas.tsx or live-client.ts must not reach a build either.
+ run(process.execPath,['node_modules/typescript/bin/tsc','--noEmit','-p','tsconfig.json']);
  console.log('All integrity checks passed.');
 }finally{
  rmSync(out,{recursive:true,force:true});

@@ -7,7 +7,6 @@
  *
  * Run through scripts/verify-all.mjs, which compiles the modules first.
  */
-/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS verifier, run by node directly like its siblings */
 const assert=require('node:assert/strict');
 const root=process.argv[2]||'/tmp/ledger-atlas-check';
 const {aggregate,selectUnattributed}=require(root+'/engine.js');

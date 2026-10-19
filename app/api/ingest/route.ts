@@ -1,4 +1,0 @@
-import {z} from 'zod';
-import {intakeSchema,normalize} from '@/lib/atlas/connectors';
-import {authorized,persist,database} from '@/lib/atlas/store';
-export async function POST(request:Request){if(!await authorized(request))return Response.json({error:'Unauthorized'},{status:401});if(Number(request.headers.get('content-length')??0)>1000000)return new Response('Payload too large',{status:413});try{const payload=z.array(intakeSchema).min(1).max(100).parse(await request.json());const events=[];for(const row of payload)events.push(await normalize(row));const inserted=await persist(events);return Response.json({received:events.length,inserted,duplicates:events.length-inserted});}catch{return Response.json({error:'Invalid or unverified event batch. Check contract, finality, price and classification evidence.'},{status:400});}}

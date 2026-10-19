@@ -1,3 +1,9 @@
+> **Archived design note (2026-10-18).** This describes the Next.js / Cloudflare Workers / D1 backend that was
+> scaffolded in September 2026 as a deferred "phase 2" and never built or connected. The scaffold left the repository
+> on 2026-10-18 (git tag `backend-deferred-2026-10`). The live site has no server (`README.md`, `HANDOFF.md` section 1).
+> "DEMO DATA" below refers to that scaffold's demo mode, which was removed from the live build on 2026-09-21 under the
+> no-synthetic-data rule. Kept as the record of the backend thinking, not as a description of anything that runs.
+
 # Blockchain Flow Map operations
 
 The hosted application opens in **DEMO DATA**. All jurisdictions, entities, classifications and transaction values in that mode are deterministic synthetic fixtures. No API key or evidence dataset was supplied during the build. No live provider has been validated end to end in this deployment.

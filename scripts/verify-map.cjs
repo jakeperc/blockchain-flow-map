@@ -2,7 +2,6 @@
  * Globe renderer maths and policy: the pure modules the map renderer is built on. Run by scripts/verify-all.mjs
  * against the compiled scratch directory (see verify-live.cjs for the compile step).
  */
-/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS verifier, run by node directly like its siblings */
 const assert=require('node:assert/strict');
 const root=process.argv[2]||'/tmp/ledger-atlas-check';
 const g=require(root+'/geo3d.js');
