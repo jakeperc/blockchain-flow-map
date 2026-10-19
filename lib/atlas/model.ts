@@ -77,7 +77,7 @@ export interface UnattributedSummary {
 export type Totals={observed:number;adjusted:number;attributed:number;domestic:number;unattributed:number;excluded:number;unresolved:number;unpricedCount:number;transactionCount:number;coverage:number|null};
 export interface Snapshot {
   window:WindowKey;at:number;
-  health:'LIVE'|'DELAYED'|'RECONNECTING'|'NOT CONNECTED';lastReceived:number|null;message:string;corridors:Corridor[];
+  health:'LIVE'|'LOADING'|'PARTIAL'|'DELAYED'|'RECONNECTING'|'NOT CONNECTED';lastReceived:number|null;message:string;corridors:Corridor[];
   totals:Totals;
   classifications:Record<string,number>;countries:CountrySummary[];history:{at:number;value:number}[];
   chainHealth:{chain:Chain;status:string;lastReceived:number|null}[];

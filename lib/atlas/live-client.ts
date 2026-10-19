@@ -579,8 +579,23 @@ export function createLiveSource():LiveSource{
    s=aggregate(events(chain),window,at);
   }
   const active=[...feeds.values()].filter(f=>chain==='All chains'||chain===f.chain);
-  const worst=active.find(f=>f.state!=='LIVE');
-  s.health=!active.length?'NOT CONNECTED':!worst?'LIVE':worst.state==='RECONNECTING'?'RECONNECTING':worst.state==='CONNECTING'?'NOT CONNECTED':'DELAYED';
+  // The page-level state, worst first. RECONNECTING: an endpoint pool is failing. DELAYED: a feed is behind the chain
+  // tip (CATCHING UP with nothing missing), so the figures are stale. LOADING: start-up, a feed still reading its first
+  // hour or connecting while others are already live. PARTIAL: every feed is at the tip but some blocks could not be
+  // read from the public endpoints, which the message names and the Data & coverage panel reports as a gap. A visitor
+  // arriving on the page therefore sees LOADING, not a fault, and a single failed chunk reads as PARTIAL, not as stale.
+  // registryHealth() can still force DELAYED below when most of the evidence has expired.
+  const states=active.map(f=>f.state);
+  const behind=active.some(f=>f.state==='CATCHING UP'&&!f.coverage().missingBlocks);
+  const partial=active.some(f=>f.coverage().missingBlocks>0);
+  s.health=!active.length?'NOT CONNECTED'
+   :states.includes('RECONNECTING')?'RECONNECTING'
+   :behind?'DELAYED'
+   :states.includes('BACKFILLING')?'LOADING'
+   :states.every(st=>st==='CONNECTING')?'NOT CONNECTED'
+   :states.includes('CONNECTING')?'LOADING'
+   :partial?'PARTIAL'
+   :'LIVE';
   s.lastReceived=Math.max(0,...active.map(f=>f.health().lastReceived??0))||null;
   s.chainHealth=CHAINS.map(c=>feeds.get(c)?.health()??{chain:c,status:'Not connected',lastReceived:null});
 

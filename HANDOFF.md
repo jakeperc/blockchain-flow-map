@@ -1,8 +1,10 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-18: **the tree was pruned for a public GitHub repository: the deferred backend scaffold, 44 unused
-UI files and 26 unused packages left, `verify-all` now type-checks the whole project, and lint is re-based at 34 errors**
-(section 29). On 2026-10-12 **24H and 7D could never unlock on all chains, because each poll recorded one block's time too
+Last updated 2026-10-18: **the page's first minute is honest: LOADING and PARTIAL states by cause instead of a blanket DELAYED,
+the first headline figure always labelled as evidenced wallets, the chain list in the pill, and the registry's size and
+freshness on the Data & coverage panel** (section 30). Earlier that day **the tree was pruned for a public GitHub
+repository: the deferred backend scaffold, 44 unused UI files and 26 unused packages left, `verify-all` now type-checks
+the whole project, and lint is re-based at 34 errors** (section 29). On 2026-10-12 **24H and 7D could never unlock on all chains, because each poll recorded one block's time too
 little (Ethereum logged about 40% of the time watched); fixed. A tab left open also recovers now after the computer sleeps,
 the browser freezes it or the network drops, instead of crawling through the gap with an empty map, and transfers left
 unpriced by a price gap are re-priced** (section 28). On 2026-10-09 (later) **Jake approved payment firms on the map and three held brands were admitted: Urban
@@ -259,8 +261,10 @@ that Jake chose explicitly:
 - **Observed time** for recorded history comes from `readInterval()`: consecutive reads tile, a read after a gap claims
   none of it. Do not go back to `time(to) - time(from)` per read; on Ethereum that recorded 40% of the time watched.
 - **Health states**: LIVE / Backfilling / Partial / Delayed / Reconnecting / Connecting /
-  Misconfigured, per chain. `registryHealth()` flips the whole page to DELAYED with an
-  explanatory message if more than 25% of the registry has expired.
+  Misconfigured, per chain. The page-level state is decided by cause since 2026-10-18 (section 30): RECONNECTING,
+  DELAYED (a feed behind the tip), LOADING (start-up), PARTIAL (at the tip with blocks missing), NOT CONNECTED, LIVE.
+  `registryHealth()` flips the whole page to DELAYED with an explanatory message if more than 25% of the registry has
+  expired.
 - `LiveSource.dispose()` clears every timer and aborts fetches; `import.meta.hot.dispose`
   is wired so HMR does not start a second backfill.
 - Inference (`inferDeposits` in `live-core.ts`) is recomputed from the buffer each cycle
@@ -520,9 +524,9 @@ integrity rules in section 2 (free does not relax the evidence standard).
    - **Broader deposit inference** (relaxed forward threshold, or exclusive-counterparty
      addresses). Methodology change: needs Jake's explicit approval and a measured before/after
      with `measure-corridors.mjs --explain`. Deliberately last.
-   - **Smaller hygiene:** show registry counts and the dormancy date in the Data & coverage
-     panel; code-split three.js out of the ~1.35 MB bundle; drop the expected public-endpoint
-     400/404/429 console noise to `debug` so real faults stand out.
+   - **Smaller hygiene:** ~~show registry counts and the dormancy date in the Data & coverage
+     panel~~ (done 2026-10-18, section 30); ~~code-split three.js out of the ~1.35 MB bundle~~ (done 2026-09-26,
+     section 11); drop the expected public-endpoint 400/404/429 console noise to `debug` so real faults stand out.
 4. GitHub plus Cloudflare Pages hosting to replace manual FTP (Jake's noted future to-do).
 5. More first-party L2 labels: done on 2026-09-21 for every entity measured as active on
    Base or Arbitrum. The unregistered market-maker, Upbit and Bithumb wallets were idle, so
@@ -545,7 +549,7 @@ integrity rules in section 2 (free does not relax the evidence standard).
    (that flag means "uploaded"; nothing in this repo sets it) and `node scripts/check-llms.mjs --live` there confirms the
    host serves both. The host has not been tested for `.md`: if it sends no content type, flip `METHOD_EXT` in
    `scripts/llms/render.mjs` to `.txt`.
-11. **Headline label on 24H, 7D and early in a session** (section 18, "Found while doing it"): the first figure reads
+11. **Done 2026-10-18 (section 30): headline label on 24H, 7D and early in a session** (section 18, "Found while doing it"): the first figure read
    "Observed onchain / All qualifying transfers" although the build reads only transfers touching an evidenced wallet.
 
 ## 9. History of the direction (why it is like this)
@@ -1121,7 +1125,7 @@ reworded ("the page was formerly named Ledger Atlas"; "no URL routes"). The file
 **Deliverable:** `outputs/ledger-atlas-live-2026-10-01.zip`, rebuilt to include `llms.txt` and `methodology.md` (ignored by Git).
 
 **Found while doing it (reported, not fixed)**
-- The first headline figure reads "Observed onchain / All qualifying transfers" on 24H, on 7D and until the first unfiltered
+- **Fixed 2026-10-18 (section 30).** The first headline figure read "Observed onchain / All qualifying transfers" on 24H, on 7D and until the first unfiltered
   sample arrives, although this build reads only transfers that touch an evidenced wallet. "Observed on evidenced wallets"
   appears only when a sample exists, and the sample is deliberately not attached to long windows (`build()` in
   `live-client.ts`: `if(sampleRecs.length&&!long)`; the label is `sampled` in `atlas.tsx`). `llms.txt` describes it as it is;
@@ -1794,3 +1798,48 @@ sentence only; its registry figures are still the 2026-09-21 ones and are refres
 **Next (plan week 1):** step 2 first-minute fixes (a LOADING health state, the pill naming every chain, the headline
 label of to-do 11, an Evidence registry section in Data & coverage), step 3 author links and `og:image`, step 4 1H
 baselines, step 5 the history rewrite, NOTICE, README, CI and the push to GitHub on Jake's go-ahead.
+
+## 30. The first minute: LOADING and PARTIAL page states, an honest headline label, the registry on the panel (2026-10-18)
+
+Week 1 step 2 of the plan in section 29. What a first-time visitor saw before this: a badge reading DELAYED while the
+page read its first hour, a pill saying "Connecting to Ethereum..." while seven chains connected, and a first headline
+figure captioned "Observed onchain / All qualifying transfers" although the build reads only transfers that touch an
+evidenced wallet (to-do 11). Nothing about the registry's size or freshness was on the page.
+
+**Page-level health, by cause** (`live-client.ts build()`; `Snapshot.health` in `model.ts` gained `LOADING` and
+`PARTIAL`). Worst first: RECONNECTING when an endpoint pool is failing; **DELAYED** when a feed is behind the chain tip
+(`CATCHING UP` with nothing missing), so the figures are stale; **LOADING** at start-up, a feed still reading its first
+hour or connecting while others are already live; **PARTIAL** when every feed is at the tip but some blocks could not
+be read from the public endpoints (the message names them and the panel reports the gap); NOT CONNECTED when nothing
+is active; otherwise LIVE. `registryHealth()` still forces DELAYED when most of the evidence has expired. Before this,
+the first non-LIVE feed decided the page, so one failed chunk on one chain read as DELAYED for up to 90 minutes, and so
+did the start-up backfill. The per-chain statuses (LIVE, Backfilling, Partial, Delayed, Reconnecting, Connecting,
+Misconfigured) are unchanged; `llms.txt` lists those, not the page states. The topbar badge carries `data-health`, and
+`globals.css` colours LIVE green and LOADING neutral; the warning amber stays for the rest.
+
+**Pill:** "Connecting to Ethereum, Base, Arbitrum, Avalanche, Polygon, Optimism and Tron..." from `source.chains`
+(`listOf()` in `atlas.tsx`), shown for NOT CONNECTED and for LOADING until the backfill progress line takes over.
+The empty-map notice no longer appears during LOADING.
+
+**Headline label:** the first figure is always "Observed on evidenced wallets / Transfers touching a known wallet";
+the `sampled` ternary is gone. `llms.txt.tpl` line 11 lost the two sentences about "Observed onchain" (the file is
+9,792 of 10,240 bytes now, 199 bytes freer).
+
+**Evidence registry section** in Data & coverage, before Recorded history: first-party and derived address counts,
+entities, jurisdictions, the watched/evidenced count for the selected chain, the dormancy date and window, the
+earliest evidence expiry and the date the endpoint caps were measured, from `registryStats()`, `dormancyInfo()`,
+`registryHealth()` and `ENDPOINTS_MEASURED`, the same functions `collectFacts()` stamps into `llms.txt`, so the two
+surfaces cannot disagree. Backlog hygiene item done (section 8, 3b).
+
+**Phones** keep their layout (section 21); the author credit for phones arrives with the links in step 3.
+
+**Verification (dev server, 2026-10-19 UTC):** a poller on `.demo-badge` after a reload recorded LOADING from the first
+second, PARTIAL at 15 seconds once every backfill had finished with one chain reporting a gap (Avalanche, a public
+endpoint 429), never DELAYED; before the fix the same reload went LOADING then DELAYED at 5 seconds. The registry
+section rendered 1,217 / 3,572 / 68 / 30, dormancy 2026-10-07 (90-day window), expiry 17 Mar 2027, caps 2026-10-06.
+`node scripts/verify-all.mjs` (with `tsc`) passed; `corepack pnpm build:live` built and the bundle carries the new pill
+text and the PARTIAL state; `grep "Observed onchain"` finds nothing in the bundle or `llms.txt`; lint unchanged at 34
+errors and 6 warnings. The embedded pane throttles timers, so the 15 seconds is this machine's; a phone takes longer.
+
+**Next:** step 3 (author links, `og:image`, `twitter:card`, the phone credit in the status strip), step 4 (1H
+baselines), step 5 (history rewrite, NOTICE, README, CI, push).
