@@ -11,7 +11,7 @@ import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
-const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds','rollup','encoding','geo3d','quality-policy','tween','tron'].map(m=>`lib/atlas/${m}.ts`);
+const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds','rollup','encoding','geo3d','quality-policy','tween','tron','gesture','atlas-view'].map(m=>`lib/atlas/${m}.ts`);
 const CHECKS=[['verify-model.cjs',[]],['verify-map.cjs',[]],['verify-registry.cjs',[]],['verify-live.cjs',[]],['verify-rollup.cjs',[]],['verify-live-build.cjs',[]],['verify-landmarks.mjs',[]],['verify-llms.mjs',[]]];
 
 const horizonArg=process.argv.indexOf('--horizon-days');

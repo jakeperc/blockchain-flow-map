@@ -7,11 +7,14 @@ import * as THREE from 'three';
 import {ZOOM_MAX,ZOOM_MIN} from '@/lib/atlas/encoding';
 import {Tween,damp,easeInOutCubic,easeInOutSine,easeOutCubic,clamp01} from '@/lib/atlas/tween';
 import {toLonLat,type Vec3} from '@/lib/atlas/geo3d';
-import {R,viewHeight,type Ctx} from './frame';
+import {atlasHomeZoom,clampToMap,extentFromProjection,ATLAS_MIN_SHARE} from '@/lib/atlas/atlas-view';
+import {R,viewHeight,projection,type Ctx} from './frame';
 
 export type MapMode='globe'|'atlas';
 export type Phase='globe'|'toAtlas'|'toGlobe'|'atlas';
 const DEG=Math.PI/180,GLOBE_FOV=38,ATLAS_FOV=20,HOME_LON=-40,HOME_ELEV=20,MORPH_S=1.6,PITCH_MAX=80*DEG;
+/** The flat map's outline in scene units, from the projection the land, outlines and arcs are built with. */
+const EXTENT=extentFromProjection((lon,lat)=>projection([lon,lat]) as [number,number]);
 
 export interface Rig{
  phase:Phase;morph:number;body:number;atmo:number;
@@ -19,7 +22,8 @@ export interface Rig{
  setMode(mode:MapMode,now:number,reduced:boolean):void;
  /** Orbit by a screen-space drag (px) in globe mode; pan in atlas mode. */
  drag(dx:number,dy:number):void;
- release(vx:number,vy:number):void;
+ /** End of a drag. Without inertia the camera stops where it is (a pinch, a pause before lifting, a cancel). */
+ release(inertia:boolean):void;
  /** Multiply the zoom level, keeping the point under (px,py) fixed when given. */
  zoomBy(factor:number,px?:number,py?:number):void;
  flyTo(lon:number,lat:number,now:number,reduced:boolean):void;
@@ -36,6 +40,8 @@ export interface Rig{
  /** True while a tween, inertia or zoom easing is still moving the camera. */
  moving():boolean;
  interactive():boolean;
+ /** `?debug=map` only: the atlas pan, zoom and inertia, for checking gestures without a phone. */
+ debugView():{panX:number;panY:number;zoom:number;zoomTarget:number;atlasHome:number;vPanX:number;vPanY:number};
 }
 
 export function buildRig(ctx:Ctx):Rig{
@@ -46,6 +52,18 @@ export function buildRig(ctx:Ctx):Rig{
  /** Scene units per canvas pixel on the atlas plane: the design frame spans the map area, not the (taller) canvas. */
  const rc=new THREE.Raycaster(),ndc=new THREE.Vector2(),inv=new THREE.Matrix4(),ro=new THREE.Vector3(),rd=new THREE.Vector3();
  const unitsPerPx=()=>viewHeight(ctx.width,ctx.areaHeight)/ctx.areaHeight/zoom;
+ /** Where the atlas opens and resets: the whole map with a margin (lib/atlas/atlas-view.ts). */
+ const atlasHome=()=>atlasHomeZoom(ctx.width,ctx.areaHeight,viewHeight(ctx.width,ctx.areaHeight),EXTENT);
+ const inAtlas=()=>rig.phase==='atlas'||rig.phase==='toAtlas';
+ /** The atlas may zoom out a little past the whole map, never further (the globe keeps ZOOM_MIN). */
+ const minZoom=()=>inAtlas()?atlasHome()*ATLAS_MIN_SHARE:ZOOM_MIN;
+ /** The area's centre sits this far (scene units) from the canvas centre; the view centre on the plane is (panX, panY + it). */
+ const shiftY=()=>ctx.areaShift*viewHeight(ctx.width,ctx.areaHeight)/ctx.areaHeight;
+ /** Keep the view centre inside the map's outline, and stop any inertia along an axis that hit it. */
+ const keepOnMap=()=>{
+  const s=shiftY(),c=clampToMap(panX,panY+s,EXTENT);
+  panX=c.x;panY=c.y-s;if(c.hitX)vPanX=0;if(c.hitY)vPanY=0;
+ };
  const rig:Rig={phase:'globe',morph:0,body:1,atmo:1,yaw,pitch,zoom,
   setMode(mode,now,reduced){
    const target=mode==='atlas'?1:0;if(morph.target===target)return;
@@ -53,20 +71,20 @@ export function buildRig(ctx:Ctx):Rig{
    morph.retarget(target,d,now);elev.retarget(target?0:HOME_ELEV,d,now);fov.retarget(target?ATLAS_FOV:GLOBE_FOV,d,now);dist.retarget(target,d,now);
    if(target){yawT.retarget(0,d*.6,now);pitchT.retarget(0,d*.6,now);panX=panY=0;}
    else{yawT.jump(yaw);pitchT.jump(pitch);yawT.retarget(HOME_LON*DEG*-1,d,now);pitchT.retarget(0,d,now);}
-   zoomT.retarget(1,d,now);vYaw=vPitch=vPanX=vPanY=0;
+   zoomT.retarget(target?atlasHome():1,d,now);vYaw=vPitch=vPanX=vPanY=0;
    rig.phase=target?'toAtlas':'toGlobe';
   },
   drag(dx,dy){
    if(rig.phase==='globe'){const r=rig.sphereRadiusPx();const dy1=dx/r,dp=dy/r;yaw+=dy1;pitch=Math.max(-PITCH_MAX,Math.min(PITCH_MAX,pitch+dp));yawT.jump(yaw);pitchT.jump(pitch);vYaw=dy1;vPitch=dp;}
-   else if(rig.phase==='atlas'){const u=unitsPerPx();panX-=dx*u;panY+=dy*u;vPanX=-dx*u;vPanY=dy*u;}
+   else if(rig.phase==='atlas'){const u=unitsPerPx();panX-=dx*u;panY+=dy*u;vPanX=-dx*u;vPanY=dy*u;keepOnMap();}
   },
-  release(){/* velocities were recorded by the last drag */},
+  release(inertia){if(!inertia){vYaw=vPitch=vPanX=vPanY=0;}},
   zoomBy(factor,px,py){
-   const next=Math.max(ZOOM_MIN,Math.min(ZOOM_MAX,zoomT.target*factor)),f=next/zoomT.target;
+   const next=Math.max(minZoom(),Math.min(ZOOM_MAX,zoomT.target*factor)),f=next/zoomT.target;
    if(f===1)return;
    if(rig.phase==='atlas'&&px!==undefined&&py!==undefined){
     const u=unitsPerPx(),ux=(px-ctx.width/2)*u,uy=-(py-ctx.height/2)*u;
-    panX+=ux*(1-1/f);panY+=uy*(1-1/f);
+    panX+=ux*(1-1/f);panY+=uy*(1-1/f);keepOnMap();
    }else if(rig.phase==='globe'&&px!==undefined&&py!==undefined&&f>1){
     const hit=rig.lonLatAt(px,py,()=>null);
     if(hit){const [lon,lat]=hit,centerLon=-yaw/DEG,centerLat=pitch/DEG+HOME_ELEV*0;let dl=lon-centerLon;dl=((dl+540)%360)-180;yaw-=dl*DEG*(1-1/f)*.9;pitch=Math.max(-PITCH_MAX,Math.min(PITCH_MAX,pitch+(lat-centerLat)*DEG*(1-1/f)*.9));yawT.jump(yaw);pitchT.jump(pitch);}
@@ -80,7 +98,7 @@ export function buildRig(ctx:Ctx):Rig{
   reset(now,reduced){
    const d=reduced?0:.9;
    if(rig.phase==='globe'){yawT.jump(yaw);pitchT.jump(pitch);let dl=HOME_LON*DEG*-1-yaw;dl=((dl+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI;yawT.retarget(yaw+dl,d,now);pitchT.retarget(0,d,now);}
-   panX=panY=0;vYaw=vPitch=vPanX=vPanY=0;zoomT.retarget(1,d,now);
+   panX=panY=0;vYaw=vPitch=vPanX=vPanY=0;zoomT.retarget(rig.phase==='atlas'?atlasHome():1,d,now);
   },
   intro(now,reduced){
    if(reduced||rig.phase!=='globe'||zoomT.target!==1||zoom!==1)return;
@@ -114,7 +132,7 @@ export function buildRig(ctx:Ctx):Rig{
    const kd=damp(4,dt);
    if(yawT.active||pitchT.active){yaw=yawT.update(now);pitch=pitchT.update(now);vYaw=vPitch=0;}
    else{yaw+=vYaw;pitch=Math.max(-PITCH_MAX,Math.min(PITCH_MAX,pitch+vPitch));vYaw*=1-kd;vPitch*=1-kd;yawT.jump(yaw);pitchT.jump(pitch);}
-   if(Math.abs(vPanX)+Math.abs(vPanY)>1e-4&&rig.phase==='atlas'){panX+=vPanX;panY+=vPanY;vPanX*=1-kd;vPanY*=1-kd;}
+   if(Math.abs(vPanX)+Math.abs(vPanY)>1e-4&&rig.phase==='atlas'){panX+=vPanX;panY+=vPanY;vPanX*=1-kd;vPanY*=1-kd;keepOnMap();}
    zoom=zoomT.active?zoomT.update(now):zoom+(zoomT.target-zoom)*damp(8,dt);
    rig.yaw=yaw;rig.pitch=pitch;rig.zoom=zoom;
    world.rotation.set(pitch,yaw,0,'XYZ');
@@ -135,7 +153,8 @@ export function buildRig(ctx:Ctx):Rig{
    return {morphing,justFinished};
   },
   moving(){return morph.active||elev.active||fov.active||dist.active||yawT.active||pitchT.active||zoomT.active||Math.abs(zoomT.target-zoom)>1e-4||Math.abs(vYaw)+Math.abs(vPitch)>1e-6||Math.abs(vPanX)+Math.abs(vPanY)>1e-4;},
-  interactive(){return rig.phase==='globe'||rig.phase==='atlas';}
+  interactive(){return rig.phase==='globe'||rig.phase==='atlas';},
+  debugView(){return {panX,panY,zoom,zoomTarget:zoomT.target,atlasHome:atlasHome(),vPanX,vPanY};}
  };
  void lastPhase;
  return rig;

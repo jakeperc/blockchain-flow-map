@@ -97,4 +97,49 @@ close(tw.damp(3,0),0);assert.ok(tw.damp(3,1)>.9);close(tw.damp(3,.5)+(1-tw.damp(
  t.retarget(0,1,.5);close(t.update(.5),50,1e-9,'retargeting does not jump');assert.ok(t.update(.75)<50);close(t.update(1.5),0);assert.equal(t.active,false);
  t.retarget(10,0,2);assert.equal(t.value,10,'zero duration is instant');}
 
-console.log('PASS: sphere maths, Fibonacci prefixes, great circles, antimeridian splitting, sun position, visibility, quality selection, governor hysteresis, recovery probes and tweens');
+// Gestures (lib/atlas/gesture.ts). The regression first: the fling that lost the flat map on phones (2026-10-19).
+{const ge=require(root+'/gesture.js');
+ const g=ge.newGesture();
+ ge.pointerDown(g,1,{x:100,y:300},0);ge.pointerDown(g,2,{x:300,y:300},10);
+ let a=ge.pointerMove(g,1,{x:90,y:300},20);assert.equal(a.kind,'zoom','two pointers zoom');close(a.factor,210/200,1e-9);close(a.x,195,1e-9,'about the current midpoint');
+ a=ge.pointerMove(g,2,{x:310,y:300},30);assert.equal(a.kind,'zoom');close(a.factor,220/210,1e-9);
+ assert.equal(ge.pointerUp(g,2,{x:310,y:300},40),null,'one finger lifting mid-pinch ends nothing yet');
+ a=ge.pointerMove(g,1,{x:92,y:300},50);
+ assert.equal(a.kind,'pan');close(a.dx,2,1e-9,'the remaining finger pans from ITS OWN last position, not the lifted finger (old code: -218)');close(a.dy,0,1e-9);
+ a=ge.pointerUp(g,1,{x:92,y:300},55);assert.deepEqual(a,{kind:'release',inertia:false},'a gesture that pinched never flings');}
+{const ge=require(root+'/gesture.js'),g=ge.newGesture();
+ ge.pointerDown(g,7,{x:0,y:0},0);
+ assert.equal(ge.pointerMove(g,7,{x:3,y:0},5),null,'inside the slop nothing moves');
+ const a=ge.pointerMove(g,7,{x:12,y:4},10);assert.equal(a.kind,'pan');close(a.dx,9,1e-9);close(a.dy,4,1e-9);
+ assert.deepEqual(ge.pointerUp(g,7,{x:12,y:4},40),{kind:'release',inertia:true},'a drag still moving when it lifts keeps its inertia');
+ ge.pointerDown(g,8,{x:0,y:0},100);ge.pointerMove(g,8,{x:40,y:0},110);
+ assert.deepEqual(ge.pointerUp(g,8,{x:40,y:0},110+ge.INERTIA_IDLE_MS+1),{kind:'release',inertia:false},'a drag that paused before lifting stops');
+ ge.pointerDown(g,9,{x:5,y:5},300);ge.pointerMove(g,9,{x:7,y:6},305);
+ assert.deepEqual(ge.pointerUp(g,9,{x:7,y:6},310),{kind:'click',x:7,y:6},'a press that never left the slop is a click');
+ ge.pointerDown(g,10,{x:0,y:0},400);ge.pointerMove(g,10,{x:50,y:0},405);
+ assert.deepEqual(ge.pointerCancel(g,10),{kind:'release',inertia:false},'a cancelled pointer ends the gesture without inertia');
+ assert.equal(ge.pointerMove(g,99,{x:1,y:1},500),null,'a hovering pointer is not a gesture');
+ assert.equal(ge.pointerUp(g,99,{x:1,y:1},500),null,'lifting an unknown pointer does nothing');}
+
+// The flat map's framing (lib/atlas/atlas-view.ts), against an independent Equal Earth (Savric, Patterson and Jenny's
+// published formula), whose extent at scale 190 must match the d3 projection the renderer draws with.
+{const av=require(root+'/atlas-view.js');
+ const A1=1.340264,A2=-0.081106,A3=0.000893,A4=0.003796,M=Math.sqrt(3)/2,S=190;
+ const ee=(lon,lat)=>{const l=lon*Math.PI/180,t=Math.asin(M*Math.sin(lat*Math.PI/180)),t2=t*t,t6=t2*t2*t2;
+  return [S*2*Math.sqrt(3)*l*Math.cos(t)/(3*(9*A4*t6*t2+7*A3*t6+3*A2*t2+A1)),-S*t*(A4*t6*t2+A3*t6+A2*t2+A1)];};
+ const ext=av.extentFromProjection(ee);
+ close(ext.halfW,514.26,.01,'half-width matches d3 geoEqualEarth().scale(190) at (180, 0)');close(ext.halfH,250.30,.01,'half-height matches it at the pole');
+ close(av.edgeAt(ext,0),ext.halfW,1e-9);close(av.edgeAt(ext,ext.halfH),Math.abs(ee(180,90)[0]),1e-9,'the pole line is the narrowest edge');
+ assert.ok(av.edgeAt(ext,100)<av.edgeAt(ext,50)&&av.edgeAt(ext,-100)===av.edgeAt(ext,100),'the outline narrows toward each pole, symmetrically');
+ // Home zoom: the whole map plus the margin fits the map area, and the atlas never opens closer than the design fit.
+ const fits=(w,ah,vh)=>{const z=av.atlasHomeZoom(w,ah,vh,ext),u=vh/ah/z,k=1+2*av.ATLAS_MARGIN;
+  assert.ok(z<=1,'never above the design fit');assert.ok(2*ext.halfW*k/u<=w+1e-6&&2*ext.halfH*k/u<=ah+1e-6,`whole map fits ${w}x${ah}`);return z;};
+ const desk=fits(1400,533,Math.max(530,1100*533/1400));assert.ok(desk>.85&&desk<.95,`desktop opens a little wider than before (${desk})`);
+ const phone=fits(375,564,530);assert.ok(phone>.25&&phone<.35,`a portrait phone opens on the whole map (${phone})`);
+ fits(812,240,530);fits(2560,1100,Math.max(530,1100*1100/2560));
+ // Pan clamp: the view centre stays inside the outline, so some map is always on screen.
+ let c=av.clampToMap(5000,-3000,ext);assert.ok(c.hitX&&c.hitY);close(c.y,-ext.halfH,1e-9);close(c.x,av.edgeAt(ext,ext.halfH),1e-9,'a far corner clamps to the pole line, not the bounding box');
+ c=av.clampToMap(100,-40,ext);assert.deepEqual(c,{x:100,y:-40,hitX:false,hitY:false},'a centre inside the map is left alone');
+ c=av.clampToMap(-600,0,ext);close(c.x,-ext.halfW,1e-9);assert.ok(c.hitX&&!c.hitY);}
+
+console.log('PASS: sphere maths, Fibonacci prefixes, great circles, antimeridian splitting, sun position, visibility, quality selection, governor hysteresis, recovery probes, tweens, gestures (the pinch-release fling) and the atlas framing');

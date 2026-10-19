@@ -1,7 +1,8 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-19: **the repository is public at https://github.com/jakeperc/blockchain-flow-map and its CI is green**
-(section 33, part 4). Before that, 2026-10-18 (latest): **the repository is prepared for GitHub: MIT licence and a NOTICE on the data, a
+Last updated 2026-10-19 (later): **on phones a pinch could fling the flat map off the screen; fixed, and the flat map now
+opens on the whole world (desktop a little wider, phones much wider)** (section 34). Earlier that day: **the repository is
+public at https://github.com/jakeperc/blockchain-flow-map and its CI is green** (section 33, part 4). Before that, 2026-10-18 (latest): **the repository is prepared for GitHub: MIT licence and a NOTICE on the data, a
 README that reads as a method summary, a CI workflow, the bulk explorer-scan outputs kept offline, and the history rewrite
 that follows** (section 33). Before that: **the 1H window has corridor baselines from sealed history, and a bias in how prior
 windows were cut (a 1H mean 25% low at any moment off the quarter-hour) is fixed** (section 32). Before that: **both pages
@@ -142,6 +143,8 @@ lib/atlas/encoding.ts               the contractual visual encodings, shared by 
 lib/atlas/geo3d.ts                  sphere maths for the globe (verified by scripts/verify-map.cjs)
 lib/atlas/quality-policy.ts         quality profiles and the frame-time governor (verified)
 lib/atlas/tween.ts                  eases and retargetable tweens (verified)
+lib/atlas/gesture.ts                pointer gestures as a pure reducer: per-pointer pan, pinch zoom, inertia rules (verified)
+lib/atlas/atlas-view.ts             the flat map's framing: whole-map home zoom, pan kept inside the outline (verified)
 live-lite/llms.txt.tpl              the hand-written prose of the published llms.txt (section 18)
 scripts/llms/render.mjs             llms.txt, methodology.md, head tags and <noscript>; run by vite.live.config.ts and verify-llms.mjs
 ```
@@ -533,7 +536,17 @@ integrity rules in section 2 (free does not relax the evidence standard).
    - **Smaller hygiene:** ~~show registry counts and the dormancy date in the Data & coverage
      panel~~ (done 2026-10-18, section 30); ~~code-split three.js out of the ~1.35 MB bundle~~ (done 2026-09-26,
      section 11); drop the expected public-endpoint 400/404/429 console noise to `debug` so real faults stand out.
-4. GitHub plus Cloudflare Pages hosting to replace manual FTP (Jake's noted future to-do).
+4. **Hosting from GitHub through Cloudflare, with a Worker that records history (Jake's plan, restated 2026-10-19).**
+   Today Jake uploads the contents of `dist-live/` into a folder under `public_html` by FTP. The plan: build and serve
+   the map from the public repository (Cloudflare Pages, or GitHub Pages) on jakepercy.com, and add a scheduled
+   Cloudflare Worker that reads the feeds continuously and stores sealed 15-minute spans (KV or D1), so 24H and 7D work
+   for a first-time visitor instead of only after that visitor's own tab has been open 19 hours or more. Jake signs up
+   for the accounts. To settle when it starts: whether jakepercy.com's DNS moves to Cloudflare (a Worker route on
+   `/global-blockchain-flow/*`) or the map takes a subdomain; that the same Worker can carry the Solana proxy (item 7,
+   `docs/API-PLAN.md`); and a new decision record beside D5, because a server-recorded window is not "what this browser
+   recorded": it needs its own coverage disclosure, the same 80% bar, the same "never scaled" rule, and the llms
+   template and methodology rewritten to match. The pure accounting (`rollup.ts`, `engine.ts`) already runs in plain
+   Node, which is what a Worker needs. Agents remind Jake of this (memory).
 5. More first-party L2 labels: done on 2026-09-21 for every entity measured as active on
    Base or Arbitrum. The unregistered market-maker, Upbit and Bithumb wallets were idle, so
    they were not pursued.
@@ -2054,3 +2067,56 @@ hit was the intended `.env.example` with an empty `TRONSCAN_API_KEY`).
 **Next:** week 2 of the plan: the seven-chain replay (overnight run), the history export, the provenance split
 (`SCHEMA` bump after Jake exports), the About page skeleton.
 
+## 34. The flat map on phones: a pinch could fling it off the screen; it now opens on the whole map (2026-10-19)
+
+Jake's report from his phone: "sometimes when you zoom out on the flattened map view, once released your two fingers,
+the map flies out of the screen into oblivion and can't be found again. The only way to get it back is by pressing the
+four cornered square button" (Reset map). And: the flattened map "needs to be zoomed out just a bit more so the whole
+map can be seen".
+
+**Cause of the fling** (read from `components/map/interaction.ts`, confirmed by replaying the old handler's arithmetic).
+The handler kept ONE previous point for all pointers, overwritten by whichever finger moved last. During a pinch that
+was usually the other finger. When one finger lifted, the remaining finger's next move was measured against the finger
+that had gone: one pan step of hundreds of pixels (in the verifier's sequence, -218 px for a 2 px nudge), recorded as
+the inertia velocity too. The atlas had no pan limit, so the map coasted off the screen and nothing brought it back.
+On the globe the same jump only spins the sphere, which is why it showed on the flat map.
+
+**Fix, as two pure modules the gate tests** (`scripts/verify-all.mjs` compiles them; `scripts/verify-map.cjs` checks them):
+- `lib/atlas/gesture.ts`, a pointer reducer the interaction feeds. Pan deltas are per pointer. A gesture that pinched
+  ends with no inertia. Inertia follows only a pointer still moving when it lifted (`INERTIA_IDLE_MS`, 80 ms). A
+  cancelled pointer ends with no inertia. Zoom is about the fingers' current midpoint. `Rig.release(inertia)` now stops
+  the camera when told to (it used to be a no-op that let the last drag's velocity run).
+- `lib/atlas/atlas-view.ts`, the framing. `clampToMap()` keeps the view centre inside the Equal Earth outline (sampled
+  every degree from the d3 projection the land is built with), so at the most extreme pan half the view is still
+  map; an axis that hits the outline stops its inertia. `atlasHomeZoom()` is the zoom that shows the whole map with
+  an 8% margin (`ATLAS_MARGIN`) in the visible map area. The atlas opens and resets there, and may zoom out to 85% of
+  it (`ATLAS_MIN_SHARE`). Zoom keeps its meaning: 1 is still the design fit (`viewHeight()` in `frame.ts`) that the
+  land-dot size and the label threshold are tuned to, so neither changed; only where the atlas opens did. The globe
+  still opens and resets at 1.
+
+**What it looks like.** Desktop 1440 x 900 opens at 0.913, the whole map with room above and below, where before
+the toolbar touched its top edge and the corridors card and legend sat on its lower corners. A 375 x 812 phone opens
+at 0.295, the whole world across the screen, where before it showed about a third of the map's width; pinch-zoom takes
+it in from there, up to the same maximum as before.
+
+**Verification (2026-10-19).** `verify-map.cjs` gains the regression (pinch, one finger lifts, the other nudges 2 px:
+a pan of 2 px and a release with no inertia), slop, click, the pause rule, cancel, hover; and the framing against an
+independent Equal Earth from the published formula (half-width 514.26 and half-height 250.30 at scale 190, matching
+d3), the whole map fitting at desktop, phone portrait and landscape and a 2560 px screen, the pole-line clamp at a
+far corner. `node scripts/verify-all.mjs` passed with `tsc`. In the dev server at 375 x 812, synthetic touch pointers
+on the canvas, reading the camera through a new `?debug=map` hook (`window.__atlasView()`, pan, zoom, inertia and the
+home zoom): opened at zoom 0.295 and pan 0; a spread zoomed in about the centre; the faulty pinch-out (one finger
+lifts, the other nudges) left the pan where it was (x -16.5 to -17.9) with zero inertia; a hard one-finger fling
+stopped with the view centre on the map's west edge (x -402.9) and the Americas still on screen. At 1440 x 900: opens
+at 0.913; thirty wheel steps out stop at the floor; a wheel zoom near a corner stops at the pole line and the edge;
+Reset returns to 0.913 and pan 0; the globe returns to zoom 1. No script error. Not tested on a real phone: the pane
+emulates the viewport, and its touches arrive as mouse clicks, so the pinch was synthesised.
+
+**Lint** unchanged. The `?debug=map` hook is debug-only, like `__atlasScene` and `__atlasBench`.
+
+**Deliverable:** `outputs/ledger-atlas-live-2026-10-19.zip` (ignored by Git), built from this commit: `index.html`,
+`landmarks.html`, `og.jpg` and the rest at the zip root. It also carries everything since the 2026-10-12 zip (sections
+29 to 33: the first-minute fixes, author links, preview image, 1H baselines). Jake FTPs its contents into the existing
+folder, keeping `assets/`.
+
+**Not pushed.** The repository is public, so each push publishes; this commit waits for Jake's go-ahead.

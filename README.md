@@ -169,7 +169,7 @@ Updated 2026-10-18. Seven chains live; 1,217 first-party wallets (plus 3,572 der
 jurisdictions; Solana not connected (it needs a keyed indexer). The repository was prepared for publication on
 2026-10-18 and went public on 2026-10-19 (HANDOFF sections 29 to 33): the deferred backend scaffold and the unused template code left the tree,
 the gate type-checks the whole project, the page's first minute reads honestly, both pages name and link their
-author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline.
+author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world (HANDOFF section 34).
 The current deliverable is `outputs/ledger-atlas-live-<date>.zip`, built from `dist-live/`.
 
 ## Repository map

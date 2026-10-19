@@ -13,6 +13,7 @@ import type {Land} from './land';
 import type {Arcs,Route} from './arcs';
 import {SAMPLES} from './arcs';
 import type {AnchorScreen} from './labels';
+import {newGesture,pointerDown,pointerMove,pointerUp,pointerCancel,type GestureAction} from '@/lib/atlas/gesture';
 
 export interface Hover{text:string;sub:string}
 export interface InteractionDeps{
@@ -31,8 +32,9 @@ export interface Interaction{
 }
 
 export function buildInteraction(ctx:Ctx,deps:InteractionDeps):Interaction{
- const canvas=ctx.renderer.domElement,pointers=new Map<number,{x:number;y:number}>();
- let start={x:0,y:0},prev={x:0,y:0},dragged=false,pinch=0,pinchMid={x:0,y:0},cursor:{x:number;y:number}|null=null,cursorMoved=false,hoverKey='',clickAt:{x:number;y:number}|null=null,tipX=NaN,tipY=NaN,tipEl:HTMLElement|null=null;
+ // Gesture rules (per-pointer deltas, no inertia after a pinch or a pause) live in lib/atlas/gesture.ts, where they are tested.
+ const canvas=ctx.renderer.domElement,gesture=newGesture(),pointers=gesture.pointers;
+ let cursor:{x:number;y:number}|null=null,cursorMoved=false,hoverKey='',clickAt:{x:number;y:number}|null=null,tipX=NaN,tipY=NaN,tipEl:HTMLElement|null=null;
  const coarse=matchMedia('(hover: none)').matches;
  const state:Interaction={hovered:null,lastInput:0,active:()=>pointers.size>0,frame,dispose};
  const local=(e:PointerEvent)=>{const r=canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};};
@@ -69,18 +71,21 @@ export function buildInteraction(ctx:Ctx,deps:InteractionDeps):Interaction{
   state.hovered=corridor;canvas.style.cursor=h?'pointer':'grab';
   if(key!==hoverKey){hoverKey=key;deps.setHover(h);}
  }
- const down=(e:PointerEvent)=>{if(!deps.rig.interactive())return;const p=local(e);pointers.set(e.pointerId,p);start=prev=p;dragged=false;canvas.setPointerCapture(e.pointerId);state.lastInput=performance.now();if(pointers.size===2){const ps=[...pointers.values()];pinch=Math.hypot(ps[0].x-ps[1].x,ps[0].y-ps[1].y);pinchMid={x:(ps[0].x+ps[1].x)/2,y:(ps[0].y+ps[1].y)/2};}};
+ const apply=(a:GestureAction|null)=>{
+  if(!a)return;
+  if(a.kind==='pan')deps.rig.drag(a.dx,a.dy);
+  else if(a.kind==='zoom')deps.rig.zoomBy(a.factor,a.x,a.y);
+  else if(a.kind==='click')clickAt={x:a.x,y:a.y};
+  else deps.rig.release(a.inertia);
+ };
+ const down=(e:PointerEvent)=>{if(!deps.rig.interactive())return;const now=performance.now();pointerDown(gesture,e.pointerId,local(e),now);canvas.setPointerCapture(e.pointerId);state.lastInput=now;};
  const move=(e:PointerEvent)=>{
   const p=local(e);
-  if(pointers.has(e.pointerId)){
-   pointers.set(e.pointerId,p);state.lastInput=performance.now();
-   if(pointers.size===2){const ps=[...pointers.values()],d=Math.hypot(ps[0].x-ps[1].x,ps[0].y-ps[1].y);if(pinch)deps.rig.zoomBy(d/pinch,pinchMid.x,pinchMid.y);pinch=d;dragged=true;}
-   else if(dragged||Math.hypot(p.x-start.x,p.y-start.y)>5){dragged=true;deps.rig.drag(p.x-prev.x,p.y-prev.y);}
-   prev=p;
-  }else if(!coarse){cursor=p;cursorMoved=true;}
+  if(pointers.has(e.pointerId)){const now=performance.now();state.lastInput=now;apply(pointerMove(gesture,e.pointerId,p,now));}
+  else if(!coarse){cursor=p;cursorMoved=true;}
  };
- const up=(e:PointerEvent)=>{pointers.delete(e.pointerId);if(!dragged)clickAt=local(e);else deps.rig.release(0,0);pinch=0;};
- const cancel=(e:PointerEvent)=>{pointers.delete(e.pointerId);dragged=true;pinch=0;};
+ const up=(e:PointerEvent)=>apply(pointerUp(gesture,e.pointerId,local(e),performance.now()));
+ const cancel=(e:PointerEvent)=>apply(pointerCancel(gesture,e.pointerId));
  const leave=()=>{cursor=null;setHoverState('',null,null);};
  const wheel=(e:WheelEvent)=>{e.preventDefault();if(!deps.rig.interactive())return;const p={x:e.offsetX,y:e.offsetY};state.lastInput=performance.now();deps.rig.zoomBy(Math.exp(-e.deltaY*.001),p.x,p.y);};
  const key=(e:KeyboardEvent)=>{

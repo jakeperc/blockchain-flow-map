@@ -120,7 +120,7 @@ export function createEngine(host:HTMLElement,io:EngineHost):Engine{
  }).catch(()=>{if(!disposed){io.setError('World geometry could not load. Refresh to retry.');io.props().onReady?.();}});
 
  const debug=debugFlag();let debugEl:HTMLDivElement|null=null;
- if(debug){debugEl=document.createElement('div');debugEl.className='map-debug';host.appendChild(debugEl);(window as unknown as {__atlasScene?:THREE.Scene}).__atlasScene=scene;}
+ if(debug){debugEl=document.createElement('div');debugEl.className='map-debug';host.appendChild(debugEl);(window as unknown as {__atlasScene?:THREE.Scene}).__atlasScene=scene;(window as unknown as {__atlasView?:()=>unknown}).__atlasView=()=>({phase:rig.phase,...rig.debugView()});}
  let lastQuality='',cpuEma=0;
  const report=()=>{const l=quality.label();if(l!==lastQuality){lastQuality=l;io.props().onQuality(l);}};
  report();
