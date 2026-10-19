@@ -7,5 +7,5 @@ recent changes, evidence, verification, and remaining work. Follow its links to
 
 After a material code, data, evidence, or deployment change, update `HANDOFF.md`
 in the same commit. Include what changed, verification results, unresolved work,
-and any build or zip deliverable. Keep the short status in `README.md` synchronized.
+and whether `dist-live/` was rebuilt. Keep the short status in `README.md` synchronized.
 Do not rely on a prior chat as the sole handoff to the next agent.

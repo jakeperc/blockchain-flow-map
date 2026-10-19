@@ -60,5 +60,7 @@ Hard rules, in short:
   section 31); never put a route or a figure in it.
 - Commit as `git -c user.email="223131039+jakeperc@users.noreply.github.com" -c user.name="Jake Percy"`.
 
-Deliverable for Jake is a zip of `dist-live/` that he FTPs into a folder under
-`public_html` on jakepercy.com, the canonical home. The GitHub Pages copy publishes itself from `main`.
+Deliverable for Jake is the `dist-live/` folder itself: he FTPs its contents into a folder under
+`public_html` on jakepercy.com, the canonical home. After any change that alters the built site, run
+`corepack pnpm build:live` so `dist-live/` matches the current commit, and tell him it is ready. Make no zip.
+The GitHub Pages copy publishes itself from `main`.

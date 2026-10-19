@@ -1,6 +1,7 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-19 (latest): **every push to `main` now publishes the map to GitHub Pages at
+Last updated 2026-10-19 (latest): **the deliverable is now `dist-live/` itself, which Jake uploads by FTP; agents make
+no zips** (section 36). Before that: **every push to `main` now publishes the map to GitHub Pages at
 https://jakeperc.github.io/blockchain-flow-map/, through the same gated build** (section 35). Before that: **on phones a pinch could fling the flat map off the screen; fixed, and the flat map now
 opens on the whole world (desktop a little wider, phones much wider)** (section 34). Earlier that day: **the repository is
 public at https://github.com/jakeperc/blockchain-flow-map and its CI is green** (section 33, part 4). Before that, 2026-10-18 (latest): **the repository is prepared for GitHub: MIT licence and a NOTICE on the data, a
@@ -48,12 +49,13 @@ reads USDC and USDT `Transfer` logs straight from free public JSON-RPC endpoints
 visitor's browser. There is no backend for the live build.
 
 - **Deploy paths must stay simple.** `corepack pnpm build:live` writes a
-  static site to `dist-live/`. Jake unzips it and FTPs the contents (keeping the
+  static site to `dist-live/`. Jake FTPs the contents of that folder (keeping the
   `assets/` folder) into a folder under `public_html` on jakepercy.com. The build uses
   relative asset paths so it works from any nested folder. Do not introduce anything that
   needs a server, runtime environment variables, or an API key. Since 2026-10-19 `.github/workflows/pages.yml` also
   publishes the same gated build to https://jakeperc.github.io/blockchain-flow-map/ on every push to `main` (section 35);
-  jakepercy.com stays the canonical home and is still uploaded by hand.
+  jakepercy.com stays the canonical home and is still uploaded by hand. Agents keep `dist-live/` built from the
+  current commit after any change to the site and make no zip (section 36).
 - `pnpm build:live` is **gated**: it runs `node scripts/verify-all.mjs` first and refuses
   to build if any verifier fails. Never remove that gate and never "fix" a failing
   verifier by weakening the assertion.
@@ -933,8 +935,8 @@ active wallets; research future chains by measured activity first.
 The 2026-09-28 wave is commit `896ba9a`. `node scripts/verify-all.mjs`, TypeScript
 typecheck and `corepack pnpm build:live` passed; lint remained at its existing 45
 errors. `outputs/ledger-atlas-live-2026-09-28.zip` packages `dist-live/` with
-`index.html` at the zip root for Jake's FTP deployment. The zip is ignored by Git;
-rebuild and repackage it after any later live-build change.
+`index.html` at the zip root for Jake's FTP deployment. The zip is ignored by Git.
+(Superseded 2026-10-19: no zips; rebuild `dist-live/` after any live-build change, section 36.)
 These additions broaden first-party Avalanche coverage across five countries; the
 project still has 29 jurisdictions overall. Further country expansion on existing
 chains is constrained by sparse active public labels. The next source decisions are
@@ -2138,7 +2140,7 @@ as `verify.yml`. `verify.yml` changed only in its comment, and the README badge 
 
 **What the copy is.** The same static build Jake uploads, served at https://jakeperc.github.io/blockchain-flow-map/. jakepercy.com stays
 the canonical home: the canonical link, `og:url`, `og:image` and `llms.txt` name it, so a link preview of the github.io
-address shows jakepercy.com's `og.jpg`, which exists there only once Jake uploads the 2026-10-19 zip. Each origin keeps
+address shows jakepercy.com's `og.jpg`, which exists there only once Jake uploads the current `dist-live/`. Each origin keeps
 its own recorded history in the visitor's browser (IndexedDB is per origin), so 24H and 7D unlock separately on each.
 No rule changes: no server, no key, no new visitor bandwidth. This is the first, static half of section 8 item 4; the
 history Worker and moving jakepercy.com itself are still to come.
@@ -2166,3 +2168,20 @@ Avalanche Partial after two 429 responses from its public endpoint, the same gap
 so the page reads PARTIAL; 32 routes drawn, $612M observed, $15.31M attributed cross-border (3.0%), registry
 1,217 / 3,572 / 68 / 30. Pushes to `main` now publish; the rule to ask Jake before each push stands.
 
+## 36. The deliverable is `dist-live/` itself, not a zip (2026-10-19)
+
+Jake: "i want the dist-live to be what i upload to the public html, not the zip". From now on the hand-off to Jake is
+the `dist-live/` folder in the project, built from the current commit. He uploads its contents by FTP into the existing
+folder under `public_html` on jakepercy.com, keeping the `assets/` folder. Agents make no zip.
+
+**The rule for agents.** After any change that alters the built site (page code, styles, registry, `llms.txt` or
+methodology sources, Landmarks data, `public/`), run `corepack pnpm build:live` before finishing, so `dist-live/` matches
+the commit, and tell Jake it is ready to upload. A change that cannot alter the build (documents, workflows, offline
+scripts) needs no rebuild. `dist-live/` stays ignored by Git; GitHub Pages builds its own copy from `main`
+(section 35), so the two are the same build of the same commit. Vite empties `dist-live/` on each build, so it never
+holds stale files; old hashed files under `assets/` on the FTP host are harmless and can be cleared at any upload.
+
+**Rebuilt 2026-10-19** from `a1623a9`: `index.html`, `landmarks.html`, `llms.txt` (9,980 bytes), `methodology.md`,
+`og.jpg`, `favicon.svg`, `world-110m.json` and `assets/` (seven files). The bundle names (`index-CXdSu1li.js`,
+`globals-qWtE0QdY.js`, `globals-BzYnEM0V.css`) are the ones GitHub Pages serves. The gate passed during the build. The
+zips under `outputs/` are left where they are and superseded; earlier sections' "Deliverable" lines are history.
