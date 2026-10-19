@@ -2156,3 +2156,13 @@ the gate working, not a Pages fault.
 **The repository sidebar.** The freeze-ledger repository shows its Pages address as the repository's website (About box)
 and a Deployments box. The Deployments box appears here with the first workflow deploy. The website link is a repository
 setting, not a file: About, the gear, "Use your GitHub Pages website", Save (or `gh repo edit --homepage`).
+
+**Verification (2026-10-19).** Commit `3f3bb0f` pushed on Jake's request; the `pages` run (39295763828) and the `verify`
+run (39295763612) on it both passed, and the `github-pages` environment received the deployment. Fetched from
+github.io: `index.html`, `landmarks.html`, `llms.txt` (9,980 bytes, `text/plain`), `methodology.md` (`text/markdown`),
+`og.jpg` and `world-110m.json` all HTTP 200, and the page loads the same hashed bundle as the local build. Loaded in
+the browser pane: no request blocked; all seven chains' primary nodes and CoinGecko reached; six chains LIVE and
+Avalanche Partial after two 429 responses from its public endpoint, the same gap section 30 recorded on the dev server,
+so the page reads PARTIAL; 32 routes drawn, $612M observed, $15.31M attributed cross-border (3.0%), registry
+1,217 / 3,572 / 68 / 30. Pushes to `main` now publish; the rule to ask Jake before each push stands.
+
