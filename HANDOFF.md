@@ -1,6 +1,7 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-18: **the page's first minute is honest: LOADING and PARTIAL states by cause instead of a blanket DELAYED,
+Last updated 2026-10-18 (late): **both pages now name and link their author and the source code, carry a link-preview
+image and the card tags, and `llms.txt` links the repository** (section 31). Earlier: **the page's first minute is honest: LOADING and PARTIAL states by cause instead of a blanket DELAYED,
 the first headline figure always labelled as evidenced wallets, the chain list in the pill, and the registry's size and
 freshness on the Data & coverage panel** (section 30). Earlier that day **the tree was pruned for a public GitHub
 repository: the deferred backend scaffold, 44 unused UI files and 26 unused packages left, `verify-all` now type-checks
@@ -1843,3 +1844,53 @@ errors and 6 warnings. The embedded pane throttles timers, so the 15 seconds is 
 
 **Next:** step 3 (author links, `og:image`, `twitter:card`, the phone credit in the status strip), step 4 (1H
 baselines), step 5 (history rewrite, NOTICE, README, CI, push).
+
+## 31. Author links on both pages, a link-preview image and the card tags (2026-10-18)
+
+Week 1 step 3 of the plan in section 29. Before this, Jake's name appeared only as unlinked text at the foot of the
+Methodology panel and the Landmarks page, nothing linked the source, and a shared link previewed as bare text.
+
+- **`lib/site/links.ts`** (new) holds `AUTHOR`, `HUB_URL`, `REPO_URL` (`https://github.com/jakeperc/blockchain-flow-map`,
+  the handle `gh` is signed in as; the name is the plan's proposal, for Jake to confirm before the push) and
+  `LINKEDIN_URL`, **empty until Jake supplies it**: every surface renders the LinkedIn link only when it is set. The
+  page imports the constants; `scripts/landmarks/html.mjs` imports them too; `scripts/llms/render.mjs` reads the file
+  as text (`siteLinks()`), stamps `{{repo}}` into the template and lets the external-link check accept a URL that
+  lives there, since the page links it through the import.
+- **Page:** the pinned signature "METHODOLOGY 1.0 · BLOCKCHAIN FLOW MAP BY JAKE PERCY" stays and is followed by
+  links to jakepercy.com and the source (`.method-author`); the Evidence registry section links the repository;
+  the status strip carries "by Jake Percy" at every width (`.status-author`, before the geography button; at
+  375 x 812 the strip measures 375 of 375 with the link 61 px wide and no overflow, so phones keep their layout
+  as section 21 asks and still show the author).
+- **Landmarks footer:** the name links the hub, and "Source code" sits beside the existing links.
+- **Head tags, both pages** (`pageSurfaces`, `landmarksSurfaces` in `render.mjs`): `og:image` (absolute, built from
+  `SITE` the way `og:url` already is), `og:image:width`/`height` (1200 x 630), `og:image:alt`, `twitter:card`
+  (`summary_large_image`), `twitter:title`/`description`/`image`, `meta name=author`, `link rel=author`. The
+  `og:image` tag joins the markers `verifyBuilt()` looks for, `og.jpg` joins `BUILT_NAMES` so a build without the
+  image fails, and the self-test asserts both pages carry `og:image` and `twitter:card` and that `links.ts` names
+  the author and a GitHub repository. The `<noscript>` block gains a line naming the author and the source.
+- **`public/og.jpg`, 1200 x 630, 82 KB: the globe's cartography only.** Captured from the dev server with
+  `scripts/og/capture-snippet.js`, which hides every data layer (anchors, routes, particles, halos, beams), zeroes
+  the per-country activity channel of the land-dot table (one RGBA texel per country: red is activity, blue and
+  alpha the base lookup), draws one frame through `__atlasBench`, cover-fits a 1200 x 630 band on the map area's
+  centre, lifts the exposure (the globe is dark by design because land brightens only with activity) and POSTs the
+  JPEG to a **dev-only** sink in `vite.live.config.ts` (`/__capture`, two names accepted, JPEG magic checked,
+  absent from a build) that writes `public/`. Nothing in the picture carries data: land, outlines, graticule and
+  the real day-night line at capture time. Re-capture only after a design change to the globe; registry changes
+  never affect it. The README hero can reuse it. A route-bearing image was rejected by the red team (a route is a
+  dated claim shown for weeks beside no window).
+- **`llms.txt`:** the Author sentence says the panel links his site and the source; `## Related` gains
+  `[Source code]({{repo}})`. **9,980 of 10,240 bytes.** The tally for the rest of the plan (About link +100,
+  findings sentence +60, routing +35) lands near 10,175; the Natural Earth credit line (~150 bytes) is the reserve
+  and the Source code line can be shortened by ~30 before that.
+
+**Verification (2026-10-18/19):** `node scripts/verify-all.mjs` passed (self-tests included); `corepack pnpm build:live`
+built with `dist-live/og.jpg` present; `dist-live/index.html` and `landmarks.html` carry the og, twitter and author
+tags (grep); the built Landmarks footer and the `<noscript>` block carry the links. Dev server: the Methodology panel
+shows the signature and the two links (`target=_blank`); the status strip shows "by Jake Percy" at desktop (1024 of
+1024, no overflow) and at 375 x 812 (above); the registry section links the repository. Lint unchanged. The pane's
+viewport emulation was reset afterwards.
+
+**Open (Jake):** supply the LinkedIn URL (one constant in `lib/site/links.ts`); confirm the repository name before
+step 5 creates it; the hub's upload manifest must list `og.jpg` (week 3).
+
+**Next:** step 4 (1H baselines), then step 5 (history rewrite, NOTICE, README, CI, push on Jake's go-ahead).

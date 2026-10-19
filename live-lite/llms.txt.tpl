@@ -18,7 +18,7 @@
 
 {{current}}
 
-**Author.** Jake Percy; the Methodology panel is signed "BLOCKCHAIN FLOW MAP BY JAKE PERCY". Contact details are in the hub file linked under Related.
+**Author.** Jake Percy; the Methodology panel is signed "BLOCKCHAIN FLOW MAP BY JAKE PERCY" and links his site and the source code. Contact details are in the hub file linked under Related.
 
 ## Data
 
@@ -33,6 +33,7 @@
 - [Blockchain Flow Map]({{site}}): the dashboard (needs JavaScript)
 - [Landmarks]({{site}}landmarks.html): landmark transactions, with sources (static text)
 - [Jake Percy]({{hub}}): the author and his other dashboards
+- [Source code]({{repo}}): the page, the evidence registry, the verifiers and the decision records, on GitHub
 
 ## Optional
 

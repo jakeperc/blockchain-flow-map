@@ -57,7 +57,19 @@ const INDEX = 'live-lite/index.html';
 /** The second page (HANDOFF section 19): static story text, so it gets its own canonical and og tags and no <noscript>. */
 const LANDMARKS = 'live-lite/landmarks.html';
 export const LANDMARKS_PAGE = 'landmarks.html';
-const BUILT_NAMES = ['index.html', 'llms.txt', `methodology${METHOD_EXT}`, LANDMARKS_PAGE];
+/** The project's own links (author, site, repository), which the page imports as constants and this file reads as text. */
+const LINKS = 'lib/site/links.ts';
+/** The link-preview image: the globe's cartography only (land, outlines, the day-night line), never a route or a figure,
+ *  because a preview is shown for weeks beside no window and no caveat. 1200 x 630. */
+export const OG_IMAGE = 'og.jpg';
+const OG_ALT = 'The Blockchain Flow Map globe: dotted land and the day-night line, with no routes drawn.';
+const BUILT_NAMES = ['index.html', 'llms.txt', `methodology${METHOD_EXT}`, LANDMARKS_PAGE, OG_IMAGE];
+
+export function siteLinks(root = ROOT) {
+  const text = readFileSync(join(root, LINKS), 'utf8');
+  const get = (name) => (text.match(new RegExp(`export const ${name}='([^']*)'`)) || [])[1] ?? '';
+  return {author: get('AUTHOR'), hub: get('HUB_URL'), repo: get('REPO_URL'), linkedin: get('LINKEDIN_URL')};
+}
 
 /* ------------------------------------------------------------------------------------------ text helpers */
 
@@ -356,7 +368,7 @@ function indexFacts(root, rel = INDEX) {
 /** Head tags for the Landmarks page: its own canonical and og tags, the llms.txt alternate, no <noscript> (its stories
  *  are static HTML). Built from the page's own title and meta description. */
 export function landmarksSurfaces({title, description}) {
-  const url = `${SITE}${LANDMARKS_PAGE}`;
+  const url = `${SITE}${LANDMARKS_PAGE}`, image = `${SITE}${OG_IMAGE}`, links = siteLinks(), DESCRIPTION = description;
   const head = [
     `<link rel="canonical" href="${escapeAttr(url)}" />`,
     `<link rel="alternate" type="text/markdown" href="llms.txt" title="llms.txt" />`,
@@ -364,8 +376,18 @@ export function landmarksSurfaces({title, description}) {
     `<meta property="og:title" content="${escapeAttr(title)}" />`,
     `<meta property="og:description" content="${escapeAttr(description)}" />`,
     `<meta property="og:url" content="${escapeAttr(url)}" />`,
+    `<meta property="og:image" content="${escapeAttr(image)}" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta property="og:image:alt" content="${escapeAttr(OG_ALT)}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${escapeAttr(title)}" />`,
+    `<meta name="twitter:description" content="${escapeAttr(DESCRIPTION)}" />`,
+    `<meta name="twitter:image" content="${escapeAttr(image)}" />`,
+    `<meta name="author" content="${escapeAttr(links.author)}" />`,
+    `<link rel="author" href="${escapeAttr(links.hub)}" />`,
   ];
-  return {head: head.join('\n    '), noscript: '', markers: [head[0], head[1], head[5]]};
+  return {head: head.join('\n    '), noscript: '', markers: [head[0], head[1], head[5], head[6]]};
 }
 
 /** Surfaces for every page the build writes, keyed by the built file name. */
@@ -377,6 +399,7 @@ function pagesOf(root) {
 
 /** Head tags and the <noscript> block, built from the same strings as llms.txt. */
 export function pageSurfaces({title}) {
+  const image = `${SITE}${OG_IMAGE}`, links = siteLinks(), DESCRIPTION = SUMMARY;
   const head = [
     `<link rel="canonical" href="${escapeAttr(SITE)}" />`,
     `<link rel="alternate" type="text/markdown" href="llms.txt" title="llms.txt" />`,
@@ -384,6 +407,16 @@ export function pageSurfaces({title}) {
     `<meta property="og:title" content="${escapeAttr(title)}" />`,
     `<meta property="og:description" content="${escapeAttr(SUMMARY)}" />`,
     `<meta property="og:url" content="${escapeAttr(SITE)}" />`,
+    `<meta property="og:image" content="${escapeAttr(image)}" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta property="og:image:alt" content="${escapeAttr(OG_ALT)}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${escapeAttr(title)}" />`,
+    `<meta name="twitter:description" content="${escapeAttr(DESCRIPTION)}" />`,
+    `<meta name="twitter:image" content="${escapeAttr(image)}" />`,
+    `<meta name="author" content="${escapeAttr(links.author)}" />`,
+    `<link rel="author" href="${escapeAttr(links.hub)}" />`,
   ];
   // The page's CSS sets `html, body {overflow: hidden; height: 100%}`, so the block scrolls inside a fixed box.
   const noscript = [
@@ -395,12 +428,13 @@ export function pageSurfaces({title}) {
     `      <p style="margin:0 0 12px">How to read it, in the page&#39;s words: &ldquo;${escapeText(RULE)}&rdquo;</p>`,
     `      <p style="margin:0 0 12px">${escapeText(CAVEAT)}</p>`,
     `      <p style="margin:0 0 12px">The map is drawn with JavaScript. A plain-text description for readers that do not run scripts: <a href="llms.txt" style="color:#bed2c5">llms.txt</a>. The method in full: <a href="methodology${METHOD_EXT}" style="color:#bed2c5">methodology${METHOD_EXT}</a>.</p>`,
+    `      <p style="margin:0 0 12px">By <a href="${escapeAttr(links.hub)}" style="color:#bed2c5">${escapeText(links.author)}</a>. Source code, evidence registry and decision records: <a href="${escapeAttr(links.repo)}" style="color:#bed2c5">GitHub</a>.</p>`,
     '    </div>',
     '  </div>',
     '</noscript>',
   ];
   // What verifyBuilt() looks for in the built page: canonical, the llms.txt alternate, og:url and the <noscript> block.
-  return {head: head.join('\n    '), noscript: noscript.join('\n    '), markers: [head[0], head[1], head[5], '<noscript>']};
+  return {head: head.join('\n    '), noscript: noscript.join('\n    '), markers: [head[0], head[1], head[5], head[6], '<noscript>']};
 }
 
 /* ------------------------------------------------------------------------------------------ render */
@@ -427,7 +461,7 @@ function renderChecked(root, atlas) {
   // The template, with constants filled and the stamped block left out: this is the hand-written prose.
   const tpl = ascii(src(TEMPLATE));
   const constants = {
-    summary: SUMMARY, caveat: CAVEAT, rule: RULE, site: SITE, hub: HUB, methodExt: METHOD_EXT,
+    summary: SUMMARY, caveat: CAVEAT, rule: RULE, site: SITE, hub: HUB, methodExt: METHOD_EXT, repo: siteLinks(root).repo,
     windows: facts ? `window tabs ${joinAnd(facts.windows)}` : 'time-window tabs',
   };
   const fillConstants = (s) => s.replace(/\{\{(\w+)\}\}/g, (all, k) => (k in constants ? constants[k] : all));
@@ -445,7 +479,7 @@ function renderChecked(root, atlas) {
   const lc = raw['lib/atlas/live-client.ts'];
   if (!(lc.indexOf('api.coingecko.com') < lc.indexOf('api.exchange.coinbase.com') && lc.indexOf('api.exchange.coinbase.com') < lc.indexOf('api.kraken.com'))) errors.push('lib/atlas/live-client.ts no longer tries CoinGecko, then Coinbase, then Kraken, as the prose says');
   for (const url of [...prose.matchAll(/\]\((https:\/\/[^)\s]+)\)/g)].map((m) => m[1]).filter((u) => !u.startsWith('https://jakepercy.com/'))) {
-    if (!raw['components/atlas.tsx'].includes(url)) errors.push(`${TEMPLATE} links ${url}, which the page itself no longer links`);
+    if (!raw['components/atlas.tsx'].includes(url) && !readFileSync(join(root, LINKS), 'utf8').includes(url)) errors.push(`${TEMPLATE} links ${url}, which neither the page nor ${LINKS} links`);
   }
   const files = Object.fromEntries(liveSources(root).map((f) => [f, src(f)]));
   errors.push(...urlStateProblems(files).map((p) => `${p}; the prose says views have no addresses, so update ${TEMPLATE} and urlStateProblems()`));
@@ -532,6 +566,8 @@ export function selfTest() {
     if (!cond) throw new Error(`llms self-test failed: ${what}`);
   };
   const ok = () => true;
+  must(pageSurfaces({title: 'T'}).head.includes('property="og:image"') && pageSurfaces({title: 'T'}).head.includes('name="twitter:card"') && landmarksSurfaces({title: 'T', description: 'd'}).head.includes('property="og:image"'), 'both pages must carry og:image and twitter:card');
+  must(/^https:\/\/github\.com\/[^/]+\/[^/]+$/.test(siteLinks().repo) && siteLinks().author.length > 0, 'lib/site/links.ts must name the author and the repository');
   const good = `# T\n\n> ${SUMMARY} ${CAVEAT}\n\n**A.** text\n\n## Related\n\n- [Page](${SITE}): the page\n- [Hub](${HUB}): the hub\n`;
   must(checkContract(good, ok).length === 0, 'a minimal valid file should pass the contract');
   must(checkContract(good.replace('text', 'caf' + U(0xE9)), ok).some((e) => /non-ASCII/.test(e)), 'non-ASCII must fail');

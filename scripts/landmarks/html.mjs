@@ -10,6 +10,7 @@ import {CHAIN_INFO} from '../../lib/landmarks/chains.ts';
 import {usd, amount, short, dateUTC, timeUTC, isoDate, percent, escapeHtml as esc, groupDecimal} from '../../lib/landmarks/format.ts';
 import {SECTION_TITLES, pointsOf, sumDecimal} from './build.mjs';
 import {domainOf} from './gen-landmarks.mjs';
+import {AUTHOR, HUB_URL, REPO_URL, LINKEDIN_URL} from '../../lib/site/links.ts';
 import {thenTodayChart, shareChart, feeChart, supplyChart} from './charts.mjs';
 
 /** lucide-react 1.31.0 "earth" (Globe2), the map's brand mark, and "arrow-up-right"; copied so the static page needs no React. */
@@ -332,7 +333,7 @@ export function renderMethod(model) {
 }
 
 export function renderFooter(model) {
-  return `<footer class="lm-footer"><p>Data as of ${esc(dateUTC(Date.parse(model.dataAsOf)))}. Blockchain Flow Map by Jake Percy. <a href="./">The live map</a> · <a href="llms.txt">llms.txt</a> · <a href="methodology.md">Map methodology</a></p></footer>`;
+  return `<footer class="lm-footer"><p>Data as of ${esc(dateUTC(Date.parse(model.dataAsOf)))}. Blockchain Flow Map by <a href="${HUB_URL}">${esc(AUTHOR)}</a>. <a href="./">The live map</a> · <a href="${REPO_URL}">Source code</a>${LINKEDIN_URL ? ` · <a href="${LINKEDIN_URL}">LinkedIn</a>` : ''} · <a href="llms.txt">llms.txt</a> · <a href="methodology.md">Map methodology</a></p></footer>`;
 }
 
 /** Every fragment the page template takes, keyed by its marker name (<!--lm:name-->). */

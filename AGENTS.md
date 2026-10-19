@@ -48,6 +48,10 @@ Hard rules, in short:
 - Add as much real data and as many sources as free APIs and public endpoints allow. When
   free sources are running out (rate limits, key-only chains, exhausted labels), stop and
   tell Jake which free/paid APIs to get and what each unlocks. He signs up himself.
+- The project's own links (author, site, repository, LinkedIn) live in `lib/site/links.ts`; the page, the Landmarks
+  renderer and the llms build all read them from there. The link-preview image `public/og.jpg` is cartography only and
+  is re-captured with `scripts/og/capture-snippet.js` on the dev server after a design change to the globe (HANDOFF
+  section 31); never put a route or a figure in it.
 - Commit as `git -c user.email="223131039+jakeperc@users.noreply.github.com" -c user.name="Jake Percy"`.
 
 Deliverable for Jake is a zip of `dist-live/` that he FTPs into a folder under

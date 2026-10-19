@@ -145,7 +145,7 @@
 /* Links to the Landmarks page (HANDOFF section 19). On phones the top bar has no free width (measured at 375 px), so the
  * link moves to the status strip, which drops the date to make room. */
 a.method-button{text-decoration:none}
-.status-landmarks{display:none;align-items:center;gap:5px;color:#a1b5a6;text-decoration:none;white-space:nowrap}
+.status-landmarks{display:none;align-items:center;gap:5px;color:#a1b5a6;text-decoration:none;white-space:nowrap}.status-author{display:flex;align-items:center;color:#8aa08f;text-decoration:none;white-space:nowrap;font-size:8px;letter-spacing:.8px}.status-author:hover{color:#dce5df}.method-author{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:11px}.method-author a{display:inline-flex;align-items:center;gap:4px;color:#adc6a0}
 .unmapped-landmarks{display:inline-flex;align-items:center;gap:6px;margin:2px 0 12px;font-size:12px;color:#b4c8b4;text-decoration:none}
 .landmarks-link:hover,.status-landmarks:hover,.unmapped-landmarks:hover{color:#dce5df}
 @media (max-width:650px){.landmarks-link{display:none}.status-landmarks{display:flex;font-size:10px}.status-date{display:none}}

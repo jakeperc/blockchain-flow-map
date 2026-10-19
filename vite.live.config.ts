@@ -8,6 +8,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/postcss';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import path from 'node:path';
+import {writeFileSync} from 'node:fs';
 const root=fileURLToPath(new URL('.',import.meta.url));
 
 /** What scripts/llms/render.mjs hands back (it is plain ESM, loaded at build time, so it is typed here by hand). */
@@ -83,11 +84,37 @@ function landmarksPage():Plugin{
   }},
  };
 }
+/**
+ * Dev only: a sink for the link-preview capture (scripts/og/capture-snippet.js). The console snippet POSTs the JPEG it
+ * drew from the globe to /__capture?name=og.jpg and this writes it into public/. Only the two preview names are
+ * accepted, nothing is served, and the plugin does not exist in a build.
+ */
+function captureSink():Plugin{
+ const names=new Set(['og.jpg','og-landmarks.jpg']);
+ return {
+  name:'jp-capture-sink',
+  apply:'serve',
+  configureServer(server){
+   server.middlewares.use('/__capture',(req,res)=>{
+    const name=new URL(req.url??'','http://localhost').searchParams.get('name')??'';
+    if(req.method!=='POST'||!names.has(name)){res.statusCode=req.method!=='POST'?405:400;res.end('refused');return;}
+    const chunks:Buffer[]=[];
+    req.on('data',(c:Buffer)=>chunks.push(c));
+    req.on('end',()=>{
+     const body=Buffer.concat(chunks);
+     if(body.length<1000||body[0]!==0xff||body[1]!==0xd8){res.statusCode=400;res.end('not a JPEG');return;}
+     writeFileSync(path.join(root,'public',name),body);
+     res.end(`wrote public/${name} (${body.length} bytes)`);
+    });
+   });
+  },
+ };
+}
 export default defineConfig({
  root:path.join(root,'live-lite'),
  base:'./',
  publicDir:path.join(root,'public'),
- plugins:[react(),landmarksPage(),llms()],
+ plugins:[react(),landmarksPage(),llms(),captureSink()],
  resolve:{alias:{'@':root}},
  css:{postcss:{plugins:[tailwindcss()]}},
  build:{outDir:path.join(root,'dist-live'),emptyOutDir:true,rolldownOptions:{input:{index:path.join(root,'live-lite','index.html'),landmarks:path.join(root,'live-lite','landmarks.html')}}},
