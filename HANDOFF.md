@@ -2119,4 +2119,4 @@ emulates the viewport, and its touches arrive as mouse clicks, so the pinch was 
 29 to 33: the first-minute fixes, author links, preview image, 1H baselines). Jake FTPs its contents into the existing
 folder, keeping `assets/`.
 
-**Not pushed.** The repository is public, so each push publishes; this commit waits for Jake's go-ahead.
+**Pushed 2026-10-19 on Jake's go-ahead** (`9ae8d68`); the CI run on it passed.
