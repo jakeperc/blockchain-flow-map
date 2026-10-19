@@ -1,12 +1,12 @@
 # Before/after measurements, 2026-09-21
 
 Five stored hours of real chain history, each replayed with `scripts/measure-corridors.mjs` for the registry
-before this run (`cc97055`) and after it (`be03bf3`). Each `window-*.json` holds the block ranges, header times and
+before this run (`cc97055`) and after it (`8303043`). Each `window-*.json` holds the block ranges, header times and
 the CoinGecko 5-minute price series; each `corridors-*.json` holds what the map's 1H view shows for both registries.
 Re-run one with:
 
 ```
-node scripts/measure-corridors.mjs --window docs/measurements/2026-09-21/window-A.json --refs cc97055,be03bf3 --explain
+node scripts/measure-corridors.mjs --window docs/measurements/2026-09-21/window-A.json --refs cc97055,8303043 --explain
 ```
 
 Chain history is immutable and the prices are stored, so a re-run reproduces these figures as long as the free

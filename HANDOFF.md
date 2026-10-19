@@ -27,7 +27,7 @@ began publishing `llms.txt` and `methodology.md` beside the page, and a plain-te
 run no JavaScript** (section 18); earlier that day came **Polygon and Optimism going live on keyless endpoints, a
 42-row wallet wave from the Dune lead feed, and the finding that Tron's feed needs no key** (section 17). Before that
 came the
-USDT top-holders wave, Tronscan decision D6 and API plan (section 16), and the **Avalanche Snowscan registry wave** (section 13, commit `684b4af`). Earlier work includes the renderer performance and look pass
+USDT top-holders wave, Tronscan decision D6 and API plan (section 16), and the **Avalanche Snowscan registry wave** (section 13, commit `896ba9a`). Earlier work includes the renderer performance and look pass
 (section 11), Avalanche going live with Polygon measured then parked and longer time
 frames (section 12), and the unplaced-flow / Unmapped work (section 10). Read this before touching anything under
 `lib/atlas/`, `scripts/registry/` or `docs/`. It explains the direction the project has
@@ -569,7 +569,7 @@ integrity rules in section 2 (free does not relax the evidence standard).
 - Phases 1 and 2 (`ab54955`) made the registry chain-qualified and brought Base and
   Arbitrum online with per-chain feeds and the derived tier.
 - Phase 3 (`7ab08d5`) added first-party Basescan and Arbiscan labels and the orphan rule.
-- 2026-09-21, "more flows and countries" (`679b514` to `be03bf3`):
+- 2026-09-21, "more flows and countries" (`679b514` to `8303043`):
   - Measured endpoint caps became a build gate (`feeds.ts`), and 1rpc.io/eth was demoted.
   - Diagnostics now measure activity and replay the 1H view against stored hours.
   - Each research wave was ranked by measured activity:
@@ -912,7 +912,7 @@ EU platform, and Poland's KNF says the companies behind kanga.exchange are not r
 there. See the source links in the measurement report. Free explorer tags on these chains are sparse as a source of new
 active wallets; research future chains by measured activity first.
 
-The 2026-09-28 wave is commit `684b4af`. `node scripts/verify-all.mjs`, TypeScript
+The 2026-09-28 wave is commit `896ba9a`. `node scripts/verify-all.mjs`, TypeScript
 typecheck and `corepack pnpm build:live` passed; lint remained at its existing 45
 errors. `outputs/ledger-atlas-live-2026-09-28.zip` packages `dist-live/` with
 `index.html` at the zip root for Jake's FTP deployment. The zip is ignored by Git;
@@ -1373,7 +1373,7 @@ Jake's decisions on 2026-10-06:
 - "MXC" tags count as MEXC, with a note on each row.
 - The Tron feed may cost up to about 2 MB per visitor-hour.
 - Registered brands only tonight.
-- The §20/§21 work ships too. It is committed separately as `e9eb6ec`.
+- The §20/§21 work ships too. It is committed separately as `aeeeee0`.
 
 Full research record: `docs/measurements/2026-10-06/tron-tronscan-tags.md`, with raw data in `tron-screen.json` (raw scan output, kept offline since 2026-10-18: `work/offline-scans/`, not in the public repository).
 
@@ -1752,7 +1752,7 @@ red-team table of what it must not bend (no data licence on the explorer tags, b
 bumped rather than worked around, no Prettier pass, `og.png` cartography only, phones unchanged). Week 1 makes the
 project findable and credible; this section is its first step.
 
-**Removed from the tree** (git history keeps everything; the pre-prune commit `b35900c` is tagged
+**Removed from the tree** (git history keeps everything; the pre-prune commit `3b1d640` is tagged
 `backend-deferred-2026-10` once the history rewrite in a later step lands):
 - The Next.js / Cloudflare Workers / D1 scaffold that was the deferred phase-2 backend: `app/api/**`, `app/layout.tsx`,
   `app/page.tsx`, `app/chatgpt-auth.ts`, `db/`, `drizzle/`, `drizzle.config.ts`, `examples/`, `build/`,
@@ -1976,9 +1976,62 @@ never scheduled, because `verify-registry.cjs` fails by the calendar on purpose 
 evidence due within 60), so a cron run would turn red with no change. The dormancy workflow in the plan (manual
 only) is week 3. Deployment stays manual FTP.
 
-**History rewrite (part 3 below records the result).** One commit (`abeb87f`, the rename) was authored and committed
+**History rewrite (part 3 below records the result).** One commit (`86ab7db`, the rename) was authored and committed
 with a work address. The rewrite changes both to the project identity on that commit only, and removes the eighteen
 scan outputs from every commit, with `git filter-branch`, after a `git bundle` of every ref and a copy of the tree
 are taken beside the repository (section 26's precedent). The two backup tags are rewritten with the history so they
-point at the new commits; no tag is pushed. `refs/original/` is deleted afterwards. Every commit after `abeb87f`
+point at the new commits; no tag is pushed. `refs/original/` is deleted afterwards. Every commit after `86ab7db`
 gets a new hash, including the sections 29 to 32 commits; the map from old to new is recorded in part 3.
+**Part 3: the rewrite, done (2026-10-18/19).** Backups first, beside the repository:
+`live-blockchain-flows-backup-2026-10-18-pre-rewrite.bundle` (every ref, verified with `git bundle verify`) and
+`live-blockchain-flows-backup-2026-10-18-pre-rewrite.tgz` (the tree without `node_modules`, `.sites-runtime`,
+`dist-live` and `.git`). Then `git filter-branch` over every ref with an env filter (author and committer e-mail on the
+rename commit) and an index filter (`git rm --cached` of the eighteen scan outputs), `--tag-name-filter cat` so the two
+backup tags follow their commits; `refs/original/` deleted, reflog expired, `git gc --prune=now`. After it:
+`git log --all --format='%ae|%ce|%an|%cn' | sort -u` prints one identity; `git log --all -- <path>` is empty for all
+eighteen paths; 177 tracked files; the pack is 1.5 MiB. Twenty of the 49 commits (those before the first scan output
+existed) kept their hashes; the other 29 changed, and every citation of one in this file and the reports was updated
+to the new value (nine replacements). The map, old to new:
+  - `ba8bde7` is now `b7e2368`
+  - `58edb8a` is now `017cc3e`
+  - `5a8c58f` is now `099ac48`
+  - `18ce3a1` is now `6d15394`
+  - `50015f4` is now `07c68ad`
+  - `b35900c` is now `3b1d640`
+  - `5353c1d` is now `5ae6142`
+  - `27d2f98` is now `2a9ae15`
+  - `7096924` is now `7dd18e5`
+  - `602b22d` is now `b70d45b`
+  - `6a3e31c` is now `a37424c`
+  - `e9eb6ec` is now `aeeeee0`
+  - `f69715c` is now `2ec57a3`
+  - `6c8b396` is now `5715dd3`
+  - `827c561` is now `b9917cf`
+  - `878dbfd` is now `7f2e975`
+  - `abeb87f` is now `86ab7db`
+  - `5f0f901` is now `5099da1`
+  - `69bf48d` is now `37f5f11`
+  - `2220cb3` is now `5dceae3`
+  - `684b4af` is now `896ba9a`
+  - `5b3a505` is now `411ad61`
+  - `9d999d4` is now `aedba70`
+  - `f10aaea` is now `0084111`
+  - `b53cb8f` is now `6c37905`
+  - `be03bf3` is now `8303043`
+  - `9837f45` is now `8431379`
+  - `02404f8` is now `309187b`
+  - `7c5438f` is now `9de1e71`
+
+The pre-prune commit is tagged `backend-deferred-2026-10` (`3b1d640`). The branch is renamed `master` to `main` for
+publication; nothing in the repository named the branch. The tags are not pushed.
+
+**Fresh clone of the rewritten repository** (a scratch folder, the project-local store reused through
+`SITES_PNPM_SHARED_STORE`, `pnpm install --frozen-lockfile --offline`, `pnpm verify`, `pnpm build:live`): offline install in 5 s, all integrity checks passed, built in 3 s, and dist-live/ holds index.html, landmarks.html, llms.txt, methodology.md, og.jpg and the assets.
+
+**Open (Jake):** the push itself, which creates the public repository `jakeperc/blockchain-flow-map` (the name is
+the plan's proposal); the LinkedIn URL for `lib/site/links.ts`; after the push, the CI badge in the README goes green
+on the first run or says why not.
+
+**Next:** week 2 of the plan: the seven-chain replay (overnight run), the history export, the provenance split
+(`SCHEMA` bump after Jake exports), the About page skeleton.
+
