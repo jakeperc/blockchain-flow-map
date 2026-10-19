@@ -75,27 +75,26 @@ Each one is written up with the measured evidence and the condition under which 
 
 ```mermaid
 flowchart LR
-  subgraph browser [Visitor's browser, no server]
-    RPC[Keyless public RPC\neth_getLogs, two topic positions] --> LC[live-client.ts\nfeeds, backfill, poll, sample, health]
-    LC --> CORE[live-core.ts\ndecode, price, classify, inferDeposits]
-    CORE --> ENG[engine.ts\naggregateSpan: corridors, countries, totals]
-    ENG --> UI[atlas.tsx + components/map\nglobe that unfolds into Equal Earth]
-    ENG --> ROLL[rollup.ts\n15-minute sealed spans]
-    ROLL --> IDB[(IndexedDB\nthis browser only)]
-    IDB --> ROLL
+  subgraph browser ["Visitor's browser, no server"]
+    RPC["Keyless public RPC<br/>eth_getLogs, two topic positions"] --> LC["live-client.ts<br/>feeds, backfill, poll, sample, health"]
+    LC --> CORE["live-core.ts<br/>decode, price, classify, inferDeposits"]
+    CORE --> ENG["engine.ts<br/>aggregateSpan: corridors, countries, totals"]
+    ENG --> UI["atlas.tsx and components/map<br/>globe that unfolds into Equal Earth"]
+    ENG --> ROLL["rollup.ts<br/>15-minute sealed spans"]
+    ROLL <--> IDB[("IndexedDB<br/>this browser only")]
   end
-  subgraph registry [Evidence pipeline, offline]
-    TAG[read-tag.mjs\nown explorer page] --> ADDR[addresses.txt\nchain | entity | address | tag | date]
-    ADDR --> PROBE[probe-code.mjs] --> GEN[gen-addresses.mjs]
-    DORM[measure-dormancy.mjs\n90 days, monthly] --> GEN
-    GEN --> KA[known-addresses.ts\ngenerated]
-    ENT[known-entities.ts\njurisdiction evidence] --> KA
+  subgraph registry ["Evidence pipeline, offline"]
+    TAG["read-tag.mjs<br/>own explorer page"] --> ADDR["addresses.txt<br/>chain, entity, address, tag, date"]
+    ADDR --> PROBE["probe-code.mjs"] --> GEN["gen-addresses.mjs"]
+    DORM["measure-dormancy.mjs<br/>90 days, monthly"] --> GEN
+    GEN --> KA["known-addresses.ts<br/>generated"]
+    KA --> ENT["known-entities.ts<br/>entities, jurisdiction evidence, lookups"]
   end
-  subgraph gate [Build gate: pnpm build:live]
-    V[verify-all.mjs\n8 verifiers + tsc] --> VITE[vite build] --> OUT[dist-live/\nindex, landmarks, llms.txt, methodology.md]
+  subgraph gate ["Build gate: pnpm build:live"]
+    V["verify-all.mjs<br/>8 verifiers and tsc"] --> VITE["vite build"] --> OUT["dist-live/<br/>index, landmarks, llms.txt, methodology.md"]
   end
-  KA --> LC
-  KA --> V
+  ENT --> CORE
+  ENT --> V
 ```
 
 The pure parts (`lib/atlas/live-core.ts`, `engine.ts`, `rollup.ts`, `model.ts`) have no fetch, DOM or timers and are
