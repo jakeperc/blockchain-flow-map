@@ -23,7 +23,7 @@ screened separately. Four cleared the $100k three-day admission floor; Lemon Cas
 Bitpanda 18 were below it, and Coinsquare 27 was idle. They remain derived evidence.
 
 A country-focused re-scan of **35 Etherscan search terms** found no new unregistered
-address hit relative to the 2026-09-21 `label-scan.json`. Search results can be capped,
+address hit relative to the 2026-09-21 `label-scan.json` (kept offline since 2026-10-18). Search results can be capped,
 so this is a useful monthly check, not proof that every tag has been enumerated.
 Of 19 previously unregistered, wallet-like hits from those terms, **Kanga Exchange 1**
 alone was active in the seven-day Ethereum screen: about $22.1M of incoming plus outgoing
@@ -58,7 +58,8 @@ deposit inference. No corridor improvement is claimed without a matched-window r
 The full 90-day dormancy refresh on 2026-09-28 completed with no failed ranges and
 measured **24 active of 764** evidenced Avalanche addresses, including the new Bitkub row.
 
-Source artifacts: `snowscan-scan.json`, `snowscan-unknown.txt`, `snowscan-activity.json`,
+Source artifacts (raw scan output, kept offline since 2026-10-18 in `work/offline-scans/`; the figures above are
+the record): `snowscan-scan.json`, `snowscan-unknown.txt`, `snowscan-activity.json`,
 `snowscan-promotions-activity.json`, `basescan-scan.json`, `basescan-unknown.txt`, and
 `basescan-activity.json`, `etherscan-country-scan.json`,
 `etherscan-country-unknown.txt`, and `etherscan-country-activity.json` in this directory.

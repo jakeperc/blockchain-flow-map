@@ -49,5 +49,5 @@ Idle Avalanche leads were already derived: Upbit hot 1, Robinhood, Coinbase 33/4
 Binance tags. The only Polygon leads were Bitkub hot 6 and Robinhood; Polygon is parked.
 No Tron or Solana addresses were found.
 
-A direct read of Etherscan's USDT top-holders page was attempted as a new lead source.
-The agent's safety classifier blocked it, and it was not pursued.
+Etherscan's USDT top-holders page was considered as a lead source. It is a page for people rather than for
+scripts, so it was not read by script; Jake exported it himself (see `usdt-top-holders.md`).

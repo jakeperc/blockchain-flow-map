@@ -6,7 +6,7 @@ admission rules are unchanged:
 - A brand needs a document naming one custodying operator (D3).
 - A wallet needs at least $100k of USDT in its screening window.
 
-Raw data: `regional-hits.json`, `unregistered-screen.json`, `counterparty-tags.json` in this folder.
+Raw data: `regional-hits.json`, `unregistered-screen.json`, `counterparty-tags.json` (raw scan output, kept offline since 2026-10-18: `work/offline-scans/`, not in the public repository).
 
 ## 1. India and Latin America: no admissible Tron wallet exists yet
 

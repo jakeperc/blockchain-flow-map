@@ -8,8 +8,8 @@ are unchanged:
 - A wallet needs at least $100k of USDT in its screening window.
 
 Raw data in this folder:
-- `tron-lead-harvest.json`: every tagged lead, with the list and page where it was found.
-- `tron-lead-screen.json`: the activity screen.
+- `tron-lead-harvest.json`: every tagged lead, with the list and page where it was found (raw scan output, kept offline since 2026-10-18: `work/offline-scans/`, not in the public repository).
+- `tron-lead-screen.json`: the activity screen (kept offline likewise).
 
 ## 1. Lead sources (leads only, never evidence)
 

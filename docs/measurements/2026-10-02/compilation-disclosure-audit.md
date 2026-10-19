@@ -6,7 +6,7 @@ based on ... compilation" on raw HTML with `([^<.]+)`. When the compilation's na
 fixed script reads each address banner as text. This report re-reads every first-party row whose note does not already
 mention a compilation.
 
-Per-row results (all 705 rows, with the exact proposed note text): `compilation-disclosure-audit.tsv` in this folder.
+Per-row results (all 705 rows, with the exact proposed note text): `compilation-disclosure-audit.tsv`, kept offline since 2026-10-18 (it is a bulk list of explorer tags).
 
 ## Result in one paragraph
 

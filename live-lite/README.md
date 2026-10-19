@@ -81,11 +81,15 @@ actually reads.
 
 Two files: `lib/atlas/known-entities.ts` (one record per operating entity: legal entity, jurisdiction,
 confidence, and the regulator/court/company document that supports it) and
-`lib/atlas/known-addresses.ts` (one line per address: the exact Etherscan public name tag and the date
-it was read). `node scripts/verify-registry.cjs` checks every entry (see the main README).
+`lib/atlas/known-addresses.ts` (one line per address: the exact public name tag read on that chain's own
+explorer and the date it was read). `node scripts/verify-registry.cjs` checks every entry (see the main README).
 
-As of 2026-09-21 the registry holds **1,114 first-party addresses across 64 entities and 29 jurisdictions**
-(figures grow with each research wave; current counts print from `scripts/verify-registry.cjs`). Exchanges and
+As of 2026-10-09 the registry holds **1,217 first-party addresses across 68 entities and 30 jurisdictions**, plus
+3,572 derived rows on the other EVM chains (figures grow with each research wave; current counts print from
+`scripts/verify-registry.cjs` and are shown in the page's Data & coverage panel). The list below is the 2026-09-21
+state; admitted since then, each under the same operator test: HashKey Exchange (HK), Independent Reserve (AU),
+Lemon Cash (AR), Brasil Bitcoin (BR), Ourbit (VG), Urban Crypto Exchange (BR), Well Wallet (CR) and DTCPay (SG, a
+payment firm). `ENTITIES` in `known-entities.ts` is the current list. Exchanges and
 custodians with a settled single-entity attribution: Binance (Cayman Islands); Coinbase, Kraken, Gemini,
 Binance.US, Robinhood Crypto, Uphold, Paxos/itBit, Anchorage Digital, Fidelity Digital Assets (US); OKX, KuCoin,
 Bitget, MEXC, Poloniex (Seychelles); Bitfinex (BVI); Upbit, Bithumb, Coinone, Korbit (South Korea); bitFlyer,
@@ -120,8 +124,8 @@ build starts from the same registry: every Ethereum address is classified with `
 chains (`scripts/registry/probe-code.mjs`, result in `scripts/registry/code-probe.json`), and an address
 that is a plain key-controlled account on Ethereum *and* on the target chain is reused there as DERIVED
 evidence — HIGH at the minimum admissible score, never VERIFIED, with the derivation stated in the
-evidence panel. Of the 805 Ethereum addresses, 46 are contracts (multisigs, proxies) and never derive; 9
-more carry code on Base and 6 on Arbitrum and are excluded there too. A first-party Basescan or Arbiscan
+evidence panel. Contracts (multisigs, proxies) never derive, and neither does an account that carries code on the target
+chain; `scripts/registry/code-probe.json` records both results per address. A first-party Basescan or Arbiscan
 label always wins over a derivation, and only a first-party label can anchor a deposit-address inference,
 so routes on Base and Arbitrum depend on the labels read on those explorers. Each address was checked against its own Etherscan page; each entity's jurisdiction is
 tied to a regulator register, court filing or the company's own legal page, with HIGH rather than
@@ -148,8 +152,8 @@ zondacrypto (Estonian licence revoked June 2026), Kuna (ceased trading 2025), Ge
 BitMart, Phemex, AscendEX, Bitrue, LBank, CoinEx, BingX, WOO X, XT.com and HitBTC (no document identifies
 which of several affiliates controls the wallet, or the claimed operator is contradicted by a regulator).
 
-**Dormant tier.** Most registry wallets are idle: 81% of the Ethereum registry moved no USDC or USDT in
-the 90 days to 2026-09-21. Those wallets stay in the registry as evidence, and any transfer that touches
+**Dormant tier.** Most registry wallets are idle: on the 2026-10-07 measurement, 657 of 823 Ethereum wallets had
+moved no USDC or USDT in 90 days. Those wallets stay in the registry as evidence, and any transfer that touches
 one still resolves to its entity, but the live filter does not ask the public nodes about them
 (`scripts/registry/measure-dormancy.mjs` writes `scripts/registry/dormancy.json`; `gen-addresses.mjs` emits
 the smaller `WATCHED` list the browser sends). That cuts what each visitor uploads and frees filter slots for

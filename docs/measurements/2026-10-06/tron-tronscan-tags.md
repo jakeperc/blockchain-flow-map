@@ -88,7 +88,7 @@ jurisdictions until local-exchange Tron wallets are found.
 ## Research wave and go-live (2026-10-06 evening, reads dated 2026-10-07 UTC)
 
 Jake's decisions: count "MXC" tags as MEXC with a note on each row; allow up to about 2 MB per visitor-hour; registered
-brands only tonight. Raw data: `tron-screen.json` (per-address screen, rejections, unregistered leads).
+brands only tonight. Raw data: `tron-screen.json` (per-address screen, rejections, unregistered leads) (raw scan output, kept offline since 2026-10-18: `work/offline-scans/`, not in the public repository).
 
 **Leads (never evidence).** There were two Tronscan API sources, each paced at 450 ms, with no block:
 - `api/search/v2?term=<brand>&type=address`, one page of 50, for each of the 64 registered entity names plus the

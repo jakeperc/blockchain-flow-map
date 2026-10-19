@@ -1,6 +1,7 @@
 # Terms for scripts/registry/label-scan.mjs. Re-run periodically: labels appear over time.
 #   node scripts/registry/label-scan.mjs --file scripts/registry/label-scan-terms.txt --out scripts/registry/label-scan.json
 # A hit is a lead only. Admission needs the address's own explorer page (read-tag.mjs) and an operator document.
+# The output file is gitignored: a bulk list of explorer tags stays offline and is never published.
 
 # "Licensed but unlabelled" list from the known-entities.ts header (2026-09-19)
 gopax

@@ -239,7 +239,7 @@ their reopen conditions. Brands first met on Tronscan were tested on the same st
 
 **2026-10-09 follow-up on the brands held on 2026-10-07 and 2026-10-08** (main session; terms read on the brands' own sites):
 - **Cropty: left out by Jake's decision.** Tronscan tag "Cropty Wallet Hot Wallet" (TVCEYdpK6o8hBt71h82aUVbgfyyxJNMYfe,
-  `docs/measurements/2026-10-08/tron-lead-screen.json`), $1.32M of USDT and 1,307 transfers in the
+  `docs/measurements/2026-10-08/tron-lead-screen.json`, kept offline since 2026-10-18), $1.32M of USDT and 1,307 transfers in the
   7 days to 2026-10-08. Its undated Terms of Service (https://www.cropty.io/terms-of-services) say it is operated by
   Coinscatch (Private) Limited (Sri Lanka), with no registration number and no register record. It would add `LK`.
   It already clears the $100k-a-week activity floor; it is out because the entity is unconfirmed and the flow is small.

@@ -22,7 +22,7 @@ version, fitted to Jake's budget.
 
 | Spend | Status |
 |---|---|
-| $49/month and $199/month plans (Helius Developer, QuickNode, Chainstack, Solscan Pro, Etherscan Lite) | **Not affordable. Do not propose them.** |
+| $49/month and $199/month plans (Helius Developer, QuickNode, Chainstack, Solscan Pro, Etherscan Lite) | **Out of scope for a personal project. Do not propose them.** |
 | Alchemy pay-as-you-go | Affordable. Usage-billed at about $0.525 per 1M compute units. |
 | Cloudflare Workers Paid, $5/month | Affordable, but start on the free tier (see below). |
 | Free keys (Infura, Tronscan, TronGrid, Helius free, Blockscout free) | Preferred |

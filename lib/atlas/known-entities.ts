@@ -35,8 +35,8 @@
  * purpose: a transfer from an issuer treasury is issuance, not bilateral settlement, which is exactly
  * what the mint/burn and treasury exclusions in engine.ts exist to keep out.
  *
- * Labels appear over time, so this list is re-scanned with scripts/registry/label-scan.mjs (results and dates in
- * scripts/registry/label-scan.json; last scan 2026-09-21). Not disputed, just unlabelled: SBI VC Trade, Zaif,
+ * Labels appear over time, so this list is re-scanned with scripts/registry/label-scan.mjs (its output,
+ * scripts/registry/label-scan.json, is a bulk list of explorer tags and is kept offline, gitignored; last scan 2026-09-21). Not disputed, just unlabelled: SBI VC Trade, Zaif,
  * PDAX, Buda, Foxbit, NovaDAX, Volabit, Yellow Card, Busha, Ovex, Rain, CoinMENA, BitOasis, ZebPay, Giottus,
  * Mudrex, Swissquote, BISON, Flow Traders, Fireblocks, Coinmate, Bits of Gold, Coinmotion, Safello, Belo,
  * Buenbit, SatoshiTango, Swyftx are properly licensed but have no public Etherscan wallet tag, so there is nothing

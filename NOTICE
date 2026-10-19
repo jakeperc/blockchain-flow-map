@@ -1,0 +1,31 @@
+Blockchain Flow Map - notice on the data in this repository
+
+Code: MIT (see LICENSE).
+
+Evidence registry (scripts/registry/addresses.txt and the generated
+lib/atlas/known-addresses.ts). Each row quotes, for verification, the public
+name tag shown on the address's own page at the named block explorer
+(Etherscan, Basescan, Arbiscan, Snowscan, Polygonscan, Optimistic Etherscan or
+Tronscan) on the date in the row. The tags are those explorers' data and their
+terms of use govern any reuse; this repository grants no licence to
+redistribute them. Rows are kept only as the cited evidence behind what the
+map draws, and the build refuses a row whose read is older than 180 days.
+
+Entity records (ENTITIES in lib/atlas/known-entities.ts), the dormancy
+measurement (scripts/registry/dormancy.json), the code probe
+(scripts/registry/code-probe.json), the decision records (docs/) and the
+measurement reports (docs/measurements/) are the author's own research and
+measurements, citing public regulator, court and company documents where a
+jurisdiction is asserted.
+
+Machine-harvested scan output (bulk lists of explorer tags from search or
+list endpoints) is not published. The reports that relied on it keep their
+figures and name the file as "kept offline".
+
+Geography: Natural Earth (public domain), as world-110m from the world-atlas
+project. Stablecoin contract addresses are taken from the issuers' own
+published lists (Circle, Tether), cited in the methodology.
+
+The map draws only transfers between wallets whose evidence meets the rules
+in docs/METHODOLOGY.md. Nothing here asserts where a person is, who owns an
+address, or that any activity is lawful or unlawful.

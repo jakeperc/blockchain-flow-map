@@ -44,6 +44,25 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+# Bulk explorer-scan output is research material kept offline in work/offline-scans/ (NOTICE); the reports cite it by name.
+/scripts/registry/label-scan.json
+/docs/measurements/2026-10-02/compilation-disclosure-audit.tsv
+/docs/measurements/2026-09-28/basescan-activity.json
+/docs/measurements/2026-09-28/basescan-scan.json
+/docs/measurements/2026-09-28/basescan-unknown.txt
+/docs/measurements/2026-09-28/etherscan-country-activity.json
+/docs/measurements/2026-09-28/etherscan-country-scan.json
+/docs/measurements/2026-09-28/etherscan-country-unknown.txt
+/docs/measurements/2026-09-28/snowscan-activity.json
+/docs/measurements/2026-09-28/snowscan-promotions-activity.json
+/docs/measurements/2026-09-28/snowscan-scan.json
+/docs/measurements/2026-09-28/snowscan-unknown.txt
+/docs/measurements/2026-10-06/tron-screen.json
+/docs/measurements/2026-10-07/unregistered-screen.json
+/docs/measurements/2026-10-07/regional-hits.json
+/docs/measurements/2026-10-07/counterparty-tags.json
+/docs/measurements/2026-10-08/tron-lead-harvest.json
+/docs/measurements/2026-10-08/tron-lead-screen.json
 !.env.example
 *.tsbuildinfo
 /dist-live/

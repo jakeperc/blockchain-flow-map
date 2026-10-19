@@ -1,6 +1,8 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-18 (late): **the 1H window has corridor baselines from sealed history, and a bias in how prior
+Last updated 2026-10-18 (latest): **the repository is prepared for GitHub: MIT licence and a NOTICE on the data, a
+README that reads as a method summary, a CI workflow, the bulk explorer-scan outputs kept offline, and the history rewrite
+that follows** (section 33). Before that: **the 1H window has corridor baselines from sealed history, and a bias in how prior
 windows were cut (a 1H mean 25% low at any moment off the quarter-hour) is fixed** (section 32). Before that: **both pages
 now name and link their author and the source code, carry a link-preview
 image and the card tags, and `llms.txt` links the repository** (section 31). Earlier: **the page's first minute is honest: LOADING and PARTIAL states by cause instead of a blanket DELAYED,
@@ -956,8 +958,8 @@ recommended.
 - Excluded brands (Bybit, Bitstamp, Luno, WazirX, Revolut, offshore exchanges, swap services)
   were dropped unscreened.
 
-A direct scrape of Etherscan's USDT top-holders page was blocked by the agent's safety classifier
-and was not pursued. The Dune spellbook `cex_evms_addresses.sql` remains an unread lead
+Etherscan's USDT top-holders page was not read by script (the page is for people, not bots, and the agent did
+not try to get round that); Jake exported it himself instead (section 16). The Dune spellbook `cex_evms_addresses.sql` remains an unread lead
 compilation.
 
 **Verification:** `verify-all.mjs` passed with one expected warning (Binance 49 is unmeasured
@@ -971,7 +973,7 @@ for Jake's API keys and his Tronscan decision.
 ## 16. USDT top-holders wave, D6 and the API plan (2026-09-29, later)
 
 - **Budget and hosting are recorded in `docs/API-PLAN.md`. Read it before any API work.**
-  - Jake cannot afford $49 or $199/month plans. He can afford Alchemy pay-as-you-go and Cloudflare $5.
+  - Paid plans at $49 or $199 a month are out of scope for a personal project. Alchemy pay-as-you-go and Cloudflare's $5 tier are acceptable.
   - Polygon needs a key only for the offline dormancy scan, so Infura free un-parks it with no server.
     Run it locally or in GitHub Actions.
   - Tron and Solana need a cached, rate-limited Cloudflare Worker proxy or cron. The free tier is
@@ -990,7 +992,7 @@ for Jake's API keys and his Tronscan decision.
   Of 169 tags, 50 were already registered and 107 were plumbing or excluded brands. Report:
   `docs/measurements/2026-09-29/usdt-top-holders.md`. **This export beat the search sweeps**
   (6 wallets against 2), so ask Jake for the USDC and L2/Avalanche holder exports next time. Agents
-  cannot fetch these pages themselves: a direct scrape was blocked by the agent safety classifier.
+  do not read these pages by script; Jake exports them himself.
 - **Verification:** `verify-all.mjs` passed. The only warnings are the expected "unmeasured" ones for
   rows added since the 2026-09-28 dormancy scan; re-run `measure-dormancy.mjs` to clear them.
   `tsc --noEmit` is clean and `pnpm build:live` passed. Registry-only change, so no browser check.
@@ -1373,7 +1375,7 @@ Jake's decisions on 2026-10-06:
 - Registered brands only tonight.
 - The §20/§21 work ships too. It is committed separately as `e9eb6ec`.
 
-Full research record: `docs/measurements/2026-10-06/tron-tronscan-tags.md`, with raw data in `tron-screen.json`.
+Full research record: `docs/measurements/2026-10-06/tron-tronscan-tags.md`, with raw data in `tron-screen.json` (raw scan output, kept offline since 2026-10-18: `work/offline-scans/`, not in the public repository).
 
 **Registry.** 21 Tron rows were added to `addresses.txt`. All carry a Tronscan `publicTag` read through
 `read-tag.mjs tronscan.org`. All are normal accounts with no risk flag, and all moved at least $100k (1 to 7 days):
@@ -1513,7 +1515,7 @@ only by the Ourbit row. Uploading either works.
 ## 25. Tronscan lead harvest from the untried list endpoints (2026-10-08)
 
 Jake asked whether the Tronscan API could add more wallets or countries. Report: `docs/measurements/2026-10-08/tron-lead-harvest.md`,
-with raw data beside it (`tron-lead-harvest.json`, `tron-lead-screen.json`).
+with raw data beside it (`tron-lead-harvest.json`, `tron-lead-screen.json` (raw scan output, kept offline since 2026-10-18: `work/offline-scans/`, not in the public repository)).
 
 **Sources (leads only).** All 943 requests returned 200. The sources were:
 - `account/list?sort=-balance`: the top 10,000 TRX accounts.
@@ -1933,3 +1935,50 @@ does not yet have; on a cold load the panel still says "Baseline unavailable", a
 running tab, or for a returning visitor, the anomaly line appears on the default window.
 
 **Next:** step 5 (history rewrite, NOTICE, README, CI, push on Jake's go-ahead).
+
+## 33. Public-repository preparation, part 2: licence and notice, README, CI, the scan outputs kept offline, the history rewrite (2026-10-18)
+
+Week 1 step 5 of the plan in section 29. Everything a stranger meets first on GitHub.
+
+**One rule for explorer tags in the public repository:** a tag appears only where it is individually cited as
+evidence with its read date. The registry (`scripts/registry/addresses.txt`, the generated `known-addresses.ts`) and
+every `.md` report stay. The machine-harvested bulk outputs (search and list scans, holder re-reads, lead screens:
+eighteen files, listed in `.gitignore` under "Bulk explorer-scan output") left the tree and, in the rewrite below,
+the history. They are kept on this machine in `work/offline-scans/` (gitignored) and in the pre-publication backup.
+Every report that cited one now says "kept offline" beside the name; the figures in the reports are the record.
+`scripts/registry/label-scan.mjs` still writes its output locally; the file is ignored.
+
+**Licence and notice.** `LICENSE` is MIT for the code and says so. There is **no data licence**: `NOTICE` states
+that each registry row quotes the named explorer's public page for verification, read on the stated date, that the
+explorers' terms govern any reuse and no licence to redistribute the tags is granted; that the entity records,
+dormancy and code-probe measurements, decision records and reports are the author's own research; that bulk scan
+output is not published; and that nothing in the repository asserts where a person is, who owns an address, or
+that any activity is lawful or unlawful. The red team's reasoning: a CC BY licence on about 1,200 verbatim tags
+would assert rights the author does not hold, and a compliance reviewer would notice.
+
+**README** rewritten as a two-minute read: the preview image as hero, the pitch, "what you are looking at", the
+eight rules in one line each, the D1-D7 table with dates and consequences, a Mermaid diagram of the browser path,
+the evidence pipeline and the gate, the quickstart, the pipeline in five steps, dated and cited visitor-cost
+figures, a "who did what" paragraph (the decisions and calls were Jake's; the agents worked under `AGENTS.md` and
+`CLAUDE.md` with the gate enforcing the standard), maintenance dates, a short status and a repository map. The
+dated changelog paragraph is gone from the README; this file is the log. `live-lite/README.md` carries the
+2026-10-09 registry figures and names the entities admitted since 2026-09-21.
+
+**Wording for the new readers, without changing what happened.** Two sentences that said a page read was "blocked
+by the agent's safety classifier" (sections 15 and 16, and `docs/measurements/2026-09-29/public-post-leads.md`) now
+say what happened: the holders page is for people rather than scripts, it was not read by script, and Jake exported
+it himself. The budget lines in section 16 and `docs/API-PLAN.md` say paid plans are out of scope for a personal
+project. Nothing else in the log was reworded.
+
+**CI.** `.github/workflows/verify.yml` runs on push and pull request only: Node 24, `pnpm install --frozen-lockfile`,
+`pnpm verify`, `pnpm typecheck`, `pnpm build:live`, and keeps `dist-live/` as a 14-day artifact for review. It is
+never scheduled, because `verify-registry.cjs` fails by the calendar on purpose (dormancy older than 45 days,
+evidence due within 60), so a cron run would turn red with no change. The dormancy workflow in the plan (manual
+only) is week 3. Deployment stays manual FTP.
+
+**History rewrite (part 3 below records the result).** One commit (`abeb87f`, the rename) was authored and committed
+with a work address. The rewrite changes both to the project identity on that commit only, and removes the eighteen
+scan outputs from every commit, with `git filter-branch`, after a `git bundle` of every ref and a copy of the tree
+are taken beside the repository (section 26's precedent). The two backup tags are rewritten with the history so they
+point at the new commits; no tag is pushed. `refs/original/` is deleted afterwards. Every commit after `abeb87f`
+gets a new hash, including the sections 29 to 32 commits; the map from old to new is recorded in part 3.

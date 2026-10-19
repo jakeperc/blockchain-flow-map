@@ -1,0 +1,31 @@
+# The build gate, run on every push and pull request: the eight integrity verifiers (model, map maths, evidence
+# registry, live path, sealed history, import graphs, Landmarks, llms.txt), a whole-project type check, and the
+# static build itself. Everything after the install is offline. The built site is kept as an artifact for review;
+# deployment stays manual (HANDOFF.md section 1).
+#
+# Never add a schedule here: verify-registry.cjs fails by the calendar on purpose (a dormancy measurement older
+# than 45 days, or evidence due to expire within 60 days), so a cron-triggered run would turn red with no change.
+name: verify
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm verify
+      - run: pnpm typecheck
+      - run: pnpm build:live
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-live
+          path: dist-live/
+          retention-days: 14

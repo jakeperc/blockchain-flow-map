@@ -11,7 +11,8 @@
  * retries with " 1" when a full response has no address rows. `total 0` is a true miss. Searching a full address
  * never returns its tag. "cap hit" means more tags may exist: probe numbered prefixes ("Coinbase 2", ...) for the rest.
  * Requests are paced and the scan stops on any non-JSON or non-200 reply; it never works around a challenge page.
- * --out merges results, with the scan date, into a JSON file (suggested: scripts/registry/label-scan.json).
+ * --out merges results, with the scan date, into a JSON file (suggested: scripts/registry/label-scan.json, which is
+ *   gitignored: a bulk list of explorer tags is research material kept offline, never published).
  * --expand enumerates numbered tag families past the cap: when a term hits the cap, it is re-queried with each digit
  * appended ("coinbase prime" -> "coinbase prime 1".."9", "coinbase prime 1" -> "coinbase prime 10".."19"), up to
  * three levels. Results are merged per term family and deduplicated by address.
