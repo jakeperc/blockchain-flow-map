@@ -89,7 +89,7 @@ Why the two passes are held, not admitted:
   - Its terms define the operator as the company "and its Related Parties". That is close to the "Company and its
     affiliates" wording that D3 fails, although one licensed entity is named. Singapore is already on the map, so
     admitting it adds flow but no country.
-- **Cropty.** This is the Well Wallet situation (section 24):
+- **Cropty.** This is the Well Wallet situation:
   - a new country (`LK` is not a map jurisdiction);
   - an entity named only in undated terms;
   - no registration number and no register confirmation.

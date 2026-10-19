@@ -1,6 +1,6 @@
 > **Archived design note (2026-10-18).** This describes the Next.js / Cloudflare Workers / D1 backend that was
 > scaffolded in September 2026 as a deferred "phase 2" and never built or connected. The scaffold left the repository
-> on 2026-10-18 (git tag `backend-deferred-2026-10`). The live site has no server (`README.md`, `HANDOFF.md` section 1).
+> on 2026-10-18 (git tag `backend-deferred-2026-10`). The live site has no server (`README.md`).
 > "DEMO DATA" below refers to that scaffold's demo mode, which was removed from the live build on 2026-09-21 under the
 > no-synthetic-data rule. Kept as the record of the backend thinking, not as a description of anything that runs.
 

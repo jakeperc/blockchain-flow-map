@@ -1,7 +1,7 @@
 /**
  * Screen a chain the build does NOT read yet. For a candidate chain, takes the registry's Ethereum plain-account
  * wallets (the set that would derive onto any EVM chain) and reports which of them moved issuer-native USDC or USDT
- * there in the last N days. This is the gate for adding a chain (HANDOFF section 12): rank candidates by measured
+ * there in the last N days. This is the gate for adding a chain: rank candidates by measured
  * evidenced activity, never by chain volume. Activity is a prioritisation signal, never evidence.
  *
  *   node scripts/screen-candidate-chain.mjs <Name> <days> [--out file.json]

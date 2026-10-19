@@ -10,7 +10,7 @@
  *   measured.json       what measure-largest.mjs found (optional until the first scan)
  *   config.json         the fixed recent window
  *
- * Every rule below is decision D7 or a red-team finding from the approved plan (HANDOFF section 19). An error stops the
+ * Every rule below is decision D7 or a red-team finding from the approved plan. An error stops the
  * build; a warning is printed.
  */
 import {readFileSync, readdirSync, existsSync} from 'node:fs';
@@ -143,7 +143,7 @@ export function unsupportedSuperlatives(text) {
 export const wordCount = (s) => s.trim().split(/\s+/).filter(Boolean).length;
 
 /** Explorers whose only readable page (`/txs?a=`) shows the tag but not the banners that credit it, so a tag read there
- *  cannot be shown to credit no outside source (registry audit, HANDOFF section 20). */
+ *  cannot be shown to credit no outside source (docs/measurements/2026-10-02/compilation-disclosure-audit.md). */
 const BANNERLESS_TAG_HOSTS = ['arbiscan.io', 'optimistic.etherscan.io'];
 
 /** Why a tag cannot name anyone under D7, if it cannot: wrong explorer, no verbatim tag or read date, a host whose

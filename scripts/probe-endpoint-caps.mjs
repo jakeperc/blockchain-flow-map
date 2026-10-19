@@ -1,6 +1,6 @@
 /**
  * Measure what each keyless RPC endpoint in a chain's live pool (lib/atlas/feeds.ts) really accepts, for the facts
- * table in HANDOFF.md section 5 and the maxTopics/maxRange caps in feeds.ts:
+ * table in docs/LIVE-FEED.md and the maxTopics/maxRange caps in feeds.ts:
  *   - CORS header for a browser origin, and that eth_chainId matches
  *   - maxRange: the largest filtered eth_getLogs block span that passes (50 random addresses, so the reply is empty
  *     and a response-size cap cannot masquerade as a range cap)

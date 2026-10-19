@@ -1,13 +1,13 @@
 /**
  * Read the public name tag from an address's own explorer page, which is the only admissible address evidence
- * (HANDOFF rule 1). Prints the tag verbatim and the date to put in the `checked` column.
+ * (integrity rule 1 in the README). Prints the tag verbatim and the date to put in the `checked` column.
  *
  *   node scripts/registry/read-tag.mjs <etherscan.io|basescan.org|arbiscan.io|snowscan.xyz|polygonscan.com|optimistic.etherscan.io|tronscan.org> <0xaddress|Taddress>...
  *
  * Arbiscan address pages return 403 to bots, so for arbiscan.io the /txs?a= page header is read instead (the tag
  * is still shown there). Requests are paced and the script stops on any non-200 or challenge page; it never works
  * around one. "no name tag" means the page has none: do not add the address. Tags that look like deposit plumbing
- * (deposit, funder, forwarder, internal, deployer) are flagged, but HANDOFF rule 3 decides admissibility. When the
+ * (deposit, funder, forwarder, internal, deployer) are flagged, but integrity rule 3 decides admissibility. When the
  * page says the label was copied from a public researcher compilation, that is printed too: record it in the row's
  * note, as existing rows do. The page logic is in tag-reader.mjs, shared with the Landmarks scan. For tronscan.org the
  * tag comes from Tronscan's API with the free TRONSCAN_API_KEY in .env.local (decision D6).

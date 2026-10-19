@@ -44,6 +44,9 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+# The maintainer's engineering notes and agent prompts live in work/ and are never published.
+/HANDOFF.md
+/docs/PROMPT-add-flows.md
 # Bulk explorer-scan output is research material kept offline in work/offline-scans/ (NOTICE); the reports cite it by name.
 /scripts/registry/label-scan.json
 /docs/measurements/2026-10-02/compilation-disclosure-audit.tsv

@@ -65,7 +65,7 @@ function llms():Plugin{
 /**
  * The Landmarks page (live-lite/landmarks.html) is static HTML with its stories, field and method written in at
  * serve and build time by scripts/landmarks/page.mjs, which builds and checks the model first and throws on any
- * problem. The page's <!--lm:name--> markers name the fragments. HANDOFF section 19.
+ * problem. The page's <!--lm:name--> markers name the fragments.
  */
 interface LandmarksPage{pageFragments:(root:string)=>Record<string,string>}
 function landmarksPage():Plugin{

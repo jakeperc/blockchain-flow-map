@@ -69,7 +69,7 @@ rows) it is 584 (52.1%). The true figure is higher: 63 rows could not be audited
 
 ## 4. What this audit cannot see: Arbiscan and Optimistic Etherscan (63 rows)
 
-Arbiscan's address pages return 403 to bots (HANDOFF rule 4), so the script reads `/txs?a=<addr>` and takes the tag from
+Arbiscan's address pages return 403 to bots (integrity rule 4 in the README), so the script reads `/txs?a=<addr>` and takes the tag from
 its header. **That page has no compilation banner.** Evidence: `Binance 54` (`0xb38e8c17...91d`) and `MEXC 10`
 (`0x9b642038...f9e5`) are Arbitrum rows whose notes already say "Arbiscan discloses the label as sourced from a public
 researcher compilation", yet `read-tag.mjs arbiscan.io` prints no disclosure for either, and the raw `/txs?a=` HTML for
@@ -127,7 +127,7 @@ Rows by entity (all hildobby; "Conf." is the entity's current confidence):
 **Where the rule comes from.** The sentence "it can lower an entity's confidence to HIGH" appears in this repository
 only in the comment of the old `read-tag.mjs`, which the 2026-10-02 edit removed. The written rules do not state it.
 The `known-entities.ts` header defines `HIGH` as "tag + corroborated jurisdiction, but the brand runs several separately
-regulated affiliates", and HANDOFF section 6 says only that a disclosure "goes into the row's note". There is no
+regulated affiliates", and the registry workflow says only that a disclosure "goes into the row's note". There is no
 threshold (one row, a share of rows, every row) anywhere.
 
 **What practice shows.** The registry is inconsistent in both directions:
@@ -159,11 +159,11 @@ row). Entities with many rows (Binance 20%, OKX 27%, KuCoin 15% of readable rows
 
 If Jake prefers the strict rule, the nine VERIFIED entities to move are Bitvavo, Bitcoin Suisse, BitoPro, Digital Surge,
 Wealthsimple Crypto, GMO Coin, bitbank, Netcoins and NDAX, and the rule should be written down in `known-entities.ts` and
-HANDOFF section 2 (it currently is not). Confidence levels are unchanged until he decides.
+the integrity rules (it currently is not). Confidence levels are unchanged until he decides.
 
 ## 7. A larger question this surfaces
 
-HANDOFF rule 1 says researcher compilations "are not admissible sources", and also that the explorer's own page showing a
+Integrity rule 1 says researcher compilations "are not admissible sources", and also that the explorer's own page showing a
 name tag is the evidence. 590 of 1,189 rows (at least half) are tags the explorer itself says it copied from hildobby's
 compilation. The registry has always admitted them with a note, so this is not new, but the first-party count is
 softer than "explorer-labelled" suggests. D7 (the Landmarks page) draws the opposite line: a compilation-credited tag

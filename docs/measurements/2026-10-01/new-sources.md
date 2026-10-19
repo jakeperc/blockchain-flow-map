@@ -63,7 +63,7 @@ Not screened: X Layer and Monad cap `eth_getLogs` at 100 blocks, HyperEVM rate-l
 shape, Sei's public node was saturated, XDC timed out above 1,000 blocks. None has an obvious
 evidenced-exchange constituency, so they were not chased.
 
-**Decision.** Polygon and Optimism were added together. HANDOFF section 12 says a new chain re-locks
+**Decision.** Polygon and Optimism were added together. A new chain re-locks
 the 24H and 7D windows for every visitor, so chains should be added in one wave. Optimism was third
 on 2026-09-25 and is second now; its caps were already measured and its dormancy scan took 22
 queries on Tenderly (up to 1,000,000 blocks each; `mainnet.optimism.io` caps at 10,000 and
@@ -79,7 +79,7 @@ the same public name tag, so `read-tag.mjs` now uses that route for both.
 
 ## 3. Tron's live feed needs no key and no Worker
 
-HANDOFF and the API plan said Tron needs a TronGrid key and therefore a proxy. Measured today:
+The project notes and the API plan said Tron needs a TronGrid key and therefore a proxy. Measured today:
 
 | Endpoint | CORS | Filtered `eth_getLogs` (USDT, 1,000 addresses in a topic position) |
 |---|---|---|

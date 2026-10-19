@@ -1,6 +1,6 @@
 # API options for growing coverage — researched 2026-09-29
 
-Section 7b of HANDOFF.md says: when free keyless sources run out, report which APIs Jake
+The project's rule: when free keyless sources run out, report which APIs Jake
 should sign up for himself. This is that report. Prices were read from each provider's own
 page where it loaded. Rows marked **unverified** could not be confirmed there.
 

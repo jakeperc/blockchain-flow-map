@@ -32,7 +32,7 @@ exchanges.
 - No Indian or LatAm exchange wallet appeared.
 
 **Conclusion.** Tronscan's own tags currently contain nothing that would put Tron flow on India or Latin America. The
-Dune leads for Bitso, Lemon Cash and CoinDCX remain untagged (section 22). Reopen if Tronscan tags one of those brands;
+Dune leads for Bitso, Lemon Cash and CoinDCX remain untagged. Reopen if Tronscan tags one of those brands;
 re-run the search with the monthly lead sweep.
 
 ## 2. Unregistered tagged brands: activity, then the operator test

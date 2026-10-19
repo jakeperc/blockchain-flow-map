@@ -11,7 +11,7 @@ D6 (Tronscan tags, 2026-09-29) and **D7 (who the Landmarks page may name, 2026-1
 
 # Decisions from the 2026-09-21 run: all three answered
 
-Three decisions came out of the "more flows and countries" run (prompt in `docs/PROMPT-add-flows.md`).
+Three decisions came out of the "more flows and countries" run.
 Each has a recommendation with measured numbers. Jake answered on 2026-09-21: he approved D2 and asked for D1 and D3
 to be answered outright, "even if both answers are no", so the next agent does not re-research them. Activity figures
 below are face-value USDC/USDT on Ethereum unless stated, from `scripts/registry/screen-activity.mjs` on 2026-09-21.
@@ -26,7 +26,7 @@ Do not re-research D1 or D3 unless one of the reopen conditions below is met.
 
 ## D1. Admit wallets that an exchange publishes itself?
 
-**Decision: no.** Not as a general rule and not for Binance's file. Rule 1 in HANDOFF is unchanged: an address enters the
+**Decision: no.** Not as a general rule and not for Binance's file. Integrity rule 1 (README) is unchanged: an address enters the
 registry only when its own Etherscan, Basescan or Arbiscan page shows a public name tag. The `known-entities.ts` header
 used to say an "exchange's own published disclosure" could also support an address; that wording was wrong and is fixed.
 **Reopen only if** an exchange in a blocked region (Latin America, Africa, the Gulf, India) starts publishing a hot-wallet
@@ -34,7 +34,7 @@ list that separates its deposit addresses, sits on its own domain, and carries s
 Arbitrum. None of the 40 checked does today. Binance's separate file (37 Ethereum, 24 Arbitrum and 14 Base addresses) would
 only add first-party anchors for exchanges already on the map, and is not worth the rule change.
 
-HANDOFF rule 1 admits a wallet only through its own explorer name tag. The `known-entities.ts` header also
+Integrity rule 1 admits a wallet only through its own explorer name tag. The `known-entities.ts` header also
 mentions "an exchange's own published disclosure", for example a proof-of-reserves address list.
 
 **Recommendation: not now, and not as a general rule.** It would not open the regions it was meant to open.
@@ -361,7 +361,7 @@ Everything else in rule 1 and rule 3 still applies to Tron:
 - deposit addresses, funders, bridges, token contracts and Tether treasury/issuer wallets stay out;
 - Tronscan `redTag` or `greyTag` (risk flags) are not identity tags and never admit a wallet.
 
-Tron addresses never derive from EVM rows (section 4). The feed plan and budget are in `docs/API-PLAN.md`.
+Tron addresses never derive from EVM rows. The feed plan and budget are in `docs/API-PLAN.md`.
 
 **Reopen if** Tronscan starts sourcing its tags from third-party compilations without saying so, or the tag API
 disappears behind a paid tier.
@@ -369,7 +369,7 @@ disappears behind a paid tier.
 ## D7. Who the Landmarks page may name, and on what evidence (2026-10-02)
 
 **Decision (Jake, 2026-10-02), with two refinements he chose after the red-team review.** The Landmarks page
-(`landmarks.html`, HANDOFF section 19) names the sender or receiver of a transaction only on one of three kinds of
+(`landmarks.html`) names the sender or receiver of a transaction only on one of three kinds of
 evidence. Anything else stays unnamed: the page shows the party's role and a shortened address.
 
 1. **Tag.** The public name tag on the address's own block explorer, stored verbatim with its read date, and only

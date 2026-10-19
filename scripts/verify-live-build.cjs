@@ -38,7 +38,7 @@ visit(join(project,'live-lite','main.tsx'));
 assert.ok(seen.has(join(project,'lib','atlas','engine.ts')),'The static build must use the shared real-data aggregation engine');
 assert.ok(seen.has(join(project,'components','map','engine.ts')),'The globe renderer chunk must be inside the checked graph');
 const mapModules=seen.size;
-// The Landmarks page (HANDOFF section 19): its own graph, the same forbidden patterns, and it must stay light. It reads
+// The Landmarks page: its own graph, the same forbidden patterns, and it must stay light. It reads
 // the generated lib/landmarks/data.ts and never the registry, the live client or the globe renderer.
 seen=new Set();
 visit(join(project,'live-lite','landmarks.tsx'));

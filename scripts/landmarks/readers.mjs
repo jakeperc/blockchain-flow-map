@@ -9,7 +9,7 @@
  *              else the daily, and only a candle that traded (a zero-volume candle repeats an old price)
  *   Sources    any URL; archive.org snapshots are read raw (id_), PDFs through pdftotext or Python's pypdf
  *
- * Endpoint facts behind these choices were measured on 2026-10-02 (HANDOFF section 19).
+ * Endpoint facts behind these choices were measured on 2026-10-02.
  */
 import {spawnSync} from 'node:child_process';
 import {mkdtempSync, writeFileSync, rmSync} from 'node:fs';

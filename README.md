@@ -152,19 +152,20 @@ Measured, with the report each figure comes from:
 
 | | Figure | Measured | Source |
 |---|---|---|---|
-| One hour on Ethereum, Base and Arbitrum, filtered feed | 4.1 MB down, 2.1 MB up | 2026-09-20 | HANDOFF section 5 |
-| The same, unfiltered | about 140 MB | 2026-09-20 | HANDOFF section 5 |
+| One hour on Ethereum, Base and Arbitrum, filtered feed | 4.1 MB down, 2.1 MB up | 2026-09-20 | docs/LIVE-FEED.md |
+| The same, unfiltered | about 140 MB | 2026-09-20 | docs/LIVE-FEED.md |
 | Upload for the backfilled hour after the dormant tier | 2.2 MB to 0.23 MB | 2026-09-21 | docs/measurements/2026-09-21/dormancy.md |
-| One hour of the Tron feed, 21 wallets | 1.24 MB on the wire | 2026-10-07 | HANDOFF section 23 |
-| Endpoint caps that bind the filter | 1,000 addresses per topic (Ethereum), 997 (Arbitrum) | 2026-09-21 | HANDOFF section 5, `lib/atlas/feeds.ts` |
+| One hour of the Tron feed, 21 wallets | 1.24 MB on the wire | 2026-10-07 | docs/measurements/2026-10-06/tron-tronscan-tags.md |
+| Endpoint caps that bind the filter | 1,000 addresses per topic (Ethereum), 997 (Arbitrum) | 2026-09-21 | docs/LIVE-FEED.md, `lib/atlas/feeds.ts` |
 
 ## Who did what
 
 The rules, the seven decisions, every admission and removal, the holder exports, the bandwidth and budget calls and
 the phone-layout calls were Jake Percy's. The code was written with AI coding agents working under
 [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md): a standard they could not relax, enforced by the build gate rather
-than by trust, with every material change recorded in [HANDOFF.md](HANDOFF.md) in the same commit. That file is the
-project's engineering log and the first thing to read before changing anything.
+than by trust. Each change was also recorded in an engineering log kept with the project but not published; the
+facts the public documents rely on are in `docs/`: the method, the decisions, the live feed's measured limits and the
+dated measurement reports.
 
 ## Maintenance
 
@@ -178,10 +179,11 @@ project's engineering log and the first thing to read before changing anything.
 
 Updated 2026-10-19. Seven chains live; 1,217 first-party wallets (plus 3,572 derived) across 68 entities and 30
 jurisdictions; Solana not connected (it needs a keyed indexer). The repository was prepared for publication on
-2026-10-18 and went public on 2026-10-19 (HANDOFF sections 29 to 33): the deferred backend scaffold and the unused template code left the tree,
+2026-10-18 and went public on 2026-10-19: the deferred backend scaffold and the unused template code left the tree,
 the gate type-checks the whole project, the page's first minute reads honestly, both pages name and link their
-author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world (HANDOFF section 34). Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build (HANDOFF section 35). The screenshots above are dated captures of the live page, and the projection caption no longer sits under the map legend on desktop (HANDOFF section 37).
-jakepercy.com is uploaded by hand from `dist-live/`, the output of `pnpm build:live`.
+author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world. Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build. The screenshots above are dated captures of the live page, and the projection caption no longer sits under the map legend on desktop.
+jakepercy.com is published by hand from `dist-live/`, the output of `pnpm build:live`. The project was formerly Ledger Atlas;
+some file names and the browser's history store still carry that name.
 
 ## Repository map
 
@@ -195,7 +197,7 @@ jakepercy.com is uploaded by hand from `dist-live/`, the output of `pnpm build:l
 | `scripts/landmarks/`, `lib/landmarks/` | The Landmarks page pipeline and its generated data |
 | `scripts/llms/` | `llms.txt`, `methodology.md` and the page's plain-text surfaces |
 | `scripts/measure-*.mjs`, `scripts/screen-candidate-chain.mjs` | Offline diagnostics that rank work by measured activity |
-| `docs/` | Methodology, decisions, API plan, measurement reports |
-| `HANDOFF.md` | The engineering log and current state; `AGENTS.md`, `CLAUDE.md` direct the agents |
+| `docs/` | Methodology, decisions, the live feed and its measured limits, API plan, measurement reports |
+| `AGENTS.md`, `CLAUDE.md` | The standing instructions the AI coding agents work under |
 
 See [NOTICE](NOTICE) for the terms on the evidence registry and the measurement reports.

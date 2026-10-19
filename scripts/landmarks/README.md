@@ -2,7 +2,7 @@
 
 The second page of the site lists landmark transactions, all-time and recent, with analysis. It is static HTML
 written at build time; only today's prices are fetched in the visitor's browser. Decision D7 in
-`docs/DECISIONS-2026-09.md` sets who it may name; HANDOFF section 19 has the history and the verification.
+`docs/DECISIONS-2026-09.md` sets who it may name.
 
 | File | What it is | Written by |
 |---|---|---|

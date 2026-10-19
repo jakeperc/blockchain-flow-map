@@ -1,7 +1,7 @@
 /**
  * Keyless public RPC pools shared by the diagnostic scripts (measure-activity.mjs, probe-endpoint-caps.mjs).
  * This mirrors the endpoint lists and per-chain chunking in lib/atlas/live-client.ts; endpoint facts (CORS,
- * range caps, body caps) are recorded in HANDOFF.md section 5. Re-measure with probe-endpoint-caps.mjs before
+ * range caps, body caps) are recorded in docs/LIVE-FEED.md. Re-measure with probe-endpoint-caps.mjs before
  * changing either place. `chunk` here is what the primary endpoint tolerates for a diagnostic pull, not the
  * browser feed's chunk size. `screenChunk` is the larger range screen-activity.mjs may use, because a
  * candidate filter matches little and the reply stays small.
@@ -18,7 +18,7 @@ export const POOLS={
  // large-range endpoint and throttled sustained querying; it is kept because publicnode is still a fallback.
  Polygon:{chainId:137,slotSec:1.5,chunk:1200,screenChunk:5000,pauseMs:700,probeToken:'0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',urls:['https://polygon.gateway.tenderly.co','https://rpc.sentio.xyz/matic','https://polygon-bor-rpc.publicnode.com','https://polygon.drpc.org']},
  Optimism:{chainId:10,slotSec:2,chunk:1500,screenChunk:5000,pauseMs:250,probeToken:'0x0b2c639c533813f4aa9d7837caf62653d097ff85',urls:['https://optimism.gateway.tenderly.co','https://mainnet.optimism.io','https://optimism-rpc.publicnode.com']},
- // Added 2026-10-06 (HANDOFF section 23). USDT only; probeToken is the 20-byte hex form of TR7NHq…Lj6t. Both endpoints
+ // Added 2026-10-06 (docs/measurements/2026-10-06/). USDT only; probeToken is the 20-byte hex form of TR7NHq…Lj6t. Both endpoints
  // refuse a reply over 10,000 logs, so chunk is sized by the busiest wallets' log count, not by block range.
  Tron:{chainId:728126428,slotSec:3,chunk:600,screenChunk:600,pauseMs:250,probeToken:'0xa614f803b6fd780986a42c78ec9c7f77e6ded13c',urls:['https://tron-evm-rpc.publicnode.com','https://api.trongrid.io/jsonrpc']},
  Avalanche:{chainId:43114,slotSec:1.2,chunk:1500,screenChunk:2000,pauseMs:250,probeToken:'0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',urls:['https://api.avax.network/ext/bc/C/rpc','https://avalanche-c-chain-rpc.publicnode.com']}

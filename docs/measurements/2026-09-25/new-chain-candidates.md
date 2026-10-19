@@ -1,6 +1,6 @@
 # Choosing two new chains — measurements, 2026-09-25
 
-Backlog item "BNB Chain, then Polygon" (HANDOFF section 8, item 3b). Jake approved adding **two** chains,
+Backlog item "BNB Chain, then Polygon". Jake approved adding **two** chains,
 chosen by measured evidenced-wallet activity rather than by name. BNB Chain was excluded before measuring, on
 evidence (decision D4); four issuer-native candidates were then measured and two shipped.
 

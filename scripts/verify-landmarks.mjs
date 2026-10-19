@@ -1,5 +1,5 @@
 /**
- * The gate for the Landmarks page (decision D7 and the approved plan; HANDOFF section 19). Run by verify-all.mjs with
+ * The gate for the Landmarks page (decision D7 and the approved plan). Run by verify-all.mjs with
  * the compiled lib/atlas modules in argv[2], so a failure stops `pnpm build:live` before Vite runs.
  *
  *   node scripts/verify-landmarks.mjs <compiled-modules-dir>

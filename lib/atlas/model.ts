@@ -1,6 +1,6 @@
 /** Geography is an evidenced entity jurisdiction, never a wallet's physical location. */
 /**
- * Polygon and Optimism joined on 2026-10-01 (HANDOFF section 17). Polygon had been parked since 2026-09-26
+ * Polygon and Optimism joined on 2026-10-01 (docs/measurements/2026-10-01/). Polygon had been parked since 2026-09-26
  * because no keyless endpoint could serve the 90-day dormancy scan decision D2 requires; Tenderly's public
  * gateway turned out to serve full history in 200,000-block spans, so the scan is now a few dozen requests.
  */

@@ -37,7 +37,7 @@ const T = {
   mint: '0xab8530f87dc9b59234c4623bf917212bb2536d647574c8e7e5da92c2ede0c9f8',
   burn: '0xcc16f5dbb4873280815c1ee09dbd06736cffcc184412cf7a71a0fdb75d397ca5',
 };
-/** Endpoints that serve full history to filtered eth_getLogs (HANDOFF section 5). Tenderly took 2,000,000-block spans
+/** Endpoints that serve full history to filtered eth_getLogs (docs/LIVE-FEED.md). Tenderly took 2,000,000-block spans
  *  when the result was small (measured 2026-10-02: every USDT Issue event since launch in 11 requests); a large result
  *  answers "more than 20000 results", which halves the span. MEV Blocker caps at 10,000 blocks. */
 const ENDPOINTS = [{url: 'https://mainnet.gateway.tenderly.co', maxSpan: 2000000}, {url: 'https://rpc.mevblocker.io', maxSpan: 10000}];

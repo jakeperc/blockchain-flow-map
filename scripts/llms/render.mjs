@@ -54,7 +54,7 @@ export const RULE = 'A route is drawn only when both ends of a transfer are publ
 const TEMPLATE = 'live-lite/llms.txt.tpl';
 const METHODOLOGY = 'docs/METHODOLOGY.md';
 const INDEX = 'live-lite/index.html';
-/** The second page (HANDOFF section 19): static story text, so it gets its own canonical and og tags and no <noscript>. */
+/** The second page (Landmarks): static story text, so it gets its own canonical and og tags and no <noscript>. */
 const LANDMARKS = 'live-lite/landmarks.html';
 export const LANDMARKS_PAGE = 'landmarks.html';
 /** The project's own links (author, site, repository), which the page imports as constants and this file reads as text. */
@@ -231,7 +231,7 @@ const TERMS = {
   // The 180 days are counted at each transfer's own time, the same way at both ends.
   'lib/atlas/engine.ts': ['admissible(t.senderEntity,t.blockTime)', 'admissible(t.receiverEntity,t.blockTime)'],
   'lib/atlas/history-store.ts': ['indexedDB'],
-  'HANDOFF.md': ['formerly Ledger Atlas'],
+  'README.md': ['formerly Ledger Atlas'],
   // The second page's names rest on the rule the prose describes (the map's link to it is pinned with atlas.tsx above).
   'scripts/landmarks/build.mjs': ['credits this tag to a third party', 'a person is named only on their own statement', 'exactly one matches'],
 };
@@ -560,7 +560,7 @@ export function verifyBuilt(dir, root = ROOT) {
   return errors;
 }
 
-/** The checks' own checks: a verifier that cannot fail proves nothing (see verify-rollup.cjs in HANDOFF section 12). */
+/** The checks' own checks: a verifier that cannot fail proves nothing (see verify-rollup.cjs). */
 export function selfTest() {
   const must = (cond, what) => {
     if (!cond) throw new Error(`llms self-test failed: ${what}`);

@@ -73,7 +73,7 @@ version, fitted to Jake's budget.
 
 1. **Jake signs up for Infura (free)** and gives the agent the key. The agent adds a keyed endpoint to
    `measure-dormancy.mjs` (read from an environment variable, never committed), runs the Polygon
-   scan, and un-parks Polygon (HANDOFF section 12, "Switch it on"). Optionally wire it into a GitHub
+   scan, and un-parks Polygon. Optionally wire it into a GitHub
    Actions workflow.
 2. **Jake gets Tronscan and TronGrid keys (free).** The agent builds the Cloudflare Worker proxy/cron
    and a Tron feed, and Tron wallets are researched with Tronscan tags under D6. Jurisdiction documents
@@ -81,5 +81,5 @@ version, fitted to Jake's budget.
 3. **Helius free** for Solana, through the same Worker.
 4. Optional: **Blockscout PRO free** as a tag lead feed for research waves.
 
-Each new chain re-locks 24H/7D for visitors until it has history (HANDOFF section 12), so batch
+Each new chain re-locks 24H/7D for visitors until it has history, so batch
 chain additions where possible.

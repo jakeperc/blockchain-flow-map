@@ -1,8 +1,8 @@
 /**
  * Per-chain feed configuration for the browser live client: the keyless public RPC endpoints it reads and the request
  * limits measured for each. Pure data, so live-client.ts, the registry verifier and the diagnostic scripts share one
- * source of truth. Every limit here is a measurement (scripts/probe-endpoint-caps.mjs; facts table in HANDOFF.md
- * section 5). Re-measure before changing one.
+ * source of truth. Every limit here is a measurement (scripts/probe-endpoint-caps.mjs; facts table in
+ * docs/LIVE-FEED.md). Re-measure before changing one.
  *
  * `largeBody` marks the endpoints that serve the registry-filtered settlement queries. Their address list sits in an
  * indexed topic position at ~68 bytes per address, so each request is tens of KB, and a public node refuses a list or
@@ -74,7 +74,7 @@ export const FEEDS:Partial<Record<Chain,FeedConfig>>={
   chainId:43114,slotMs:1200,blocks:3000,chunk:1500,liveRange:40,catchupRange:1500,pauseMs:0,sampleBlocks:60
  },
  /**
-  * Switched on 2026-10-01 (HANDOFF section 17; docs/measurements/2026-10-01/). Polygon cleared the activity gate
+  * Switched on 2026-10-01 (docs/measurements/2026-10-01/). Polygon cleared the activity gate
   * on 2026-09-25 and was parked the next day, because the 90-day dormancy scan decision D2 requires did not fit
   * on the keyless endpoints known then: polygon-bor-rpc.publicnode.com prunes history older than ~37 hours and
   * polygon.drpc.org serves 100 blocks per request (~102,000 requests a month). polygon.gateway.tenderly.co serves
@@ -98,7 +98,7 @@ export const FEEDS:Partial<Record<Chain,FeedConfig>>={
   chainId:10,slotMs:2000,blocks:1800,chunk:1500,liveRange:30,catchupRange:1500,pauseMs:0,sampleBlocks:10
  },
  /**
-  * Added 2026-10-06 (HANDOFF section 23; docs/measurements/2026-10-06/). Tron speaks EVM-shaped JSON-RPC with no key:
+  * Added 2026-10-06 (docs/measurements/2026-10-06/). Tron speaks EVM-shaped JSON-RPC with no key:
   * addresses inside topics and logs are the 20-byte hex form of the base58 T-address (tron.ts converts both ways), and
   * USDT TR7NHq…Lj6t is 0xa614f803b6fd780986a42c78ec9c7f77e6ded13c. USDT only: Circle no longer issues USDC on Tron.
   * Tron is not an EVM chain in the model, so it is never a derivation target; every Tron row is a Tronscan tag (D6).
