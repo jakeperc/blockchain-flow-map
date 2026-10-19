@@ -1,6 +1,8 @@
 # Blockchain Flow Map — handoff notes for the next agent
 
-Last updated 2026-10-19 (latest): **the deliverable is now `dist-live/` itself, which Jake uploads by FTP; agents make
+Last updated 2026-10-19 (latest): **the README opens on two dated screenshots of the live page, the globe and the
+atlas with routes drawn, and the projection caption no longer sits under the map legend on desktop** (section 37).
+Before that: **the deliverable is now `dist-live/` itself, which Jake uploads by FTP; agents make
 no zips** (section 36). Before that: **every push to `main` now publishes the map to GitHub Pages at
 https://jakeperc.github.io/blockchain-flow-map/, through the same gated build** (section 35). Before that: **on phones a pinch could fling the flat map off the screen; fixed, and the flat map now
 opens on the whole world (desktop a little wider, phones much wider)** (section 34). Earlier that day: **the repository is
@@ -2185,3 +2187,46 @@ holds stale files; old hashed files under `assets/` on the FTP host are harmless
 `og.jpg`, `favicon.svg`, `world-110m.json` and `assets/` (seven files). The bundle names (`index-CXdSu1li.js`,
 `globals-qWtE0QdY.js`, `globals-BzYnEM0V.css`) are the ones GitHub Pages serves. The gate passed during the build. The
 zips under `outputs/` are left where they are and superseded; earlier sections' "Deliverable" lines are history.
+
+## 37. README screenshots of the flows, globe and atlas; the projection caption moved off the legend (2026-10-19)
+
+Jake asked for the README's screenshot to show the flows in action, on the globe and on the flat map. Until now the
+README opened on `public/og.jpg`, the link-preview image, which is cartography only by design (section 31).
+
+**What changed.**
+
+- **`docs/images/live-globe.jpg` and `docs/images/live-atlas.jpg`** (new, 2160 x 1350, about 290 KB each): the whole
+  page, read live from the dev server on 19 October 2026 at 21:13 UTC on the 1H window, first on the globe and then
+  unfolded into the Equal Earth atlas. Both show the same hour: 23 routes, $461.5M observed on evidenced wallets,
+  $10.4M (2.8%) geographically attributed, and the page reading PARTIAL because Avalanche's public endpoint was
+  answering 429 (the gap sections 30 and 35 recorded). Nothing was staged or hidden: no data layer was touched and the
+  PARTIAL state was left in. The globe was dragged by hand to the Atlantic side before the capture (it turns at
+  0.35° a second), and the cursor was moved off the map so no country tooltip shows.
+- **README:** the two images sit side by side at the top, each linking to its full size, with a caption that dates
+  them, names the window and says the routes are what that hour showed, not a standing claim. That answers the red
+  team's objection to a route-bearing preview (section 31: "a route is a dated claim shown for weeks beside no window"):
+  each image carries its own window, time and status strip, and the caption repeats them. `public/og.jpg` is unchanged
+  and stays cartography only; the README simply no longer uses it.
+- **`live-lite/styles/globals.css`, one rule:** the "PERSPECTIVE GLOBE / EQUAL EARTH PROJECTION · 01 / GLOBAL" caption
+  moved from `bottom:78px` to `top:40px` of the map area. On every desktop width it sat under the map legend, because
+  the legend is placed from the page shell's bottom (`bottom:157px`) and the caption from the map area's bottom, so the
+  two always landed on the same lines (measured at 1440 x 900: legend 640 to 743 px, caption 663 to 678 px). It now sits
+  right-aligned under the view and filter toolbar (263 to 278 px at 1440 x 900; at 1000 x 768 it clears the toolbar's 245 px
+  and the zoom controls' 353 px). Phones are untouched: the caption is hidden at 980 px and below, as before.
+
+**How the screenshots were taken (to re-capture).** The browser pane's screenshots are too small for a README, so a
+headless Edge (`msedge --headless=new --remote-debugging-port=9333 --force-device-scale-factor=1.5` with a scratch
+`--user-data-dir`) was driven over the DevTools protocol from a throwaway Node script in the agent's scratchpad (not in
+the repository): `Target.createTarget` at 1464 x 992 gives a 1440 x 900 viewport, the GPU is used (ANGLE on Direct3D 11),
+the page was left about two minutes to backfill the hour, `Input.dispatchMouseEvent` drags the globe and presses the
+ATLAS tab, and `Page.captureScreenshot` writes JPEG quality 88. Re-capture when the page's look changes. Keep the window
+and time visible in each image and the date in the README caption.
+
+**Verification (2026-10-19).** Dev server, headless Edge: the caption measured clear of the legend at 1440 x 900 and
+1000 x 768 after the change, and both captures were checked by eye (no tooltip, no overlap, routes and labels drawn).
+`corepack pnpm build:live` passed the gate (eight verifiers and `tsc`) and rebuilt `dist-live/` from this commit's
+tree. Lint is unaffected (CSS is not linted). The README renders the images from relative paths, which GitHub serves
+from the repository.
+
+**Deliverable.** `dist-live/` is rebuilt and ready to upload; the only change a visitor sees is the caption's position
+on desktop.

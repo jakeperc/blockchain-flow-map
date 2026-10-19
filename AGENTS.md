@@ -57,7 +57,9 @@ Hard rules, in short:
 - The project's own links (author, site, repository, LinkedIn) live in `lib/site/links.ts`; the page, the Landmarks
   renderer and the llms build all read them from there. The link-preview image `public/og.jpg` is cartography only and
   is re-captured with `scripts/og/capture-snippet.js` on the dev server after a design change to the globe (HANDOFF
-  section 31); never put a route or a figure in it.
+  section 31); never put a route or a figure in it. The README's screenshots are separate: `docs/images/live-globe.jpg`
+  and `live-atlas.jpg` are dated captures of the whole live page (HANDOFF section 37). Re-take them after a visible
+  design change, keep the window, time and status visible, and update the README caption's date.
 - Commit as `git -c user.email="223131039+jakeperc@users.noreply.github.com" -c user.name="Jake Percy"`.
 
 Deliverable for Jake is the `dist-live/` folder itself: he FTPs its contents into a folder under

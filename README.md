@@ -1,6 +1,13 @@
 # Blockchain Flow Map
 
-![The Blockchain Flow Map globe](public/og.jpg)
+<p>
+  <a href="docs/images/live-globe.jpg"><img src="docs/images/live-globe.jpg" width="49%" alt="The live page on the globe: evidenced cross-border routes between the United States, the Caribbean and Europe, with the three headline figures, the leading corridors and the 1H window"></a>
+  <a href="docs/images/live-atlas.jpg"><img src="docs/images/live-atlas.jpg" width="49%" alt="The same hour unfolded into the Equal Earth atlas: routes linking the United States and the Caribbean with Europe, the Seychelles, South Africa and Australia"></a>
+</p>
+
+*The live page on 19 October 2026 at 21:13 UTC, 1H window, on the globe and unfolded into the Equal Earth atlas. The
+routes are what that hour's evidenced wallets showed, not a standing claim; the page read PARTIAL because Avalanche's
+public endpoint was rate-limiting.*
 
 [![verify](https://github.com/jakeperc/blockchain-flow-map/actions/workflows/verify.yml/badge.svg)](https://github.com/jakeperc/blockchain-flow-map/actions/workflows/verify.yml)
 [![licence: MIT](https://img.shields.io/badge/code-MIT-6f8f7a)](LICENSE)
@@ -173,7 +180,7 @@ Updated 2026-10-19. Seven chains live; 1,217 first-party wallets (plus 3,572 der
 jurisdictions; Solana not connected (it needs a keyed indexer). The repository was prepared for publication on
 2026-10-18 and went public on 2026-10-19 (HANDOFF sections 29 to 33): the deferred backend scaffold and the unused template code left the tree,
 the gate type-checks the whole project, the page's first minute reads honestly, both pages name and link their
-author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world (HANDOFF section 34). Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build (HANDOFF section 35).
+author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world (HANDOFF section 34). Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build (HANDOFF section 35). The screenshots above are dated captures of the live page, and the projection caption no longer sits under the map legend on desktop (HANDOFF section 37).
 jakepercy.com is uploaded by hand from `dist-live/`, the output of `pnpm build:live`.
 
 ## Repository map
