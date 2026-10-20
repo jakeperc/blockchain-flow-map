@@ -48,8 +48,12 @@
 .topbar{height:44px;padding:0 14px;gap:8px}
 .brand{gap:6px}
 .brand>svg{width:19px;height:19px}
-.brand span{font-size:12px;letter-spacing:1.1px}
+.brand span{font-size:12px;letter-spacing:.7px}
 .demo-badge{padding:5px 7px;font-size:8px;gap:4px}
+/* Measured at 375 px: brand, view tabs, health badge and the methodology icon need 450 px, so the badge was clipped at the
+   right edge. The health state is already shown twice below the map (time strip and status strip), so the badge leaves
+   the top bar on phones. The brand's tracking is tightened so the bar also fits 360 px phones. */
+.demo-badge{display:none}
 .method-button{padding:4px}
 .overview{top:52px;left:14px;right:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .overview-title{display:none}
