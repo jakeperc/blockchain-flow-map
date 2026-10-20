@@ -277,6 +277,45 @@ their reopen conditions. Brands first met on Tronscan were tested on the same st
     took effect 2026-09-19 and its register may not exist yet.
   - Against WhiteBIT: WhiteBIT's entity is named in its agreement but has no government record; Well Wallet's has a
     government record but is named only in footers. HIGH at most, with the placeholder recorded as a caveat.
+**2026-10-20 re-check of every brand the operator test has excluded (Jake asked whether the test should be loosened).**
+Twenty-three brands were re-read from their own current documents, registers and filings by three research agents
+(WebFetch and WebSearch only; no browser, no downloads). **No reopen condition is met.** Details, URLs and dates are in
+`docs/measurements/2026-10-20/admission-review.md`. In brief:
+- **Still residence- or contract-based:** Crypto.com (a Foris DAX entity per jurisdiction; UAE terms re-dated
+  2026-04-24), Bybit (its single ToS was replaced on 2026-10-16 by per-entity documents: Bybit Technology Limited,
+  Seychelles, and an Abu Dhabi CMA-licensed operator), Bitstamp (seven entities "depending on client residency";
+  Robinhood changed the branding only; keys at BitGo and Copper), Coinbase Prime (the custody page now says "Asset
+  availability may depend on client jurisdiction and custody entity"), Nexo (Nexo US, LLC with Bakkt; Tangany GmbH for
+  the EEA), Luno (entity by country of verification), eToro (the FY2025 20-F keeps per-jurisdiction custody), BitGo
+  (OCC national trust bank since 2025-12-12, New York trust for New York, SG/DE/CH/AE affiliates), Copper (US
+  broker-dealer since July 2026; custody split US vs Swiss), FalconX (custody split Malta vs Fireblocks Trust for US
+  clients), B2C2 (nine entities), GSR, Zero Hash (entity by region, now with a North Carolina trust company), Cumberland
+  (six trading entities, no custody statement), Galaxy (the FY2025 10-K: Prime client assets at unnamed third-party
+  custodians, no affiliate holds a BitLicense).
+- **Still no entity named at all:** HTX (governing law now Pakistan; "HTX Operators" unnamed), Gate (agreement re-dated
+  2026-07-22; a licences page lists nine entities and disclaims any link to the platform), Jump (Tai Mo Shan appears only
+  in the SEC order), Amber (no terms page; the 20-F says the private parent runs the wallet infrastructure), Cobo
+  ("the relevant member(s) of the Cobo Group"), Matrixport (renamed BIT on 2026-03-20; operator a BVI company, custodian
+  unnamed), Ceffu (its global terms are gone; the FZE terms cover the FZE's own clients only, and MirrorX and Prime Wallet
+  are "not provided by Ceffu Custody FZE").
+- **WhiteBIT moved toward its condition but does not meet it:** whitebit.uk/terms now prints Peak Horizon Corp.'s
+  Panamanian company number (155761182), which no reachable register confirmed, and since 2026-06-18 EU/EEA users are
+  custodied by a separate Austrian FMA-authorised entity (WB-Shield Innovations GmbH), so the custodian is now
+  residence-dependent as well. **Reopen only if** the Panamanian registration is confirmed and the global agreement names
+  one custodian for every client including EU residents.
+- **A consistency finding on an admitted brand:** Wintermute's own disclaimer says "different Wintermute entities trade
+  different products" (derivatives through Wintermute Asia Pte Ltd, Singapore) and that availability depends on "the
+  capabilities of each Wintermute entity", the same wording that removed FalconX. Both entities trade their own book, so
+  no customer crypto is involved and the split is by product rather than by client residence. Jake decides whether D3
+  reads that as a pass (document the reading here) or restricts the entry to spot wallets with a note.
+- **Measured cost of the test, Ethereum, 7 days to 2026-10-20** (wallets of the excluded brands as listed in the Dune
+  compilation plus the removed hub rows, screened on public RPCs; lead-grade, not evidence): the D3-excluded brands moved
+  $7.5B of USDC/USDT through 57 active wallets (Coinbase Prime 1 $2.08B, Bybit $1.32B, Crypto.com $716M, Gate.io $610M,
+  Bitstamp $590M, FalconX $471M, Ceffu $375M, Copper $281M, BitGo $280M, WhiteBIT $264M, Luno $208M, Nexo $183M), the
+  removed hubs $1.4B (B2C2 $663M, Galaxy $572M, Cumberland $138M, Jump $68M), and the brands left out for other reasons
+  $1.1B (Deribit $728M, Revolut $174M, HitBTC $81M). For comparison the registry's own 823 Ethereum wallets moved $63.5B through 114 active wallets in the same week, so the test
+  leaves out about 16% of what the map could observe, none of which could be placed.
+
 ## D4. BNB Chain: are Binance-Peg stablecoins admissible? (2026-09-25)
 
 **Answer: no. BNB Chain stays out, and Polygon's bridged USDT with it.**

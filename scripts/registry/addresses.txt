@@ -80,6 +80,7 @@ Ethereum|coinjar|0xd6a062cae6123c158768a5c444ca0896cc60d6b1|Coinjar 3|2026-09-18
 Ethereum|digitalsurge|0xfb75b231c307738ce506c242babad2fd2e77b0bf|Digital Surge 1|2026-09-18|Inactive for over a year.
 Ethereum|btcmarkets|0xc55eddadeeb47fcde0b3b6f25bd47d745ba7e7fa|BTC Markets 2|2026-09-18|
 Ethereum|btcmarkets|0x122f90062549ff778806a15fa3b2a66973b9ea1c|BTC Markets 5|2026-09-24|Hot wallet; about $2.7M and 400 transfers in the 7 days to 2026-09-24.
+Ethereum|btcmarkets|0xaecfb1af29b96011ec9aa1ff98d8c49b49bb3ddc|BTC Markets: MultiSig 1|2026-10-20|Multisig custody contract (first-party only, never derives). Etherscan discloses the tag came from a public researcher compilation. Lead from the Dune compilation; about $224k in the 7 days to 2026-10-20.
 Ethereum|coinsquare|0x02fdc44bf226e49dceca4775afaef3360e9c4ee9|Coinsquare 1|2026-09-18|
 Ethereum|coinsquare|0x0fcff154753e337983613889b69dd85fe8a1a145|Coinsquare 2|2026-09-18|
 Ethereum|coinsquare|0x14aa1ad09664c33679ae5689d93085b8f7c84bd3|Coinsquare 3|2026-09-18|
@@ -277,6 +278,7 @@ Ethereum|bitopro|0x16905697103cd4ad6a22193b242941b62f660bbc|BitoPro 2|2026-09-18
 Ethereum|bitopro|0xaa65cc699f9b0258064d952ad987269f7c9dbfad|BitoPro 3|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
 Ethereum|bitopro|0x5b1686a90262c7aa3b8e5d42cec455c47607799b|BitoPro 7|2026-09-24|About $2M moved in the 7 days to 2026-09-24.
 Ethereum|maicoin|0x477b8d5ef7c2c42db84deb555419cd817c336b6f|MaiCoin 1|2026-09-18|Very active.
+Ethereum|maicoin|0xa9bff538a906154c80a8dbccd229f3deddfa52d6|MAX Exchange 1|2026-10-20|MAX is the exchange brand of Modernity Financial Technologies, the Taipei company behind MaiCoin (see the entity note). Etherscan discloses the tag came from a public researcher compilation. Lead from the Dune compilation; about $331k and 264 transfers in the 7 days to 2026-10-20.
 Ethereum|altcointrader|0xc58bb74606b73c5043b75d7aa25ebe1d5d4e7c72|AltCoinTrader 1|2026-09-18|Main hot wallet, very active.
 Ethereum|altcointrader|0x1bc972db7b169c2d79719485803af1a23645108d|AltCoinTrader 3|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.
 Ethereum|altcointrader|0xa1495f85d30acab5126f5c1920cd9cb1ce265263|AltCoinTrader 4|2026-09-18|Etherscan discloses the label as sourced from a public researcher compilation.

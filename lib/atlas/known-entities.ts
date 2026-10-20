@@ -58,9 +58,11 @@
  * affiliates", with US/UK/Singapore clients routed to separate licensed entities); Zero Hash (US, Louisiana,
  * EEA, Bermuda, Australia and Brazil entities, chosen by client residence); Amber Group (separate HK, Singapore
  * and Dubai licensed entities plus a Cayman holding company, none tied to the tagged wallets). None can be tied
- * to one jurisdiction.
- * Labelled but left out on purpose: WhiteBIT (Panama operator named only in a user agreement, no registration number or
- * licence cited; decision D3, 2026-09-21) and Revolut (operating entity ambiguous), zondacrypto
+ * to one jurisdiction. Every excluded brand was re-read on 2026-10-20 (docs/measurements/2026-10-20/admission-review.md):
+ * no reopen condition is met; Bybit now publishes per-entity terms (Seychelles and Abu Dhabi), Matrixport is renamed BIT.
+ * Labelled but left out on purpose: WhiteBIT (Panama operator Peak Horizon Corp. named in its user agreement; the terms
+ * printed a company number by 2026-10-20 that no reachable register confirmed, and EU users are custodied by a separate
+ * Austrian entity since 2026-06-18; decision D3, re-checked 2026-10-20) and Revolut (operating entity ambiguous), zondacrypto
  * (Estonian licence revoked June 2026), Kuna and Genesis Trading (ceased operations), DWF Labs
  * (entity document unreadable), Abraxas Capital (fund vehicle, not a venue), BitMEX (winding up Sept 2026),
  * EXMO (UK-sanctioned May 2026), Kanga Exchange (active tagged wallet, but Poland is not its operator
