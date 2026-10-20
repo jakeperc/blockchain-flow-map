@@ -177,7 +177,7 @@ dated measurement reports.
 
 ## Status
 
-Updated 2026-10-20. Seven chains live; 1,219 first-party wallets (plus 3,577 derived) across 68 entities and 30
+Updated 2026-10-20. Seven chains live; 1,221 first-party wallets (plus 3,577 derived) across 68 entities and 30
 jurisdictions; Solana not connected (it needs a keyed indexer). The repository was prepared for publication on
 2026-10-18 and went public on 2026-10-19: the deferred backend scaffold and the unused template code left the tree,
 the gate type-checks the whole project, the page's first minute reads honestly, both pages name and link their
