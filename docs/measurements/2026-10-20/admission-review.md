@@ -101,6 +101,7 @@ and "last updated" date, are in section 5. What changed since September:
 | Dune spellbook compilation re-read from GitHub | 1 | Unchanged since 2026-10-01: 4,957 rows, 328 brands. 1,485 leads for registered brands are not in the registry |
 | Those 1,485 leads screened on Ethereum, 7 days | ~120 RPC | 12 active; 4 above $100k: "Binance Internal 2" (plumbing), "Bitfinex Tether Treasury" (issuer), "HashKey 2" and "KuCoin: ERC-20 Batch Transfer" (both rejected on 2026-10-01), and two new ones below |
 | Tags read for the two | 2 | **Admitted:** `MAX Exchange 1` (0xa9bf...52d6, entity MaiCoin, same Taipei company; $331k, 264 transfers) and `BTC Markets: MultiSig 1` (0xaecf...3ddc, a custody contract; $224k). Both tags are disclosed by Etherscan as sourced from a public researcher compilation, recorded in the row notes as the registry already does |
+| The same 1,485 leads on the other chains, 7 days | ~3,000 RPC | Arbitrum: 2 active, only MAX Exchange 1 ($171k, derived there from today's Ethereum row). Base: `mainnet.base.org` answered 403 to the 7-day screen and it was stopped. Avalanche, Polygon and Optimism were still screening when this report was written; the 2026-10-01 screen of the same file had already taken their active leads |
 
 Registry after this: 1,219 first-party rows, 3,577 derived, 68 entities, 30 jurisdictions. The free label sources are
 where the 2026-09-21 and 2026-10-08 reports left them: the explorer tags of active, admissible wallets are enumerated,
