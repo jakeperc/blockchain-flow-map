@@ -13,17 +13,17 @@
  * Deliberately NOT pure, so it stays out of live-core.ts. The logic worth testing — what a span means, how
  * spans merge, what coverage they prove — is in rollup.ts, which has no idea this file exists.
  */
-import {type StoredRollup} from './rollup';
+import {STORED_SCHEMA,type StoredRollup} from './rollup';
 
 const DB_NAME='ledger-atlas-history';
 const STORE='spans';
 /**
- * Bump when the stored shape changes. An upgrade DROPS the old spans rather than migrating them: a span is a
- * summary computed under a particular set of rules, and silently reinterpreting it under new ones would make
- * a number on screen mean something nobody measured. Losing a week of one visitor's history is the cheaper
- * mistake by far.
+ * The stored shape's version (STORED_SCHEMA in rollup.ts, bumped when that shape changes). An upgrade DROPS the old
+ * spans rather than migrating them: a span is a summary computed under a particular set of rules, and silently
+ * reinterpreting it under new ones would make a number on screen mean something nobody measured. Losing a week of
+ * one visitor's history is the cheaper mistake by far.
  */
-const SCHEMA=1;
+const SCHEMA=STORED_SCHEMA;
 
 export interface HistoryStatus {
  available:boolean;

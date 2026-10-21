@@ -36,7 +36,7 @@ export function formatAmount(atomic:bigint,decimals:number):string{
 }
 
 /** Nearest sample within tolerance, or null. Never falls back to an assumed $1 peg, and never returns a stale sample. */
-export function priceAt(series:Sample[],t:number,toleranceMs:number):Sample|null{
+export function priceAt(series:readonly Sample[],t:number,toleranceMs:number):Sample|null{
  if(!series.length)return null;
  let lo=0,hi=series.length-1;
  while(lo<hi){const mid=(lo+hi)>>1;if(series[mid].at<t)lo=mid+1;else hi=mid;}

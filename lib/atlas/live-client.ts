@@ -5,7 +5,8 @@
  * accounting panel are computed exactly as the production backend would compute them; the only
  * difference is memory. Nothing survives a page reload, so only the 5M and 1H windows are offered and
  * baselines stay null. The pure parts — decoding, pricing, inference, retention — live in live-core.ts
- * and are covered by scripts/verify-live.cjs; this file is transport, state and subscriptions.
+ * and are covered by scripts/verify-live.cjs; what a sealed span is sealed from lives in recorder-core.ts
+ * (scripts/verify-recorder.cjs); this file is transport, state and subscriptions.
  *
  * ONE FEED PER CHAIN, TWO KINDS OF QUERY, and the reason for them.
  * Reading every USDC and USDT transfer costs a visitor about 23 MB an hour on Ethereum and 100 MB an
@@ -35,6 +36,7 @@ import {rpcAddress} from './tron';
 import {knownAttribution,isDerived,watchedAddresses,dormancyInfo,registryHealth,ENTITIES} from './known-entities';
 import {addressKey,classifyRec,decodeTransferLog,inferDeposits,makeBlockTimeFn,nextPollRange,planChunks,priceAt,pruneRecords,readInterval,addSample,type Rec,type Sample} from './live-core';
 import {BUCKET_MS,bucketOf,sealSpan,mergeRollups,mergeUnmapped,coverageOf,partsForChains,applyBaselines,registryVersionsOf,toStored,fromStored,type Rollup} from './rollup';
+import {CONTEXT_MS,PRICE_TOLERANCE_MS,inferOptions,observedMsIn,sealChainBuckets,type Interval,type RecorderRegistry} from './recorder-core';
 import {createHistoryStore,type HistoryStatus} from './history-store';
 
 export interface LiveSource {
@@ -128,7 +130,8 @@ const PRICE_PROVIDERS:PriceProvider[]=[
 ];
 const POLL_MS=20000,PRICE_MS=120000,TICK_MS=8000,SAMPLE_MS=900000,EMIT_COALESCE_MS=1500;
 const TIP_LAG=1,BATCH_LIMIT=3,RPC_ATTEMPTS=4,RPC_STRIKES=2;
-const RETENTION_MS=90*60000,PRICE_TOLERANCE_MS=600000;
+/** Raw transfers are held for the same 90 minutes a seal infers from (recorder-core.ts), so a span sees what the buffer holds. */
+const RETENTION_MS=CONTEXT_MS;
 /**
  * Recorded history (see rollup.ts). Raw transfers still expire after RETENTION_MS; what survives is the sealed
  * accounting for each completed 15-minute span, in this browser only.
@@ -143,7 +146,6 @@ const HISTORY_MS=7*86400000;
 const UNLOCK_SHARE=.8;
 const LONG_WINDOWS:WindowKey[]=['24H','7D'];
 const SEAL_MS=60000;
-const INFER_FORWARD_SHARE=.8; // a deposit address forwards (nearly) everything it received
 const SAMPLE_CAP=20000;
 /** Report the feed as partial rather than LIVE once this share of a backfill failed to load. */
 const COVERAGE_ALARM=.1;
@@ -153,6 +155,17 @@ const CHAIN_CONFIG=FEEDS;
 const LIVE_CHAINS=Object.keys(CHAIN_CONFIG) as Chain[];
 /** A chain's WATCHED addresses (evidenced minus the dormant tier, decision D2) as 32-byte topic values, for the indexed sender/receiver positions of Transfer. Tron's base58 rows go through their 20-byte hex form. */
 const topicsFor=(chain:Chain)=>watchedAddresses(chain).map(a=>'0x'+rpcAddress(chain,a).slice(2).padStart(64,'0'));
+/**
+ * The registry a span was sealed under. Evidence itself expires against each transfer's own block time, so a
+ * sealed span stays correct as it ages; what changes across a deploy is which wallets were evidenced at all,
+ * and a span sealed under an older registry attributed less than today's would. That is a real property of the
+ * observation, so such spans are kept and disclosed rather than discarded. registryVersion() in known-entities.ts is
+ * the exact content hash; the page keeps this coarser label until it reads spans recorded elsewhere, because switching
+ * on its own would mark every returning visitor's stored history as recorded under a different registry.
+ */
+const REGISTRY_VERSION=`${registryHealth().total}@${dormancyInfo().measuredAt}`;
+/** The registry as inference and sealing read it, the same object for the buffer's pass and for every seal. */
+const REGISTRY:RecorderRegistry={version:REGISTRY_VERSION,known:knownAttribution,firstParty:a=>!isDerived(a),entities:ENTITIES,explorerTx:(c,h)=>EXPLORERS[c].tx(h)};
 
 type State='CONNECTING'|'BACKFILLING'|'LIVE'|'CATCHING UP'|'RECONNECTING';
 type Header={timestamp:string}|null;
@@ -248,7 +261,7 @@ export function createLiveSource():LiveSource{
  /* ---------- Inference, recomputed from whatever evidence is still buffered ---------- */
  function reinfer(){
   const all:Rec[]=[];for(const f of feeds.values())all.push(...f.buffer);
-  inferred=inferDeposits(all,{known:knownAttribution,firstParty:a=>!isDerived(a),entities:ENTITIES,explorerTx:(c,h)=>EXPLORERS[c].tx(h),forwardShare:INFER_FORWARD_SHARE});
+  inferred=inferDeposits(all,inferOptions(REGISTRY));
   for(const r of all)classifyRec(r,attributionFor);
  }
 
@@ -273,7 +286,7 @@ export function createLiveSource():LiveSource{
    * seconds were read (a poll lands up to 20 s after the span closes, and a quiet chain may bring no transfer to
    * re-seal it) is marked dirty, so its coverage is corrected rather than frozen short.
    */
-  const observed:{from:number;to:number}[]=[];
+  const observed:Interval[]=[];
   const noteObserved=(from:number,to:number)=>{
    if(!(to>from))return;
    observed.push({from,to});
@@ -286,17 +299,6 @@ export function createLiveSource():LiveSource{
   const noteRead=(from:number,to:number,timeOf:(n:number)=>number)=>{
    const r=readInterval(readEnd,from,to,timeOf);
    noteObserved(r.from,r.to);readEnd=r.next;
-  };
-  /** Milliseconds of `[start,end]` this feed actually held. Overlaps are merged, so a re-read never inflates it. */
-  const observedMsIn=(start:number,end:number)=>{
-   const clipped=observed.map(x=>({from:Math.max(x.from,start),to:Math.min(x.to,end)})).filter(x=>x.to>x.from).sort((a,b)=>a.from-b.from);
-   let ms=0,cur:{from:number;to:number}|null=null;
-   for(const x of clipped){
-    if(!cur||x.from>cur.to){if(cur)ms+=cur.to-cur.from;cur={...x};}
-    else cur.to=Math.max(cur.to,x.to);
-   }
-   if(cur)ms+=cur.to-cur.from;
-   return ms;
   };
   // Keyed by the contract's RPC form (lowercase 0x hex), which is what logs carry; CONTRACTS keeps Tron's base58 key.
   const tokens=Object.fromEntries(Object.entries(CONTRACTS[chain]??{}).map(([a,t])=>[rpcAddress(chain,a),t]));
@@ -471,7 +473,7 @@ export function createLiveSource():LiveSource{
   }
 
   return {
-   chain,buffer,sampleBuffer,observedMsIn,dirty,
+   chain,buffer,sampleBuffer,observed,dirty,
    records:()=>[...buffer,...sampleBuffer],
    start:async()=>{
     try{await backfill();}
@@ -496,13 +498,6 @@ export function createLiveSource():LiveSource{
  const anyBackfilling=()=>[...feeds.values()].some(f=>f.progress()!==null);
 
  /* ---------- Recorded history: sealed spans, per bucket per chain ---------- */
- /**
-  * The registry a span was sealed under. Evidence itself expires against each transfer's own block time, so a
-  * sealed span stays correct as it ages; what changes across a deploy is which wallets were evidenced at all,
-  * and a span sealed under an older registry attributed less than today's would. That is a real property of the
-  * observation, so such spans are kept and disclosed rather than discarded.
-  */
- const REGISTRY_VERSION=`${registryHealth().total}@${dormancyInfo().measuredAt}`;
  const history=createHistoryStore({retentionMs:HISTORY_MS});
  const sealed=new Map<string,Rollup>();
  let historyLoaded=false;
@@ -514,7 +509,9 @@ export function createLiveSource():LiveSource{
   * new records since. Re-sealing overwrites by (bucket, chain), so a late-arriving log corrects its span
   * instead of being added twice, and a span becomes final when it leaves the buffer. A span with no matching
   * transfers is still sealed: zero activity over a watched quarter hour is a measurement, and baselines need
-  * it to tell a quiet window from an unwatched one.
+  * it to tell a quiet window from an unwatched one. Each seal prices, infers and classifies its own copy of the
+  * chain's records (sealChainBuckets in recorder-core.ts), so a seal that lands before the buffer's coalesced
+  * re-classification has run no longer stores a poll's transfers as unattributed.
   */
  function sealDue(){
   const now=Date.now();
@@ -523,15 +520,13 @@ export function createLiveSource():LiveSource{
   for(const [chain,feed] of feeds){
    // Spans that left the buffer can no longer be sealed (a rejoin after a long pause can mark some), so stop tracking them.
    for(const b of feed.dirty)if(b<first)feed.dirty.delete(b);
-   for(let b=first;b+BUCKET_MS<=now;b+=BUCKET_MS){
-    const key=partKey(b,chain);
-    if(sealed.has(key)&&!feed.dirty.has(b))continue;
-    const part=sealSpan(feed.buffer.filter(r=>r.blockTime>b&&r.blockTime<=b+BUCKET_MS),b,b+BUCKET_MS,{
-     chain,coverage:[{chain,observedMs:feed.observedMsIn(b,b+BUCKET_MS)}],
-     registry:REGISTRY_VERSION,sealedAt:now,forTotals:r=>r.tx??r
-    });
-    sealed.set(key,part);fresh.push(part);
-    feed.dirty.delete(b);
+   const due:number[]=[];
+   for(let b=first;b+BUCKET_MS<=now;b+=BUCKET_MS)if(!sealed.has(partKey(b,chain))||feed.dirty.has(b))due.push(b);
+   if(!due.length)continue;
+   const parts=sealChainBuckets({chain,buckets:due,records:feed.buffer,observed:feed.observed,prices:series,registry:REGISTRY,contextEnd:now});
+   for(const part of parts){
+    sealed.set(partKey(part.bucket,chain),part);fresh.push(part);
+    feed.dirty.delete(part.bucket);
    }
   }
   // Drop spans past the retention horizon from memory; the store prunes its own copy when it next loads.
@@ -547,7 +542,7 @@ export function createLiveSource():LiveSource{
    const feed=feeds.get(chain);
    if(!feed)return [];
    return [sealSpan(feed.buffer.filter(r=>r.blockTime>from&&r.blockTime<=at),from,at,{
-    chain,coverage:[{chain,observedMs:feed.observedMsIn(from,at)}],
+    chain,coverage:[{chain,observedMs:observedMsIn(feed.observed,from,at)}],
     registry:REGISTRY_VERSION,sealedAt:at,forTotals:r=>r.tx??r
    })];
   });

@@ -53,7 +53,9 @@ folder are its entry). Its stories are static HTML rendered at build time from `
   the window as partial with its real start time, rather than quietly showing a short hour.
 - The pure parts of that client — decoding, pricing, block-time interpolation, retention and the
   deposit-address inference — live in `lib/atlas/live-core.ts` and are exercised by
-  `scripts/verify-live.cjs`. `pnpm build:live` runs every verifier first and refuses to build on a failure,
+  `scripts/verify-live.cjs`. Which records a sealed quarter hour is built from, and how they are classified at that
+  moment, lives in `lib/atlas/recorder-core.ts`, checked by `scripts/verify-recorder.cjs` on recorded real Ethereum
+  and Tron logs. `pnpm build:live` runs every verifier first and refuses to build on a failure,
   including when the evidence registry would expire within 60 days of the build.
 - **Country glow.** Most evidenced transfers have only one evidenced end (an exchange wallet and an
   unknown counterparty). Those can never be a route, but the app already sums them per jurisdiction as

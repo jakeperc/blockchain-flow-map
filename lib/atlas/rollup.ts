@@ -27,8 +27,9 @@
  *    otherwise contribute transfers from before it, and scaling its totals down would be inventing numbers.
  *    The cost is at most one bucket of nominal window length, and `coverageOf()` reports it.
  *
- * Pure: no fetch, no DOM, no timers, no module state. history-store.ts persists these; live-client.ts seals
- * and merges them; scripts/verify-rollup.cjs exercises the invariants above.
+ * Pure: no fetch, no DOM, no timers, no module state. history-store.ts persists these; recorder-core.ts decides which
+ * records a span is sealed from; live-client.ts seals and merges them; scripts/verify-rollup.cjs exercises the
+ * invariants above.
  */
 import {WINDOWS,CHAINS,UNKNOWN,type Chain,type WindowKey,type Snapshot,type Totals,type Corridor,type CountrySummary,type Transfer,type Attribution,type UnattributedEntity,type UnattributedTransfer} from './model';
 import {aggregateSpan,selectUnattributedSpan,rank,type TotalsInput,type UnattributedInput} from './engine';
@@ -279,14 +280,20 @@ export interface Baseline {mean:number;samples:number;ratio:number|null;z:number
  * bias, and one of 96 on 24H. The cost is a gap of under one span between the last prior window and the
  * live window, which is honest: that stretch is not sealed yet. A window whose length is not a whole
  * number of spans (5M) gets no baseline, because no prior window could be tiled.
+ *
+ * A prior window's coverage does not depend on the corridor, so a caller asking for every corridor of one snapshot
+ * passes one `memo` (prior window end -> coverage share) for all of them, and each prior window's coverage is
+ * computed once rather than once per corridor. The memo is valid only for the same parts, window and chains.
  */
-export function baselineFor(parts:readonly Rollup[],corridorId:string,window:WindowKey,at:number,chains:readonly Chain[],minShare:number,current:number):Baseline|null{
+export function baselineFor(parts:readonly Rollup[],corridorId:string,window:WindowKey,at:number,chains:readonly Chain[],minShare:number,current:number,memo?:Map<number,number>):Baseline|null{
  const duration=WINDOWS[window],values:number[]=[];
  if(duration%BUCKET_MS!==0)return null;
  const anchor=Math.floor(at/BUCKET_MS)*BUCKET_MS;
  for(let i=1;i<=BASELINE_SAMPLES;i++){
   const endOfPrior=anchor-i*duration;
-  if(coverageOf(parts,window,endOfPrior,chains).share<minShare)return null;
+  let share=memo?.get(endOfPrior);
+  if(share===undefined){share=coverageOf(parts,window,endOfPrior,chains).share;memo?.set(endOfPrior,share);}
+  if(share<minShare)return null;
   let sum=0;
   for(const p of partsInWindow(parts,endOfPrior-duration,endOfPrior))
    for(const c of p.corridors)if(c.id===corridorId)sum+=c.usdValue;
@@ -301,8 +308,9 @@ export function baselineFor(parts:readonly Rollup[],corridorId:string,window:Win
 
 /** Attach baselines to a merged snapshot's corridors, where this browser's history supports one. */
 export function applyBaselines(snapshot:Snapshot,parts:readonly Rollup[],chains:readonly Chain[],minShare:number):void{
+ const memo=new Map<number,number>();
  for(const c of snapshot.corridors){
-  const b=baselineFor(parts,c.id,snapshot.window,snapshot.at,chains,minShare,c.usdValue);
+  const b=baselineFor(parts,c.id,snapshot.window,snapshot.at,chains,minShare,c.usdValue,memo);
   if(!b)continue;
   c.baseline=b.mean;c.baselineSamples=b.samples;c.anomalyRatio=b.ratio;c.anomalyScore=b.z;
  }
@@ -313,6 +321,13 @@ export function applyBaselines(snapshot:Snapshot,parts:readonly Rollup[],chains:
 export const registryVersionsOf=(parts:readonly Rollup[])=>[...new Set(parts.map(p=>p.registry))];
 
 /* ---------- The persisted projection ---------- */
+
+/**
+ * Version of the stored shape below. Bump it when that shape changes: a browser's store then DROPS its spans
+ * (history-store.ts) and a published bundle in another format is refused (recorder-core.ts), rather than a summary
+ * computed under one set of rules being reinterpreted under another.
+ */
+export const STORED_SCHEMA=1;
 
 /**
  * What history-store.ts writes to disk: the accounting, without per-transfer detail.

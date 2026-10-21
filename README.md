@@ -177,11 +177,11 @@ dated measurement reports.
 
 ## Status
 
-Updated 2026-10-20. Seven chains live; 1,221 first-party wallets (plus 3,577 derived) across 68 entities and 30
+Updated 2026-10-21. Seven chains live; 1,221 first-party wallets (plus 3,577 derived) across 68 entities and 30
 jurisdictions; Solana not connected (it needs a keyed indexer). The repository was prepared for publication on
 2026-10-18 and went public on 2026-10-19: the deferred backend scaffold and the unused template code left the tree,
 the gate type-checks the whole project, the page's first minute reads honestly, both pages name and link their
-author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world. Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build. The screenshots above are dated captures of the live page, and the projection caption no longer sits under the map legend on desktop. On 2026-10-20 the health badge, which a 375 px phone clipped at the right edge of the top bar, leaves the top bar on phones (the time strip and status strip still show it), and the headline figures were re-measured at 375 px: three columns, nothing overlapping.
+author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world. Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build. The screenshots above are dated captures of the live page, and the projection caption no longer sits under the map legend on desktop. On 2026-10-20 the health badge, which a 375 px phone clipped at the right edge of the top bar, leaves the top bar on phones (the time strip and status strip still show it), and the headline figures were re-measured at 375 px: three columns, nothing overlapping. On 2026-10-21 sealing moved into `lib/atlas/recorder-core.ts`, checked on recorded real Ethereum and Tron logs; what the page shows is unchanged, except that a quarter hour sealed in the moment between a poll and the page's re-classification of it is no longer stored with that poll's transfers unattributed.
 jakepercy.com is published by hand from `dist-live/`, the output of `pnpm build:live`. The project was formerly Ledger Atlas;
 some file names and the browser's history store still carry that name.
 
@@ -194,6 +194,7 @@ some file names and the browser's history store still carry that name.
 | `lib/atlas/` | Model, accounting, live client, sealed history, registry, geography |
 | `scripts/registry/` | The evidence pipeline: source list, tag reader, code probe, dormancy scan, generator |
 | `scripts/verify-*.{cjs,mjs}`, `scripts/verify-all.mjs` | The build gate |
+| `scripts/fixtures/` | Real chain logs, headers and prices recorded for the verifiers to replay (`scripts/record-recorder-fixture.mjs`) |
 | `scripts/landmarks/`, `lib/landmarks/` | The Landmarks page pipeline and its generated data |
 | `scripts/llms/` | `llms.txt`, `methodology.md` and the page's plain-text surfaces |
 | `scripts/measure-*.mjs`, `scripts/screen-candidate-chain.mjs` | Offline diagnostics that rank work by measured activity |

@@ -16,9 +16,9 @@ import {createRequire} from 'node:module';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 
-export const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds','rollup','encoding','geo3d','quality-policy','tween','tron'];
+export const MODULES=['model','geography','engine','evm','known-addresses','known-entities','live-core','feeds','rollup','encoding','geo3d','quality-policy','tween','tron','recorder-core'];
 /** Modules added after the diagnostics were written; absent at older refs, and nothing in the registry needs them. */
-const OPTIONAL=new Set(['feeds','rollup','encoding','geo3d','quality-policy','tween','tron']);
+const OPTIONAL=new Set(['feeds','rollup','encoding','geo3d','quality-policy','tween','tron','recorder-core']);
 
 export function loadAtlas(ref){
  const tmp=mkdtempSync(join(tmpdir(),'ledger-atlas-diag-'));

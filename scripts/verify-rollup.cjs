@@ -222,6 +222,24 @@ const fullDay=chains=>chains.map(chain=>({chain,observedMs:BUCKET_MS}));
  assert.ok(later-Math.floor(later/BUCKET_MS)*BUCKET_MS>0&&later-Math.floor(later/BUCKET_MS)*BUCKET_MS<BUCKET_MS,'the gap to the live window is under one span');
  // A window that is not a whole number of spans cannot have tiled prior windows.
  assert.equal(baselineFor(parts,'US-GB','5M',at,['Ethereum'],.8,10),null,'5M gets no baseline');
+ // applyBaselines shares one coverage memo across a snapshot's corridors; it must change no result. Two corridors
+ // with history, one without, over both a covered and a gappy history.
+ for(const hist of [parts,gappy]){
+  const multi=hist.map(p=>({...p,corridors:[...p.corridors,{...p.corridors[0],id:'SG-US',origin:'SG',destination:'US',usdValue:p.corridors[0].usdValue/2}]}));
+  const snap=aggregate([],window,at);
+  for(const [id,usdValue] of [['US-GB',3000],['SG-US',800],['GB-SG',10]]){
+   const [origin,destination]=id.split('-');
+   snap.corridors.push({id,origin,destination,window,windowStart:at-duration,windowEnd:at,usdValue,transactionCount:1,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:at,rankScore:0});
+  }
+  const expected=snap.corridors.map(c=>[c.id,baselineFor(multi,c.id,window,at,['Ethereum'],.8,c.usdValue)]);
+  applyBaselines(snap,multi,['Ethereum'],.8);
+  for(const [id,b] of expected){
+   const c=snap.corridors.find(x=>x.id===id);
+   assert.equal(c.baseline,b?b.mean:null,`${id}: a shared coverage memo gives the baseline each corridor gets alone`);
+   assert.equal(c.anomalyRatio,b?b.ratio:null);
+  }
+  assert.equal(expected.filter(([,b])=>b).length,hist===parts?3:0,'the memo is exercised with and without a baseline');
+ }
  // The live hour, aggregated from raw records rather than merged from spans, takes a baseline from sealed history.
  const live=aggregate([transfer({blockTime:at-60_000,usdValue:3000,senderEntity:US,receiverEntity:GB})],window,at);
  assert.equal(live.corridors[0].baseline,null,'aggregate() alone has no baseline');

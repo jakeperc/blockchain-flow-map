@@ -78,6 +78,7 @@
 import type {Attribution,Chain} from './model';
 import {ADDRESSES,DERIVED,WATCHED,DORMANCY,CODE_PROBED_AT} from './known-addresses';
 import {EXPLORERS} from './geography';
+import {sha256} from './tron';
 export type EntityCategory='exchange'|'market maker'|'custodian'|'broker'|'payment';
 export interface EntityRecord {id:string;name:string;category:EntityCategory;jurisdiction:string;confidence:'VERIFIED'|'HIGH';source:string;sourceUrl:string;evidenceNote:string;lastVerified:string;}
 const e=(id:string,name:string,jurisdiction:string,confidence:'VERIFIED'|'HIGH',source:string,sourceUrl:string,evidenceNote:string,lastVerified='2026-09-18',category:EntityCategory='exchange'):EntityRecord=>({id,name,category,jurisdiction,confidence,source,sourceUrl,evidenceNote,lastVerified});
@@ -259,4 +260,28 @@ export function registryStats(){
  }
  const derived=DERIVED.reduce((n,d)=>n+d.addresses.length,0);
  return {addresses:Object.keys(ADDRESSES).length,derived,entities:Object.keys(ENTITIES).length,byEntity,byJurisdiction,byChain};
+}
+let version:string|null=null;
+/**
+ * The registry's identity, recorded on every sealed span: a SHA-256 content hash (first 16 hex digits) of everything
+ * in it that can change a span's figures. That is each address's attribution fields the accounting reads (entity,
+ * cluster, category, jurisdiction, confidence, score, verification date, association), first-party and derived alike,
+ * the watched filter that decides which transfers are requested at all (D2), and each entity's name and jurisdiction,
+ * which deposit inference reads. Tag wording, notes and links are left out: they change no figure. Two builds share a
+ * version exactly when they would request and attribute the same transfers, which a count and a date (the label used
+ * before) cannot promise. Computed once, on first use.
+ */
+export function registryVersion():string{
+ if(version)return version;
+ const TAB='\t',NL='\n';
+ const lines:string[]=[];
+ for(const key of [...INDEX.keys()].sort()){
+  const a=INDEX.get(key)!;
+  lines.push([key,a.entity,a.addressCluster,a.category,a.jurisdiction??'',a.confidence,a.score,a.lastVerified,a.association].join(TAB));
+ }
+ for(const w of [...WATCHED].sort((x,y)=>x.chain<y.chain?-1:x.chain>y.chain?1:0))lines.push(['watched',w.chain,[...w.addresses].sort().join(',')].join(TAB));
+ for(const id of Object.keys(ENTITIES).sort())lines.push(['entity',id,ENTITIES[id].name,ENTITIES[id].jurisdiction].join(TAB));
+ const digest=sha256(new TextEncoder().encode(lines.join(NL)));
+ version=[...digest.slice(0,8)].map(b=>b.toString(16).padStart(2,'0')).join('');
+ return version;
 }
