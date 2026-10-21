@@ -12,6 +12,7 @@
  * endpoint is visible rather than averaged away. Rate-limit replies are reported as such, not as caps.
  *
  *   node scripts/probe-endpoint-caps.mjs <Ethereum|Base|Arbitrum> [--tries N] [--pause MS] [--url <one endpoint>]
+ * A --url outside the chain's pool is probed as a candidate, the same way.
  */
 import {sleep} from './rpc-pool.mjs';
 import {loadAtlas} from './atlas-modules.mjs';
@@ -41,7 +42,8 @@ async function post(url,method,params){
 }
 const logs=(url,from,to,topics)=>post(url,'eth_getLogs',[{fromBlock:hex(from),toBlock:hex(to),address:tokens,topics}]);
 console.log(`${chain}: live chunk ${feed.chunk} blocks, filter ${registry.length} addresses, ${tries} tries per size, probed ${new Date().toISOString().slice(0,10)}`);
-for(const ep of feed.endpoints){
+const pool=only&&!feed.endpoints.some(e=>e.url===only)?[{url:only,largeBody:false,candidate:true}]:feed.endpoints;
+for(const ep of pool){
  if(only&&ep.url!==only)continue;
  const url=ep.url;
  const id=await post(url,'eth_chainId',[]);
@@ -50,7 +52,8 @@ for(const ep of feed.endpoints){
  const tip=parseInt(tipRes.j?.result??'0x0',16)-20;
  const few=Array.from({length:50},randomAddr).map(pad);
  let maxRange=0,rangeNote='';
- for(const r of [5000,4000,2000,1500,1200,1000,500,200,100,50]){
+ // Down to 10: on 2026-10-21 api.avax.network capped the filter at 10 blocks, and at 100 a few hours later.
+ for(const r of [5000,4000,2000,1500,1200,1000,500,200,100,50,20,10]){
   const x=await logs(url,tip-r+1,tip,[TRANSFER,few,null]);
   if(x.ok){maxRange=r;break;}
   rangeNote=x.err;await sleep(800);
@@ -70,6 +73,6 @@ for(const ep of feed.endpoints){
   fail=`${n} entries (~${size} KB) passed ${pass}/${tries}${limited?`, ${limited} rate-limited`:''}: ${last}`;
   break;
  }
- console.log(`${url}${ep.largeBody?' [largeBody]':''} | cors ${id.cors} | maxRange ${maxRange||`none (${rangeNote})`} | maxTopics ${maxTopics}${maxTopics?` (~${kb} KB over ${span} blocks)`:''}${fail?` | first failure: ${fail}`:' | passed every size tried'}`);
+ console.log(`${url}${ep.largeBody?' [largeBody]':ep.candidate?' [candidate]':''} | cors ${id.cors} | maxRange ${maxRange||`none (${rangeNote})`} | maxTopics ${maxTopics}${maxTopics?` (~${kb} KB over ${span} blocks)`:''}${fail?` | first failure: ${fail}`:' | passed every size tried'}`);
  await sleep(1000);
 }

@@ -34,7 +34,7 @@ import {EXPLORERS} from './geography';
 import {FEEDS,type FeedConfig} from './feeds';
 import {rpcAddress} from './tron';
 import {knownAttribution,isDerived,watchedAddresses,dormancyInfo,registryHealth,ENTITIES} from './known-entities';
-import {addressKey,classifyRec,decodeTransferLog,inferDeposits,makeBlockTimeFn,nextPollRange,planChunks,priceAt,pruneRecords,readInterval,addSample,type Rec,type Sample} from './live-core';
+import {addressKey,classifyRec,decodeTransferLog,inferDeposits,makeBlockTimeFn,nextPollRange,planChunks,priceAt,pruneRecords,readInterval,replyVerdict,addSample,type Rec,type Sample} from './live-core';
 import {BUCKET_MS,bucketOf,sealSpan,mergeRollups,mergeUnmapped,coverageOf,partsForChains,applyBaselines,registryVersionsOf,toStored,fromStored,type Rollup} from './rollup';
 import {CONTEXT_MS,PRICE_TOLERANCE_MS,inferOptions,observedMsIn,sealChainBuckets,type Interval,type RecorderRegistry} from './recorder-core';
 import {createHistoryStore,type HistoryStatus} from './history-store';
@@ -305,11 +305,12 @@ export function createLiveSource():LiveSource{
   const contracts=Object.keys(tokens);
   const topics=topicsFor(chain);
 
-  /** One request with retries. A rate limit or "can't route" is retried on the same endpoint after a pause; an unreachable or refusing host is abandoned at once, because staying on it burns the whole attempt budget without ever reaching a healthy endpoint. The budget is at least one attempt per endpoint. `large` restricts rotation to endpoints that accept a big request body. */
+  /** One request with retries. A rate limit or "can't route" is retried on the same endpoint after a pause; an unreachable or refusing host is abandoned at once, because staying on it burns the whole attempt budget without ever reaching a healthy endpoint. The budget is at least one attempt per endpoint. `large` restricts rotation to endpoints that accept a big request body. A JSON-RPC error (an endpoint's own cap, replyVerdict) moves to the next endpoint too, so one endpoint lowering its cap costs that endpoint, not the chain; when every endpoint refuses, the last refusal is returned and rpc() throws its message, as before. */
   async function post(body:unknown,large=false):Promise<unknown>{
    const pool=large?cfg.endpoints.filter(e=>e.largeBody):cfg.endpoints;
    if(!pool.length)throw Error('no endpoint accepts this request');
-   let lastErr:unknown=null;
+   let lastErr:unknown=null,refusal:unknown=null;
+   const refusedBy=new Set<string>();
    const attempts=Math.max(RPC_ATTEMPTS,pool.length+1);
    for(let attempt=0;attempt<attempts;attempt++){
     if(disposed)throw Error('disposed');
@@ -318,19 +319,28 @@ export function createLiveSource():LiveSource{
      const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:signal(25000)});
      const text=await res.text();
      let json:unknown=null;try{json=JSON.parse(text);}catch{json=null;}
-     const transient=res.status===429||res.status>=500||(json!==null&&!Array.isArray(json)&&typeof (json as {error?:unknown}).error==='object'&&(json as {error:{code?:number}}).error?.code===12);
-     if(!res.ok&&!(json&&transient)){
+     const verdict=replyVerdict(res.status,json);
+     if(verdict==='rotate'){
       console.warn(`[ledger-atlas live] ${chain} ${url} HTTP ${res.status} → ${text.slice(0,160)}`);
       lastErr=Error(`HTTP ${res.status}`);rpcIndex++;endpointStrikes=0;await sleep(200);continue;
      }
-     if(transient){lastErr=Error(`transient ${res.status}`);endpointStrikes++;if(endpointStrikes>=RPC_STRIKES){rpcIndex++;endpointStrikes=0;}await sleep(400*(attempt+1));continue;}
-     failures=0;endpointStrikes=0;return json;
+     if(verdict==='retry'){lastErr=Error(`transient ${res.status}`);endpointStrikes++;if(endpointStrikes>=RPC_STRIKES){rpcIndex++;endpointStrikes=0;}await sleep(400*(attempt+1));continue;}
+     failures=0;endpointStrikes=0;
+     if(verdict==='refused'){
+      console.warn(`[ledger-atlas live] ${chain} ${url} refused → ${text.slice(0,160)}`);
+      refusal=json;refusedBy.add(url);rpcIndex++;
+      if(refusedBy.size>=pool.length)break; // every endpoint refused: a retry would only repeat them
+      continue;
+     }
+     return json;
     }catch(err){
      if(disposed)throw err;
      lastErr=err;rpcIndex++;endpointStrikes=0; // unreachable host: move on immediately
      await sleep(200);
     }
    }
+   // A refusal is an answer, not a lost connection, so it is not counted as a failure.
+   if(refusal)return refusal;
    failures++;throw lastErr??Error('RPC failed');
   }
   async function rpc<T>(method:string,params:unknown[],large=false):Promise<T>{

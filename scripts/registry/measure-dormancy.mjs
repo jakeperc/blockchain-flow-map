@@ -48,8 +48,10 @@ const ENDPOINTS={
  // Measured 2026-10-01, 90 days back: Tenderly took 1,000,000 blocks (5,556 logs in 0.6 s); mainnet.optimism.io
  // answers "limited to a 10,000 range"; optimism-rpc.publicnode.com refuses archive depth without a token.
  Optimism:[{url:'https://optimism.gateway.tenderly.co',maxSpan:1000000},{url:'https://mainnet.optimism.io',maxSpan:10000}],
- // api.avax.network took 500,000 blocks in one filtered request (11,263 logs in 26 s); publicnode caps at 50,000.
- Avalanche:[{url:'https://api.avax.network/ext/bc/C/rpc',maxSpan:500000},{url:'https://avalanche-c-chain-rpc.publicnode.com',maxSpan:50000}],
+ // Re-measured 2026-10-21 with the whole evidenced registry, 90 days back: Tenderly's gateway took 200,000 blocks
+ // (12,951 logs in 1.7 s; 500,000 answers "invalid params"). api.avax.network, which took 500,000 on 2026-09-25,
+ // now caps at 100 but still serves that depth; publicnode caps at 50,000 and prunes old blocks.
+ Avalanche:[{url:'https://avalanche.gateway.tenderly.co',maxSpan:200000},{url:'https://avalanche-c-chain-rpc.publicnode.com',maxSpan:50000},{url:'https://api.avax.network/ext/bc/C/rpc',maxSpan:100}],
  // Measured 2026-10-06: both serve 90 days back and refuse any reply over 10,000 logs ("query returned more than 10000
  // results"), so the span is bounded by the busiest wallets' log count; it grows once they have been seen and drop out.
  Tron:[{url:'https://tron-evm-rpc.publicnode.com',maxSpan:200000},{url:'https://api.trongrid.io/jsonrpc',maxSpan:200000}]

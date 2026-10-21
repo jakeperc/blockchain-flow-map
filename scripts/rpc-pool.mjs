@@ -21,7 +21,9 @@ export const POOLS={
  // Added 2026-10-06 (docs/measurements/2026-10-06/). USDT only; probeToken is the 20-byte hex form of TR7NHq…Lj6t. Both endpoints
  // refuse a reply over 10,000 logs, so chunk is sized by the busiest wallets' log count, not by block range.
  Tron:{chainId:728126428,slotSec:3,chunk:600,screenChunk:600,pauseMs:250,probeToken:'0xa614f803b6fd780986a42c78ec9c7f77e6ded13c',urls:['https://tron-evm-rpc.publicnode.com','https://api.trongrid.io/jsonrpc']},
- Avalanche:{chainId:43114,slotSec:1.2,chunk:1500,screenChunk:2000,pauseMs:250,probeToken:'0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',urls:['https://api.avax.network/ext/bc/C/rpc','https://avalanche-c-chain-rpc.publicnode.com']}
+ // Since 2026-10-21 api.avax.network caps a filtered read at 100 blocks, so it is not listed; Tenderly serves full
+ // history and leads, publicnode prunes old blocks.
+ Avalanche:{chainId:43114,slotSec:1.2,chunk:1500,screenChunk:2000,pauseMs:250,probeToken:'0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',urls:['https://avalanche.gateway.tenderly.co','https://avalanche-c-chain-rpc.publicnode.com']}
 };
 /**
  * Per-request timeout. A minute is right for a dormancy scan's huge ranges, but when a public endpoint starts

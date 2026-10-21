@@ -8,7 +8,7 @@
  */
 const assert=require('node:assert/strict');
 const root=process.argv[2]||'/tmp/ledger-atlas-check';
-const {inferDeposits,priceAt,decodeTransferLog,formatAmount,makeBlockTimeFn,planChunks,nextPollRange,readInterval,pruneRecords,addressKey,classifyRec}=require(root+'/live-core.js');
+const {inferDeposits,priceAt,decodeTransferLog,formatAmount,makeBlockTimeFn,planChunks,nextPollRange,readInterval,pruneRecords,addressKey,classifyRec,replyVerdict}=require(root+'/live-core.js');
 const {aggregate}=require(root+'/engine.js');
 const {UNKNOWN,admissible}=require(root+'/model.js');
 const {ERC20_TRANSFER_TOPIC}=require(root+'/evm.js');
@@ -202,6 +202,23 @@ const sweep=(over={})=>[rec({sender:OUTSIDE,receiver:DEP,blockTime:T0,...over.in
  assert.equal(nextPollRange(100,401,ETH),'rejoin');
 }
 
+/* ---------- Endpoint replies: what moves to the next endpoint ---------- */
+{
+ // api.avax.network's reply to a filtered eth_getLogs over its cap, measured 2026-10-21 (docs/LIVE-FEED.md).
+ const capRefusal={jsonrpc:'2.0',id:1,error:{code:-32602,message:'block range too large: total block range in this request exceeds the maximum of 100 blocks'}};
+ assert.equal(replyVerdict(200,capRefusal),'refused','a cap stated as a JSON-RPC error over HTTP 200 moves to the next endpoint, not into the chunk as a failure');
+ assert.equal(replyVerdict(200,{jsonrpc:'2.0',id:1,error:'rate limited'}),'refused','an error that is not an object is still a refusal');
+ assert.equal(replyVerdict(200,{jsonrpc:'2.0',id:1,result:[]}),'ok','an empty result is a good answer');
+ assert.equal(replyVerdict(200,{jsonrpc:'2.0',id:1,result:[],error:null}),'ok','a null error field is no error');
+ assert.equal(replyVerdict(200,[{id:1,result:'0x1'},{id:2,error:{code:-32000,message:'x'}}]),'ok','a batch is returned whatever its items say; rpcBatch falls back to single calls');
+ assert.equal(replyVerdict(200,{error:{code:12,message:"can't route"}}),'retry','code 12 retries the same endpoint, as before');
+ assert.equal(replyVerdict(429,{error:{code:-32005,message:'rate limit'}}),'retry','a JSON 429 retries');
+ assert.equal(replyVerdict(503,{error:{code:-32603}}),'retry','a JSON 5xx retries');
+ assert.equal(replyVerdict(429,null),'rotate','a 429 that is not JSON (a CDN page) rotates, as before');
+ assert.equal(replyVerdict(403,{error:{code:-32000,message:'paid plan'}}),'rotate','a refusing HTTP status rotates even with a JSON body');
+ assert.equal(replyVerdict(200,null),'rotate','a 200 that is not JSON is no answer');
+}
+
 /* ---------- Observed time: consecutive reads tile ---------- */
 {
  /** Merged length of [from,to] intervals, as live-client's observedMsIn measures it. */
@@ -241,4 +258,4 @@ const sweep=(over={})=>[rec({sender:OUTSIDE,receiver:DEP,blockTime:T0,...over.in
  assert.equal(pruneRecords(recs,T0-10000).length,3,'an out-of-order record does not stop retention early');
 }
 
-console.log('PASS: inference (evidence, refusals, boundary, chain scoping, expiry, corridor), price selection, decoding (EVM and Tron), decimals, block times, chunking, polling after a pause, observed time, retention');
+console.log('PASS: inference (evidence, refusals, boundary, chain scoping, expiry, corridor), price selection, decoding (EVM and Tron), decimals, block times, chunking, polling after a pause, endpoint replies, observed time, retention');

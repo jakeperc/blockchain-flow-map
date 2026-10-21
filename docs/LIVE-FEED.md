@@ -41,9 +41,11 @@ file whenever a cap or chunk size is re-measured.
   | Polygon | rpc.sentio.xyz/matic | yes | 4,800+ | ~323 KB+ | 5,000 (10,000 for the scan, 90 days back) | echoes origin |
   | Polygon | polygon.drpc.org | no (demoted 2026-10-01) | 1,000 | ~67 KB | 100 | `*` |
   | Polygon | polygon-rpc.com | – | **key-gated**: HTTP 401 "API key disabled, tenant disabled" | – | – | `*` |
-  | Avalanche | api.avax.network/ext/bc/C/rpc | yes | 4,800+ | ~323 KB+ | 5,000 (**500,000** accepted for the dormancy scan) | echoes origin |
+  | Avalanche | api.avax.network/ext/bc/C/rpc | no (demoted 2026-10-21) | 1,024 over 100 blocks; 1,200 rate-limited 3/3 (HTTP 429) | ~69 KB | **100** on 2026-10-21 (10 earlier that day; 5,000, and 500,000 for the scan, on 2026-09-25). A wider filtered read gets HTTP 200 with -32602 "block range too large". 100 blocks still served 90 days back | echoes origin |
   | Avalanche | avalanche-c-chain-rpc.publicnode.com | yes | 4,800+ | ~323 KB+ | 5,000 (50,000 for the scan) | `*` |
-  | Avalanche | avalanche.drpc.org | no (demoted 2026-09-25) | 2,400; 4,800 timed out 1/3 ("upgrade to paid plan") | ~162 KB | 100 | `*` |
+  | Avalanche | avalanche.gateway.tenderly.co | yes (since 2026-10-21) | 4,800+ | ~323 KB+ | 5,000 (**200,000** for the dormancy scan, 90 days back; 500,000 "invalid params") | `*` |
+  | Avalanche | avalanche.drpc.org | no (demoted 2026-09-25) | 4,800 over 100 blocks on 2026-10-21 (2,400 on 2026-09-25; 4,800 timed out 1/3, "upgrade to paid plan") | ~323 KB | 100 | `*` |
+  | Avalanche | rpc.sentio.xyz/avalanche | measured 2026-10-21, not listed | 4,800+ over 1,000 blocks | ~323 KB+ | 1,000 (1,500: HTTP 429 "public eth_getLogs is limited to 1000 blocks") | echoes origin |
   | Celo | forno.celo.org | measured, not shipped | 1,024 (1,200 failed 2/3) | ~69 KB | 5,000 | `*` |
   | Celo | celo.drpc.org | unusable | "invalid hex string" to the filtered shape | – | none | `*` |
   | Optimism | optimism.gateway.tenderly.co | yes | 4,800+ | ~323 KB+ | 5,000 (**1,000,000** for the dormancy scan) | `*` |
@@ -54,7 +56,13 @@ file whenever a cap or chunk size is re-measured.
   | Tron | tron-evm-rpc.publicnode.com | yes (since 2026-10-06) | 1,000 ("exceed max topics: 1000") | ~67 KB | 1,200 in 17 s | `*` |
 
   Polygon and Avalanche were first measured 2026-09-25, and Polygon and Optimism were re-measured on 2026-10-01
-  when they went live (docs/measurements/2026-10-01/). Celo was measured and rejected on activity
+  when they went live (docs/measurements/2026-10-01/). Avalanche was re-measured on 2026-10-21, after
+  api.avax.network's cut from 5,000 blocks to 100 had failed every Avalanche chunk (the page read Partial, "3,000
+  of 3,000 Avalanche blocks could not be loaded"). Tenderly's Avalanche gateway joined publicnode on the filtered feed
+  and returned the same logs over the live chunk. Other keyless Avalanche endpoints tried that day did not qualify:
+  1rpc.io/avax/c caps at 50 blocks; avalanche.api.onfinality.io and api.zan.top refuse eth_getLogs without a key
+  or under load; rpc.ankr.com/avalanche, avalanche.public-rpc.com, avalanche.blockpi.network and the nodies and
+  Blast endpoints are key-gated or retired; avax.meowrpc.com and avalanche.llamarpc.com did not answer. Celo was measured and rejected on activity
   (docs/measurements/2026-09-25/new-chain-candidates.md). Polygon's chunk
   was 100 while drpc had to serve the filtered feed; with Tenderly, publicnode and Sentio serving it, the chunk
   is 1,200 and drpc keeps only the small calls. The Tron rows were measured before Tron went live on 2026-10-06 (docs/measurements/2026-10-06/); the two filtered
@@ -78,7 +86,10 @@ file whenever a cap or chunk size is re-measured.
   sample, so it serves headers and samples. publicnode's Arbitrum node needs a token;
   llamarpc, blockpi, meowrpc and alchemy-demo are dead.
 - **Retry policy**: transient errors (429/5xx/code 12) retry the same endpoint with
-  strikes; hard errors rotate immediately; attempts = max(4, pool size + 1). Failed chunks
+  strikes; hard errors rotate immediately; attempts = max(4, pool size + 1). Since 2026-10-21 a JSON-RPC error to a
+  single request (how a node states its own cap, often over HTTP 200) also rotates, so one endpoint lowering its cap
+  costs that endpoint and not the chain; when every endpoint refuses, the refusal is the chunk's error and is not
+  counted as a lost connection (`replyVerdict` in `live-core.ts`). Failed chunks
   are counted in `missingBlocks` and surface as Partial/Delayed, never swallowed.
 - **After a pause** (the computer slept, the browser froze the tab, the network dropped) a feed more than its backfilled
   hour behind re-reads the latest hour instead of crawling through blocks the buffer would prune, and any transfer left

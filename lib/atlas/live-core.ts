@@ -114,6 +114,24 @@ export function nextPollRange(lastBlock:number,target:number,cfg:{blocks:number;
  return [from,Math.min(target,from+(behind>cfg.liveRange?cfg.catchupRange:cfg.liveRange)-1)];
 }
 
+/**
+ * What the live client does with one endpoint's reply to a single request or a batch. 'ok' returns it. 'retry' waits
+ * and asks the same endpoint again (a rate limit, a 5xx, or JSON-RPC code 12 "can't route"). 'rotate' moves to the next
+ * endpoint: a refusing HTTP status, or a 200 that is not JSON. 'refused' also moves on: a JSON-RPC error to a single
+ * request, which is how a public node states its own cap. On 2026-10-21 api.avax.network began answering a filtered
+ * eth_getLogs wider than its new limit with HTTP 200 and -32602 "block range too large"; returned as a good reply, it
+ * failed every Avalanche chunk although publicnode served the same request. A batch is 'ok' whatever its items say,
+ * because rpcBatch() falls back to single calls when any item failed.
+ */
+export function replyVerdict(status:number,json:unknown):'ok'|'retry'|'rotate'|'refused'{
+ const error=json!==null&&typeof json==='object'&&!Array.isArray(json)?(json as {error?:unknown}).error:undefined;
+ const transient=status===429||status>=500||(typeof error==='object'&&error!==null&&(error as {code?:unknown}).code===12);
+ if(status<200||status>299)return json!==null&&transient?'retry':'rotate';
+ if(json===null)return 'rotate';
+ if(transient)return 'retry';
+ return error!==undefined&&error!==null?'refused':'ok';
+}
+
 /** Records at or after the cutoff. Returns a new array: a filter rather than a head-walk, so one out-of-order insert cannot stop retention forever. */
 export function pruneRecords(records:Rec[],cutoff:number):Rec[]{
  return records.filter(r=>r.blockTime>=cutoff);

@@ -30,8 +30,8 @@ export interface FeedConfig{
  /** Unfiltered blocks per denominator sample. Sized to a few hundred logs on each chain. */
  sampleBlocks:number;
 }
-/** Date the maxTopics and maxRange figures below were last measured (Tron on 2026-10-06, Polygon and Optimism on 2026-10-01, Avalanche on 2026-09-25). */
-export const ENDPOINTS_MEASURED='2026-10-06';
+/** Date the maxTopics and maxRange figures below were last measured (Avalanche on 2026-10-21, Tron on 2026-10-06, Polygon and Optimism on 2026-10-01). */
+export const ENDPOINTS_MEASURED='2026-10-21';
 /**
  * Endpoints, all keyless and browser-callable (CORS confirmed 2026-09-21). One hour is 300 Ethereum blocks, 1,800 Base
  * blocks or 14,400 Arbitrum blocks. Measured 2026-09-21 in the live request shape, three tries per size:
@@ -66,11 +66,15 @@ export const FEEDS:Partial<Record<Chain,FeedConfig>>={
   * (decision D4). Polygon was chosen alongside Avalanche, parked, and switched on 2026-10-01; see below.
   */
  Avalanche:{
-  // api.avax.network echoes the request origin instead of sending '*', which is fine for a real page load.
-  // avalanche.drpc.org caps the filter at 100 blocks and timed out on the largest list, so it serves only the
-  // small calls (headers and the unfiltered sample) and does not drag the chunk down. 3,000 blocks is one hour
-  // at the measured 1.14 s block time, rounded to a nominal 1.2 s; real header times are interpolated anyway.
-  endpoints:[{url:'https://api.avax.network/ext/bc/C/rpc',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://avalanche-c-chain-rpc.publicnode.com',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://avalanche.drpc.org',largeBody:false}],
+  // Re-measured 2026-10-21. api.avax.network served the filter over 5,000 blocks on 2026-09-25; it now caps a
+  // filtered eth_getLogs at 100 blocks (10 a few hours earlier the same day) and answers a wider one with HTTP 200
+  // and -32602 "block range too large", so it serves only the small calls. It echoes the request origin instead of
+  // sending '*', which is fine for a real page load. avalanche.gateway.tenderly.co, found the same day, takes 5,000
+  // blocks and 4,800 addresses like publicnode and returned the same logs, so the filtered feed keeps two endpoints.
+  // avalanche.drpc.org caps the filter at 100 blocks, so it too serves only the small calls (headers and the
+  // unfiltered sample) and does not drag the chunk down. 3,000 blocks is one hour at the measured 1.14 s block
+  // time, rounded to a nominal 1.2 s; real header times are interpolated anyway.
+  endpoints:[{url:'https://avalanche-c-chain-rpc.publicnode.com',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://avalanche.gateway.tenderly.co',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://api.avax.network/ext/bc/C/rpc',largeBody:false},{url:'https://avalanche.drpc.org',largeBody:false}],
   chainId:43114,slotMs:1200,blocks:3000,chunk:1500,liveRange:40,catchupRange:1500,pauseMs:0,sampleBlocks:60
  },
  /**
