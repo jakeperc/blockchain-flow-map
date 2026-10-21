@@ -18,7 +18,7 @@ import {join} from 'node:path';
 import {rpc} from '../rpc-pool.mjs';
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const UA = 'Mozilla/5.0 (compatible; BlockchainFlowMap-Landmarks/1.0; +https://jakepercy.com/global-blockchain-flow/)';
+const UA = 'Mozilla/5.0 (compatible; BlockchainFlowMap-Landmarks/1.0; +https://flows.jakepercy.com/)';
 const PAUSE_MS = 250;
 
 /** GET with retries on 429/5xx and network errors. Other 4xx answers are final: a blocked page is not retried around. */

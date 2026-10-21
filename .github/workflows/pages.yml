@@ -1,10 +1,11 @@
-# Publish the live map to GitHub Pages (https://jakeperc.github.io/blockchain-flow-map/) on every push to main.
+# Publish the live map to GitHub Pages on every push to main. Since 2026-10-21 it is served at https://flows.jakepercy.com/,
+# the custom domain set in the repository's Pages settings (a CNAME at jakepercy.com's DNS host).
 #
 # The build is the same gated build as verify.yml: `pnpm build:live` runs scripts/verify-all.mjs (the eight
 # verifiers and the type check) before Vite builds anything, so a commit that fails a verifier is never published
 # and the live copy stays on the last commit that passed. The build uses relative paths, so the folder name does
-# not matter. Canonical links, og:image and llms.txt still name jakepercy.com, which stays the canonical home,
-# published separately by hand.
+# not matter. Canonical links, og:image and llms.txt name https://flows.jakepercy.com/ (SITE in
+# scripts/llms/render.mjs); nothing is uploaded by hand any more.
 #
 # Never add a schedule: verify-registry.cjs fails by the calendar on purpose, so a scheduled run would go red with
 # no change. Run it by hand (workflow_dispatch) to republish without a commit.

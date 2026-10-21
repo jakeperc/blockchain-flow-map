@@ -46,8 +46,8 @@ version, fitted to Jake's budget.
 
 ## Hosting options
 
-- **GitHub Pages** can host the static site for free, replacing FTP to jakepercy.com. It is on the
-  to-do list. It **cannot** hide a key, so it cannot run the proxy.
+- **GitHub Pages** hosts the static site for free at https://flows.jakepercy.com/ since 2026-10-21, replacing FTP
+  to jakepercy.com. It **cannot** hide a key, so it cannot run the proxy.
 - **GitHub Actions** runs scheduled jobs with secrets: the monthly Polygon dormancy scan, the
   monthly scans on the other chains, and label and lead refreshes. It then commits the results. It
   is free on public repos; private repos get 2,000 minutes a month.

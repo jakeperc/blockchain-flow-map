@@ -12,21 +12,20 @@ public endpoint was rate-limiting.*
 [![verify](https://github.com/jakeperc/blockchain-flow-map/actions/workflows/verify.yml/badge.svg)](https://github.com/jakeperc/blockchain-flow-map/actions/workflows/verify.yml)
 [![licence: MIT](https://img.shields.io/badge/code-MIT-6f8f7a)](LICENSE)
 
-**Live:** [jakepercy.com/global-blockchain-flow](https://jakepercy.com/global-blockchain-flow/) ·
-[Landmarks](https://jakepercy.com/global-blockchain-flow/landmarks.html) ·
-[llms.txt](https://jakepercy.com/global-blockchain-flow/llms.txt) ·
-[methodology](https://jakepercy.com/global-blockchain-flow/methodology.md)
+**Live:** [flows.jakepercy.com](https://flows.jakepercy.com/) ·
+[Landmarks](https://flows.jakepercy.com/landmarks.html) ·
+[llms.txt](https://flows.jakepercy.com/llms.txt) ·
+[methodology](https://flows.jakepercy.com/methodology.md)
 
-**Built from `main` on every push:** [jakeperc.github.io/blockchain-flow-map](https://jakeperc.github.io/blockchain-flow-map/) (GitHub Pages, the same
-gated build)
+Published by GitHub Pages from `main` on every push, through the same gated build.
 
 A live, evidence-only map of cross-border stablecoin settlement. The visitor's browser reads USDC and USDT
 `Transfer` logs straight from free public RPC endpoints on seven chains (Ethereum, Base, Arbitrum, Avalanche, Polygon,
 Optimism, Tron), attributes each transfer against a registry of exchange and custodian wallets whose evidence is a
 public name tag on the address's own explorer page plus a regulator or company document for the operator's
 jurisdiction, and draws a route only when both ends of a transfer are evidenced wallets in different jurisdictions.
-There is no server, no database and no API key: a static folder, uploaded by FTP to jakepercy.com and published to
-GitHub Pages by CI. The map deliberately shows only a
+There is no server, no database and no API key: a static folder that CI builds through the gate and GitHub Pages
+publishes. The map deliberately shows only a
 small fraction of on-chain volume and says exactly how small.
 
 ## What you are looking at
@@ -183,7 +182,8 @@ jurisdictions; Solana not connected (it needs a keyed indexer). The repository w
 2026-10-18 and went public on 2026-10-19: the deferred backend scaffold and the unused template code left the tree,
 the gate type-checks the whole project, the page's first minute reads honestly, both pages name and link their
 author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world. Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build. The screenshots above are dated captures of the live page, and the projection caption no longer sits under the map legend on desktop. On 2026-10-20 the health badge, which a 375 px phone clipped at the right edge of the top bar, leaves the top bar on phones (the time strip and status strip still show it), and the headline figures were re-measured at 375 px: three columns, nothing overlapping. On 2026-10-21 sealing moved into `lib/atlas/recorder-core.ts`, checked on recorded real Ethereum and Tron logs; what the page shows is unchanged, except that a quarter hour sealed in the moment between a poll and the page's re-classification of it is no longer stored with that poll's transfers unattributed. Later that day Avalanche, which had read PARTIAL since `api.avax.network` cut its filtered reads from 5,000 blocks to 100, reads LIVE again: Tenderly's Avalanche gateway joined publicnode on the filtered feed (re-measured in `docs/LIVE-FEED.md`), and the page now moves to the next endpoint when one refuses a request with a JSON-RPC error, so the next such cut costs one endpoint rather than a chain. Base was re-measured the same day: `mainnet.base.org` had cut its filtered reads from 2,000 blocks to 200 and then refused them, which had left publicnode as the only endpoint serving Base's filter. Tenderly's and Sentio's Base endpoints now serve it too, with Base's chunk lowered from 1,500 blocks to the 1,000 they take.
-jakepercy.com is published by hand from `dist-live/`, the output of `pnpm build:live`. The project was formerly Ledger Atlas;
+Since 2026-10-21 the map lives at flows.jakepercy.com, published by GitHub Pages from `main`; it is no longer
+uploaded by hand to a folder on jakepercy.com. The project was formerly Ledger Atlas;
 some file names and the browser's history store still carry that name.
 
 ## Repository map

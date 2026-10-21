@@ -2,8 +2,8 @@
 
 The full Blockchain Flow Map interface — the Three.js Equal Earth map, corridor panels, evidence inspector,
 playback, the lot — built as plain static files with an **in-browser live data source for seven chains**
-and no server at all. Deploy it exactly like `jakepercy.com/bitcoin-battlefield`: upload a folder
-via FTP and open it. No server, no database, no environment variables.
+and no server at all. GitHub Pages publishes it from `main` at https://flows.jakepercy.com/. No server, no
+database, no environment variables.
 
 ## Build and deploy
 
@@ -11,10 +11,9 @@ via FTP and open it. No server, no database, no environment variables.
 pnpm build:live
 ```
 
-That writes `dist-live/`. Upload the **contents** of `dist-live/` to wherever you want the page
-addressable on jakepercy.com (for example a `ledger-atlas-live` folder under `public_html`). Asset
-paths are relative, so any folder works. Rebuild and re-upload whenever the evidence registry or the
-app changes.
+That writes `dist-live/`, the same build `.github/workflows/pages.yml` publishes on every push to `main`. Asset
+paths are relative, so the folder also works copied under any path on any static host (`scripts/serve-dist.cjs`
+serves it from a nested path to check that).
 
 The folder also holds `llms.txt` and `methodology.md`, written by the build for readers that run no JavaScript, and
 `index.html` carries a canonical link, Open Graph tags, a link to `llms.txt` and a `<noscript>` summary. The prose of

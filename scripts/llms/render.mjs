@@ -38,7 +38,8 @@ import {createRequire} from 'node:module';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-export const SITE = 'https://jakepercy.com/global-blockchain-flow/';
+/** The map's home since 2026-10-21: GitHub Pages, under the custom domain set in the repository's Pages settings. */
+export const SITE = 'https://flows.jakepercy.com/';
 export const HUB = 'https://jakepercy.com/llms.txt';
 /** If the host serves .md without a content type, change this to '.txt'; nothing else needs to change. */
 export const METHOD_EXT = '.md';
@@ -478,7 +479,7 @@ function renderChecked(root, atlas) {
   }
   const lc = raw['lib/atlas/live-client.ts'];
   if (!(lc.indexOf('api.coingecko.com') < lc.indexOf('api.exchange.coinbase.com') && lc.indexOf('api.exchange.coinbase.com') < lc.indexOf('api.kraken.com'))) errors.push('lib/atlas/live-client.ts no longer tries CoinGecko, then Coinbase, then Kraken, as the prose says');
-  for (const url of [...prose.matchAll(/\]\((https:\/\/[^)\s]+)\)/g)].map((m) => m[1]).filter((u) => !u.startsWith('https://jakepercy.com/'))) {
+  for (const url of [...prose.matchAll(/\]\((https:\/\/[^)\s]+)\)/g)].map((m) => m[1]).filter((u) => !u.startsWith('https://jakepercy.com/') && !u.startsWith(SITE))) {
     if (!raw['components/atlas.tsx'].includes(url) && !readFileSync(join(root, LINKS), 'utf8').includes(url)) errors.push(`${TEMPLATE} links ${url}, which neither the page nor ${LINKS} links`);
   }
   const files = Object.fromEntries(liveSources(root).map((f) => [f, src(f)]));

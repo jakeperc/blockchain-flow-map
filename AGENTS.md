@@ -55,7 +55,8 @@ Hard rules, in short:
   publishes: never push `work/` (it holds the local notes), `outputs/` or tags (only `backend-deferred-2026-10` is published), never commit the
   bulk scan outputs `.gitignore` lists, and expect `.github/workflows/verify.yml` to run `pnpm verify`, `pnpm typecheck`
   and `pnpm build:live` on every push, and `.github/workflows/pages.yml` to publish that build to
-  https://jakeperc.github.io/blockchain-flow-map/ on every push to `main`: a push to `main` is a deploy. Never add a
+  https://flows.jakepercy.com/ (GitHub Pages, custom domain since 2026-10-21) on every push to `main`: a push to
+  `main` is a deploy. Never add a
   schedule to either workflow (the registry gate fails by the calendar).
 - The project's own links (author, site, repository, LinkedIn) live in `lib/site/links.ts`; the page, the Landmarks
   renderer and the llms build all read them from there. The link-preview image `public/og.jpg` is cartography only and
@@ -64,5 +65,6 @@ Hard rules, in short:
   and `live-atlas.jpg` are dated captures of the whole live page. Re-take them after a visible
   design change, keep the window, time and status visible, and update the README caption's date.
 
-The build output is `dist-live/` (ignored by Git). After a change that alters the built site, rebuild it with
-`corepack pnpm build:live` so it matches the current commit. The GitHub Pages copy publishes itself from `main`.
+The build output is `dist-live/` (ignored by Git), for checking a build locally (`corepack pnpm build:live`, then the
+`dist-check` preview). The public site at https://flows.jakepercy.com/ is GitHub Pages' build of `main`, so a push is
+the deploy; nothing is uploaded by hand.
