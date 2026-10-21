@@ -9,7 +9,10 @@
 export const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 export const POOLS={
  Ethereum:{chainId:1,slotSec:12,chunk:200,screenChunk:2000,pauseMs:300,probeToken:'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',urls:['https://rpc.mevblocker.io','https://eth.drpc.org','https://1rpc.io/eth']},
- Base:{chainId:8453,slotSec:2,chunk:1500,screenChunk:2000,pauseMs:200,probeToken:'0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',urls:['https://mainnet.base.org','https://base-rpc.publicnode.com']},
+ // Re-measured 2026-10-21: mainnet.base.org refused eth_getLogs (HTTP 429 -32011, and 413 over 200 blocks) and
+ // publicnode refuses blocks older than about half a day (HTTP 403 "Archive requests require a personal token").
+ // Tenderly's gateway and Sentio serve 1,000 blocks 90 days back, so they lead and the ranges are 1,000.
+ Base:{chainId:8453,slotSec:2,chunk:1000,screenChunk:1000,pauseMs:200,probeToken:'0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',urls:['https://base.gateway.tenderly.co','https://rpc.sentio.xyz/base','https://base-rpc.publicnode.com']},
  Arbitrum:{chainId:42161,slotSec:0.25,chunk:1200,screenChunk:4000,pauseMs:350,probeToken:'0xaf88d065e77c8cc2239327c5edb3a432268e5831',urls:['https://arbitrum.gateway.tenderly.co','https://arb1.arbitrum.io/rpc']},
  // Added 2026-09-25. Block times measured over 100 blocks; endpoint facts and the rejected candidates are in
  // docs/measurements/2026-09-25/new-chain-candidates.md.

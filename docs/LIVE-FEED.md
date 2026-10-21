@@ -16,7 +16,7 @@ file whenever a cap or chunk size is re-measured.
 - A separate small **unfiltered sample** is fetched every 15 minutes (`SAMPLE_MS` in `live-client.ts`) for the honest denominator (`Snapshot.sample`).
 - **Per-chain config** in `FEEDS` (`lib/atlas/feeds.ts`, pure, imported by `live-client.ts`,
   the registry verifier and the diagnostic scripts): chain id, slot time, blocks per hour,
-  chunk size, pause, and each endpoint's measured caps. Ethereum 50-block chunks, Base 1500,
+  chunk size, pause, and each endpoint's measured caps. Ethereum 50-block chunks, Base 1000 (1500 until 2026-10-21),
   Arbitrum 1200 with a 350 ms pause, Avalanche 1500, Polygon 1200, Optimism 1500. Change them only after re-measuring.
 - **Endpoint caps** (measured 2026-09-21 with `scripts/probe-endpoint-caps.mjs` in the live
   request shape, three tries per size; "topics" = addresses in one indexed position, ~68
@@ -29,9 +29,12 @@ file whenever a cap or chunk size is re-measured.
   | Ethereum | rpc.mevblocker.io | yes | 4,800+ | ~323 KB+ | 5,000+ | echoes origin |
   | Ethereum | 1rpc.io/eth | no (demoted 2026-09-21) | refused 805 3/3 (503, "apply an OnFinality API key") | – | none (rate-limited) | `*` |
   | Ethereum | eth-pokt.nodies.app | no | 403 on any large POST | – | 50 | `*` |
-  | Base | mainnet.base.org | yes | 4,800+ | ~323 KB+ | 2,000 | `*` |
-  | Base | base-rpc.publicnode.com | yes | 4,800+ | ~323 KB+ | 5,000+ | `*` |
-  | Base | 1rpc.io/base | no | 815 passed; rate-limited at 1,000 | ~55 KB | 50 | `*` |
+  | Base | base-rpc.publicnode.com | yes | 4,800+ | ~323 KB+ | 5,000+ on 2026-10-21; refuses blocks older than about half a day (HTTP 403 "Archive requests require a personal token") | `*` |
+  | Base | base.gateway.tenderly.co | yes (since 2026-10-21) | 4,800+ over 1,000 blocks | ~323 KB+ | 1,000 (1,001 passes; 1,100 gets HTTP 200 "invalid params"), the same 90 days back | `*` |
+  | Base | rpc.sentio.xyz/base | yes (since 2026-10-21) | 4,800+ over 1,000 blocks | ~323 KB+ | 1,000 (1,001: HTTP 429 "public eth_getLogs is limited to 1000 blocks"), the same 90 days back | echoes origin |
+  | Base | mainnet.base.org | no (demoted 2026-10-21) | – | – | 2,000 on 2026-09-21. On 2026-10-21 a browser's filtered read got HTTP 413 with -32614 "eth_getLogs is limited to a 200 range"; later that day every eth_getLogs, a one-block unfiltered read included, got HTTP 429 -32011 "request limit reached" while other methods answered | echoes origin |
+  | Base | 1rpc.io/base | no | 1,200 over 50 blocks (1,600 passed 2/3) on 2026-10-21; 815 passed and 1,000 rate-limited on 2026-09-21 | ~81 KB | 50 | `*` |
+  | Base | 8453.rpc.thirdweb.com | measured 2026-10-21, not listed | 4,800+ over 1,000 blocks | ~323 KB+ | 1,000 (1,500: HTTP 200 "Log response size exceeded. Maximum allowed number of requested blocks is 1000") | `*` |
   | Arbitrum | arbitrum.gateway.tenderly.co | yes | 1,000 (1,024 "exceed max topics") | ~67 KB | 5,000+ | `*` |
   | Arbitrum | arb1.arbitrum.io/rpc | yes | 997: 1,000 selectors incl. 2 contracts + event topic | ~67 KB | 5,000+ | `*` |
   | Arbitrum | arbitrum.drpc.org | no | 1,000 over 100 blocks | ~67 KB | 100 | `*` |
@@ -62,7 +65,20 @@ file whenever a cap or chunk size is re-measured.
   and returned the same logs over the live chunk. Other keyless Avalanche endpoints tried that day did not qualify:
   1rpc.io/avax/c caps at 50 blocks; avalanche.api.onfinality.io and api.zan.top refuse eth_getLogs without a key
   or under load; rpc.ankr.com/avalanche, avalanche.public-rpc.com, avalanche.blockpi.network and the nodies and
-  Blast endpoints are key-gated or retired; avax.meowrpc.com and avalanche.llamarpc.com did not answer. Celo was measured and rejected on activity
+  Blast endpoints are key-gated or retired; avax.meowrpc.com and avalanche.llamarpc.com did not answer. Base was
+  re-measured the same day, after mainnet.base.org had begun refusing filtered reads over 200 blocks; the page stayed
+  LIVE only because it rotated to publicnode, which left one endpoint serving Base's filter. Tenderly's and Sentio's
+  Base endpoints take 4,800+ addresses but 1,000 blocks, and over one 1,000-block chunk all three returned the same
+  logs (371 with the live filter, 372 with the whole registry), so Base's chunk dropped from 1,500 to 1,000 blocks
+  and the filtered feed has three endpoints. The 1,800-block hour is two chunks either way. thirdweb's endpoint
+  measured like Sentio and is not listed. The other keyless Base endpoints tried that day did not qualify:
+  base.drpc.org serves 100 blocks (200 gets HTTP 400 "ranges over 10000 blocks are not supported on free plan");
+  base-pokt.nodies.app and base-public.nodies.app cap at 50 blocks and base-mainnet.public.blastapi.io at 10;
+  base.meowrpc.com does not support eth_getLogs; base.blockpi.network, rpc.ankr.com/base, base.api.onfinality.io and
+  api.zan.top want a key or an account; base.lava.build is discontinued (HTTP 410); base.llamarpc.com and
+  endpoints.omniatech.io returned Cloudflare errors (525, 521); rpc.therpc.io/base, base.rpc.subquery.network,
+  developer-access-mainnet.base.org and rpc.notadegen.com/base did not answer. gateway.tenderly.co/public/base and
+  base.publicnode.com behave as aliases of the listed Tenderly and publicnode endpoints. Celo was measured and rejected on activity
   (docs/measurements/2026-09-25/new-chain-candidates.md). Polygon's chunk
   was 100 while drpc had to serve the filtered feed; with Tenderly, publicnode and Sentio serving it, the chunk
   is 1,200 and drpc keeps only the small calls. The Tron rows were measured before Tron went live on 2026-10-06 (docs/measurements/2026-10-06/); the two filtered
@@ -80,8 +96,11 @@ file whenever a cap or chunk size is re-measured.
   mevblocker accepts 10,000 blocks (20,000 refused), publicnode Base 5,000 (20,000 refused)
   until it started answering 403 to everything, `mainnet.base.org` 2,000, Tenderly and arb1
   1,000,000+ blocks when the result is small. Ethereum takes about 2 minutes, Arbitrum 1, Base
-  about 30 (3.9M blocks at 2,000 per request).
-- **Other endpoint facts** (verified 2026-09-19–21): `base.drpc.org` rejects the filter.
+  about 30 (3.9M blocks at 2,000 per request). Since 2026-10-21 Base's scan reads Tenderly's gateway, then Sentio,
+  1,000 blocks each, measured 90 days back with the whole registry (about 7,800 queries); publicnode refuses blocks
+  older than about half a day and mainnet.base.org refused eth_getLogs.
+- **Other endpoint facts** (verified 2026-09-19–21): `base.drpc.org` rejects the filter (on 2026-10-21 it served
+  100 blocks and refused 200).
   `arbitrum.drpc.org` returned chain id `42161` and real logs over a 40-block unfiltered
   sample, so it serves headers and samples. publicnode's Arbitrum node needs a token;
   llamarpc, blockpi, meowrpc and alchemy-demo are dead.

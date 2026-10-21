@@ -30,7 +30,7 @@ export interface FeedConfig{
  /** Unfiltered blocks per denominator sample. Sized to a few hundred logs on each chain. */
  sampleBlocks:number;
 }
-/** Date the maxTopics and maxRange figures below were last measured (Avalanche on 2026-10-21, Tron on 2026-10-06, Polygon and Optimism on 2026-10-01). */
+/** Date the maxTopics and maxRange figures below were last measured (Base and Avalanche on 2026-10-21, Tron on 2026-10-06, Polygon and Optimism on 2026-10-01). */
 export const ENDPOINTS_MEASURED='2026-10-21';
 /**
  * Endpoints, all keyless and browser-callable (CORS confirmed 2026-09-21). One hour is 300 Ethereum blocks, 1,800 Base
@@ -51,8 +51,15 @@ export const FEEDS:Partial<Record<Chain,FeedConfig>>={
   chainId:1,slotMs:12000,blocks:300,chunk:50,liveRange:6,catchupRange:50,pauseMs:0,sampleBlocks:2
  },
  Base:{
-  endpoints:[{url:'https://mainnet.base.org',largeBody:true,maxTopics:4800,maxRange:2000},{url:'https://base-rpc.publicnode.com',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://1rpc.io/base',largeBody:false}],
-  chainId:8453,slotMs:2000,blocks:1800,chunk:1500,liveRange:30,catchupRange:1500,pauseMs:0,sampleBlocks:2
+  // Re-measured 2026-10-21. mainnet.base.org served the filter over 2,000 blocks on 2026-09-21; that day it answered
+  // a wider filtered read with HTTP 413 and -32614 "eth_getLogs is limited to a 200 range", then refused every
+  // eth_getLogs from the measuring machine with HTTP 429 -32011 "request limit reached" while still answering other
+  // calls, so it serves only the small calls. base.gateway.tenderly.co and rpc.sentio.xyz/base take 4,800 addresses
+  // but only 1,000 blocks, and returned the same logs as publicnode, so the chunk is 1,000 rather than 1,500: the
+  // 1,800-block hour is two chunks either way, and the filtered feed has three endpoints instead of one. Sentio
+  // refuses a wider read with HTTP 429, which the client takes as a rate limit, so catchupRange stays at the chunk.
+  endpoints:[{url:'https://base-rpc.publicnode.com',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://base.gateway.tenderly.co',largeBody:true,maxTopics:4800,maxRange:1000},{url:'https://rpc.sentio.xyz/base',largeBody:true,maxTopics:4800,maxRange:1000},{url:'https://mainnet.base.org',largeBody:false},{url:'https://1rpc.io/base',largeBody:false}],
+  chainId:8453,slotMs:2000,blocks:1800,chunk:1000,liveRange:30,catchupRange:1000,pauseMs:0,sampleBlocks:2
  },
  Arbitrum:{
   endpoints:[{url:'https://arbitrum.gateway.tenderly.co',largeBody:true,maxTopics:1000,maxRange:5000},{url:'https://arb1.arbitrum.io/rpc',largeBody:true,maxTopics:997,maxRange:5000},{url:'https://arbitrum.drpc.org',largeBody:false},{url:'https://1rpc.io/arb',largeBody:false}],

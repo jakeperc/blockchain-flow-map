@@ -38,7 +38,12 @@ if(!(days>0)||!(endDaysAgo>=0)){console.error('usage: node scripts/registry/meas
 
 const ENDPOINTS={
  Ethereum:[{url:'https://rpc.mevblocker.io',maxSpan:10000},{url:'https://eth.drpc.org',maxSpan:100}],
- Base:[{url:'https://base-rpc.publicnode.com',maxSpan:5000},{url:'https://mainnet.base.org',maxSpan:2000}],
+ // Re-measured 2026-10-21 with the whole evidenced registry, 90 days back: Tenderly's gateway took 1,001 blocks (201
+ // and 238 logs per position in 0.2-0.4 s; 2,000 answers "invalid params") and Sentio 1,000 (1,001: HTTP 429 "public
+ // eth_getLogs is limited to 1000 blocks"). publicnode refuses blocks older than about half a day with HTTP 403,
+ // which rpc() reports without the body that ARCHIVE_LIMIT reads, and mainnet.base.org refused every eth_getLogs
+ // (HTTP 429 -32011), so neither is listed. 90 days is about 7,800 queries at 1,000 blocks.
+ Base:[{url:'https://base.gateway.tenderly.co',maxSpan:1000},{url:'https://rpc.sentio.xyz/base',maxSpan:1000}],
  Arbitrum:[{url:'https://arbitrum.gateway.tenderly.co',maxSpan:1000000},{url:'https://arb1.arbitrum.io/rpc',maxSpan:1000000}],
  // Measured 2026-10-01 with the real filter, 90 days back: Tenderly's gateway took 200,000 blocks (13,567 logs in
  // 0.7 s; 1,000,000 answers "invalid params") and returned the same logs as polygon.drpc.org at four depths.
