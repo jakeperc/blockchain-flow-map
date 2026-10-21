@@ -81,6 +81,7 @@ Each one is written up with the measured evidence and the condition under which 
 | D5 | 2026-09-25 | A 24H or 7D figure is what this browser recorded, in sealed quarter-hours, offered at 80% coverage. | Recorded history, measured coverage, real baselines; no per-transfer detail stored. |
 | D6 | 2026-09-29 | Tronscan's own public name tags are admissible for Tron, like Etherscan's. | Tron live with 27 tagged wallets; nothing derives onto Tron. |
 | D7 | 2026-10-02 | Who the Landmarks page may name: an explorer tag crediting no outside source, or a primary document identifying the transaction. | News and analytics firms never name anyone there; a person only on their own statement or a court record. |
+| D8 | 2026-10-21 | A shared recorder may seal the same quarter-hours as each browser, with the same code; one span per chain and quarter hour, the better-observed one, never summed. | Not read by the page yet: first measured, then compared with browser-recorded spans. 24H to be ready on first load. |
 
 ## How it works
 

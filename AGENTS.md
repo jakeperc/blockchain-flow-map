@@ -3,7 +3,7 @@
 Read `work/HANDOFF.md` first when it exists: the maintainer's local notes on the project's current state, workflows
 and open work. It is kept out of the repository on purpose (`work/` is ignored by Git); never commit it, and never copy
 its contents into a tracked file. The public references are `docs/METHODOLOGY.md` (the evidence model),
-`docs/DECISIONS-2026-09.md` (decisions D1 to D7), `docs/LIVE-FEED.md` (how the live feed works and the measured endpoint
+`docs/DECISIONS-2026-09.md` (decisions D1 to D8), `docs/LIVE-FEED.md` (how the live feed works and the measured endpoint
 caps), the dated reports under `docs/measurements/`, and the integrity rules in `README.md`.
 
 ChatGPT and Claude both work in this repository. After a material change, update `work/HANDOFF.md` with what changed,
@@ -23,7 +23,9 @@ Hard rules, in short:
   it; do not remove the gate or weaken a failing assertion. Since 2026-10-18 it ends with `tsc --noEmit` over
   the whole project, so a type error in the UI fails the gate too (`pnpm typecheck` runs that step alone;
   `pnpm dev:live` is the dev server). Node 22.18 or newer: the build-time renderers import `.ts` from `.mjs`.
-- The live build is static and keyless. Do not add a server, runtime env vars or API keys.
+- The page is static and keyless: no runtime env vars and no API keys, and it must behave exactly as before when the
+  history recorder is unreachable or its address in the page is empty. The only server is that recorder (decision D8,
+  in `worker/`): it reads only the public endpoints the page reads and publishes only sealed spans. Add no other.
 - The observed-onchain figure is a declared sample. Never scale it up.
 - Lint has 34 pre-existing errors and 6 warnings (`pnpm lint`, recounted 2026-10-18 under the typescript-eslint and
   react-hooks presets). Do not add to that count.

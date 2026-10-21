@@ -2,7 +2,8 @@
 
 D1 to D3 came out of the 2026-09-21 "more flows and countries" run. **D4 and D5 were decided on 2026-09-25**,
 when two new chains and the longer time frames were added; they are recorded at the end of this file, followed by
-D6 (Tronscan tags, 2026-09-29) and **D7 (who the Landmarks page may name, 2026-10-02)**.
+D6 (Tronscan tags, 2026-09-29), **D7 (who the Landmarks page may name, 2026-10-02)** and **D8 (a shared history
+recorder, 2026-10-21)**.
 
 | | Answer | What changed |
 |---|---|---|
@@ -386,7 +387,8 @@ kept in IndexedDB in that browser alone. Consequences, all deliberate:
   to a 24H figure would invite reading it as that window's denominator.
 
 **Reopen if** a backend arrives (the sealed spans then become a cache rather than the only history), or if Jake
-wants the unlock bar moved after seeing how rarely 7D unlocks in practice.
+wants the unlock bar moved after seeing how rarely 7D unlocks in practice. Reopened by D8 (2026-10-21): a shared
+recorder now records spans as well as each browser.
 
 ## D6. Tronscan's own name tags are admissible evidence for Tron (2026-09-29)
 
@@ -466,3 +468,77 @@ complete. The gate fails a story that leaves a member out.
 **Reopen if** an explorer starts crediting tags inconsistently, Jake wants analytics attributions admitted with a
 "reported" label, or he wants a complete set whose every member pays one address (the Silk Road case) to identify
 that address.
+
+## D8. 24H and 7D from a shared recorder as well as this browser (2026-10-21)
+
+**Decision (Jake, 2026-10-21): approved, and 24H should be ready immediately (point 10).** It reopens D5, whose own
+reopen condition was "if a backend arrives". Nothing reads the recorder until it has been measured and compared with
+browser-recorded spans; until then the page behaves exactly as under D5.
+
+**Answer: a small recorder on Cloudflare seals the same 15-minute spans with the same code, around the
+clock, and publishes them as public read-only files. A 24H or 7D window is built from spans recorded by that server,
+by this browser, or both. It is offered only once 80% of it has been observed on its least-covered chain, as now.**
+
+Why: under D5 a window needs the visitor's own tab to have watched at least 80% of it, so a first-time visitor never
+sees 24H or 7D. A recorder that never sleeps makes them available on first load. For the compliance and analyst
+readers this map is for, one shared record that anyone can download and re-derive is also a stronger claim than one
+private record per browser.
+
+What it means, point by point:
+
+1. **A recorder exists; the page stays static and keyless.** The page still reads the chains itself, from the same
+   keyless public endpoints, with no API key and no runtime configuration. The recorder is a separate Cloudflare
+   Worker (`worker/`) that reads the same endpoints. The page only downloads its files and never sends it anything,
+   its own recorded spans included. If the recorder is unreachable, or its address in the page is empty, the page
+   behaves exactly as it does today and says so.
+2. **What a 24H or 7D figure means.** The window is assembled from spans recorded by the server, by this browser, or
+   both. The bar is unchanged: 80% observed (`UNLOCK_SHARE`), and the least-covered chain decides.
+3. **Disclosure, and nothing scaled.** The coverage panel says how much of the window was observed and which source
+   recorded it. Nothing is estimated, scaled up or filled in: a quarter hour that nobody observed stays a gap.
+4. **One span per chain and quarter hour.** When the server and this browser both hold a span for the same (chain,
+   bucket), the one that observed more of it (`observedMs`) is used and the other is ignored. The server wins a tie.
+   Spans are never added together or averaged, so no transfer can be counted twice.
+5. **The same context as a browser.** Deposit-address inference depends on what else was seen nearby. Each server
+   span is sealed with that chain's transfers from the 90 minutes before its seal point, which is what a browser holds
+   in memory when it seals. A server span and a browser span of the same quarter hour are therefore computed from
+   comparable inputs.
+6. **Raw data is temporary and never published.** The recorder keeps decoded transfers and price samples for at most
+   about 2.5 hours, only to finish inference and pricing, and then deletes them. It publishes only sealed spans, and
+   it keeps nothing about visitors. Cloudflare, as the host, sees the network address of a browser that downloads a
+   file, as any web host does.
+7. **The registry version becomes a content hash.** Today a span records its registry as the wallet count and the
+   dormancy date, which two different registries can share. It becomes a hash of the registry's content, so the
+   server and the page agree exactly on whether two spans used the same registry.
+8. **A different registry is disclosed, not rejected** (the D5 rule). A span sealed under another registry is kept,
+   and the window is marked as mixed. The page on jakepercy.com is uploaded by hand and can be older than the
+   recorder, so the disclosure says "a different version of the registry", not "an earlier version". Only a change to
+   the stored format (`SCHEMA`) makes the page reject spans.
+9. **Server spans are kept 8 days**: a week plus a margin. 24H baselines need five days of history and work after
+   five days; 7D baselines need 35 days and stay unavailable.
+10. **Backfill: yes for 24H (Jake: "24h should be ready immediately").** When it first starts, the recorder reads the
+    previous 24 hours, so 24H is ready at once rather than about 20 hours after the first recording. Backfilled spans
+    are read and sealed by the same code under the same rules, their coverage is measured the same way, and the
+    disclosure marks them as backfilled. **7D is measured before it is promised.** Every transfer needs a 5-minute
+    price within ten minutes of its block, and there is never a $1 fallback. The page's three price sources give that
+    only for recent hours (CoinGecko about a day, Kraken about 60 hours, and Coinbase has no USDC market), but on
+    2026-10-21 Coinbase served USDT and Bitstamp served USDT and USDC as 5-minute candles a week back, without a key.
+    What is not yet known is whether every chain's public endpoints serve a week of filtered history, and what a
+    week of reads costs them; the recorder's 24-hour test measures both. If both hold, the backfill covers 7D too,
+    with Bitstamp added as a disclosed price source. Otherwise 7D is ready after about six days of recording.
+11. **A public, read-only API.** The day files and their manifest are served at `/v1/`, GET only and readable from
+    any site, because the data is public. Anyone can download the spans the page shows and check them.
+12. **The wording changes with it.** The README's "There is no server, no database and no API key" is rewritten, as
+    are the page message, `llms.txt` ("There is no API") and the methodology, each quote with its source. Proposed
+    README sentence: "The page needs no server and no API key: your browser reads the chains itself. A small
+    recorder on Cloudflare reads the same public endpoints around the clock and publishes sealed quarter-hour
+    summaries as public, read-only files, so the 24H and 7D windows are ready when the page opens." `AGENTS.md`'s
+    "static and keyless, no server" rule becomes: the page stays static and keyless and must behave as before when
+    the recorder is unreachable; the one server is the history recorder in `worker/`, and no other is added.
+
+What does not change: 5M and 1H still come only from the transfers the visitor's browser holds; spans keep no
+per-transfer detail; the unfiltered sample is not sealed; this browser's own recorded history is kept and used as
+before.
+
+**Reopen if** the recorder costs more than its budget, Cloudflare changes the Workers Paid or R2 terms it relies on, a
+measured comparison of server and browser spans for the same quarter hours differs by more than point 5 explains, or
+Jake wants each source's figures shown separately instead of merged.
