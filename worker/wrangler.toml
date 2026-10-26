@@ -1,0 +1,33 @@
+# The history recorder (decision D8, docs/DECISIONS-2026-09.md). No account ID and no secrets here: wrangler reads the
+# account from `wrangler login` locally and from CLOUDFLARE_ACCOUNT_ID in CI. Run wrangler from the repository root with
+# `--config worker/wrangler.toml`; worker/README.md has the commands.
+name = "bfm-recorder"
+main = "index.ts"
+compatibility_date = "2026-10-01"
+# The public, read-only API (D8 point 11) is served at this Worker's workers.dev address.
+workers_dev = true
+preview_urls = false
+
+[triggers]
+# Every minute: prices, the live reads, a paced slice of the backfill, the quarter hours now due, then publishing.
+crons = ["* * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bfm-recorder"
+# Set to the id `wrangler d1 create bfm-recorder` prints. Local runs (`wrangler dev`) do not need the real one.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+# The day files and the manifest. R2 is strongly consistent, so the manifest never names a file the bucket lacks.
+binding = "HISTORY"
+bucket_name = "bfm-history"
+
+[observability]
+enabled = true
+
+[limits]
+# Cloudflare has no spending cap. A sub-hourly cron may use at most 30 s of CPU, and a run stops starting new work after
+# RUN_BUDGET_MS of wall time (index.ts), so this is a ceiling for a bug, not a budget.
+cpu_ms = 30000

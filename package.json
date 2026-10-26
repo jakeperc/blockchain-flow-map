@@ -26,6 +26,7 @@
     "topojson-client": "^3.1.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "5.20261018.1",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "4.2.1",
     "@types/d3-geo": "^3.1.1",

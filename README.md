@@ -80,7 +80,7 @@ Each one is written up with the measured evidence and the condition under which 
 | D5 | 2026-09-25 | A 24H or 7D figure is what this browser recorded, in sealed quarter-hours, offered at 80% coverage. | Recorded history, measured coverage, real baselines; no per-transfer detail stored. |
 | D6 | 2026-09-29 | Tronscan's own public name tags are admissible for Tron, like Etherscan's. | Tron live with 27 tagged wallets; nothing derives onto Tron. |
 | D7 | 2026-10-02 | Who the Landmarks page may name: an explorer tag crediting no outside source, or a primary document identifying the transaction. | News and analytics firms never name anyone there; a person only on their own statement or a court record. |
-| D8 | 2026-10-21 | A shared recorder may seal the same quarter-hours as each browser, with the same code; one span per chain and quarter hour, the better-observed one, never summed. | Not read by the page yet: first measured, then compared with browser-recorded spans. 24H to be ready on first load. |
+| D8 | 2026-10-21 | A shared recorder may seal the same quarter-hours as each browser, with the same code; one span per chain and quarter hour, the better-observed one, never summed. | Built in [`worker/`](worker/README.md), not yet deployed or read by the page: first measured, then compared with browser-recorded spans. It backfills a week; transfers older than the page's price sources reach are priced from Bitstamp (amended 2026-10-26). |
 
 ## How it works
 
@@ -183,7 +183,9 @@ jurisdictions; Solana not connected (it needs a keyed indexer). The repository w
 the gate type-checks the whole project, the page's first minute reads honestly, both pages name and link their
 author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world. Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build. The screenshots above are dated captures of the live page, and the projection caption no longer sits under the map legend on desktop. On 2026-10-20 the health badge, which a 375 px phone clipped at the right edge of the top bar, leaves the top bar on phones (the time strip and status strip still show it), and the headline figures were re-measured at 375 px: three columns, nothing overlapping. On 2026-10-21 sealing moved into `lib/atlas/recorder-core.ts`, checked on recorded real Ethereum and Tron logs; what the page shows is unchanged, except that a quarter hour sealed in the moment between a poll and the page's re-classification of it is no longer stored with that poll's transfers unattributed. Later that day Avalanche, which had read PARTIAL since `api.avax.network` cut its filtered reads from 5,000 blocks to 100, reads LIVE again: Tenderly's Avalanche gateway joined publicnode on the filtered feed (re-measured in `docs/LIVE-FEED.md`), and the page now moves to the next endpoint when one refuses a request with a JSON-RPC error, so the next such cut costs one endpoint rather than a chain. Base was re-measured the same day: `mainnet.base.org` had cut its filtered reads from 2,000 blocks to 200 and then refused them, which had left publicnode as the only endpoint serving Base's filter. Tenderly's and Sentio's Base endpoints now serve it too, with Base's chunk lowered from 1,500 blocks to the 1,000 they take.
 Since 2026-10-21 the map lives at flows.jakepercy.com, published by GitHub Pages from `main`; it is no longer
-uploaded by hand to a folder on jakepercy.com. The project was formerly Ledger Atlas;
+uploaded by hand to a folder on jakepercy.com. On 2026-10-26 the history recorder of decision D8 was built in
+`worker/`, after a test run on Cloudflare. It is not deployed yet, and the page does not read it. It backfills a week
+on its first start and publishes each day's spans in a compact, lossless format, about 2.6 MB a week gzipped. The project was formerly Ledger Atlas;
 some file names and the browser's history store still carry that name.
 
 ## Repository map
@@ -193,6 +195,7 @@ some file names and the browser's history store still carry that name.
 | `live-lite/` | The two pages' entries, styles and the `llms.txt` prose template |
 | `components/atlas.tsx`, `components/map/` | The UI and the globe renderer |
 | `lib/atlas/` | Model, accounting, live client, sealed history, registry, geography |
+| `worker/` | The history recorder (decision D8): a Cloudflare Worker that seals and publishes 24H and 7D history |
 | `scripts/registry/` | The evidence pipeline: source list, tag reader, code probe, dormancy scan, generator |
 | `scripts/verify-*.{cjs,mjs}`, `scripts/verify-all.mjs` | The build gate |
 | `scripts/fixtures/` | Real chain logs, headers and prices recorded for the verifiers to replay (`scripts/record-recorder-fixture.mjs`) |

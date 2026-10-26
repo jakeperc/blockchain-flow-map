@@ -239,6 +239,66 @@ for(const d of BOTH){
  assert.equal(rc.validateBundle({...base,spans:[{...s0,chain:'Tron',coverage:[{chain:'Tron',observedMs:1}]}]},['Ethereum']).ok,false,'only the chains the page reads are accepted');
 }
 
+/* ---------- Pricing from the first provider holding a sample near the block ---------- */
+{
+ const r={...ETH.records[0],usdValue:null,usdPrice:null,priceTime:null,priceSource:null},t=r.blockTime;
+ const stale=[{at:t-rc.PRICE_TOLERANCE_MS-1,usd:.99,source:'A'}],fresh=[{at:t+60000,usd:1.001,source:'B'}],exact=[{at:t,usd:1.002,source:'C'}];
+ assert.equal(rc.priceFromFirst(r,[stale,fresh,exact]).priceSource,'B','a provider whose samples are stale never stops a later one from pricing');
+ assert.equal(rc.priceFromFirst(r,[exact,fresh]).priceSource,'C','providers are tried in order');
+ const p=rc.priceFromFirst(r,[fresh]);
+ assert.deepEqual([p.usdValue,p.usdPrice,p.priceTime],[Number(r.amount)*1.001,1.001,t+60000],'the same arithmetic as decoding');
+ assert.equal(rc.priceFromFirst(r,[stale,[]]),r,'no sample within tolerance: unpriced, never $1');
+ assert.equal(rc.priceFromFirst(ETH.records[0],[fresh]),ETH.records[0],'a priced record is left as it is');
+ const unpriced=ETH.records.map(x=>({...x,usdValue:null,usdPrice:null,priceTime:null,priceSource:null}));
+ assert.deepEqual(seal(ETH,unpriced.map(x=>rc.priceFromFirst(x,[[],prices[x.asset]])),{prices:{}}),seal(ETH,ETH.records),'records priced from a provider list seal as records priced from one series');
+}
+
+/* ---------- The day file on the wire: lossless ---------- */
+{
+ const spans=[...seal(ETH,ETH.records),...seal(TRON,TRON.records)].map(toStored);
+ const dayOf=s=>new Date(s.bucket).toISOString().slice(0,10);
+ const same=(wire,expect,what)=>{
+  const back=rc.decodeDay(json(wire),CHAINS);
+  assert.ok(back.ok,`${what}: the encoded day decodes (${back.reason??''})`);
+  assert.equal(JSON.stringify(back.bundle.spans),JSON.stringify(expect),`${what}: decoding gives back the same JSON text`);
+ };
+ for(const day of new Set(spans.map(dayOf))){
+  const own=spans.filter(s=>dayOf(s)===day),wire=rc.encodeDay(day,own);
+  assert.ok(wire.spans.every(Array.isArray),'every recorded span packs as a tuple');
+  assert.ok(JSON.stringify(wire).length<JSON.stringify({schema:STORED_SCHEMA,day,spans:own}).length,'the encoding is smaller');
+  same(wire,own,`recorded spans of ${day}`);
+ }
+ // A span holding what the fixture may not: a corridor, a jurisdiction and its entity. Each fallback is exercised.
+ const s0=spans.find(s=>s.totals.adjusted>0)??spans[0],day=dayOf(s0),e={entity:'Example',jurisdiction:'US',unplacedIn:2.5,unplacedOut:0,transactionCount:1};
+ const rich={...s0,
+  corridors:[...s0.corridors,{id:'US-SG',origin:'US',destination:'SG',usdValue:5.25,transactionCount:2,assets:{USDT:5.25},chains:{[s0.chain]:5.25},confidence:{HIGH:5.25},topEntities:[{entity:'Example',usdValue:5.25}],lastActivity:s0.bucket+1}],
+  countries:[...s0.countries,{code:'ZZ',inbound:1,outbound:2,knownEndpointAdjusted:6,coverage:.5,unplacedIn:2.5,unplacedOut:0,entities:[e]}],
+  unmapped:{...s0.unmapped,entities:[...s0.unmapped.entities,e]}};
+ assert.ok(Array.isArray(rc.encodeDay(day,[rich]).spans[0]),'a span with corridors and jurisdictions packs as a tuple');
+ const variants={
+  'with corridors and jurisdictions':rich,
+  'a corridor on two chains':{...rich,corridors:rich.corridors.map(c=>({...c,chains:{[s0.chain]:c.usdValue-1,Tron:1}}))},
+  'a corridor in two assets':{...rich,corridors:rich.corridors.map(c=>({...c,assets:{USDC:1,USDT:c.usdValue-1},confidence:{HIGH:1,VERIFIED:c.usdValue-1}}))},
+  'unmapped entities in another order':{...rich,unmapped:{...rich.unmapped,entities:[...rich.unmapped.entities].reverse()}},
+  'an unmapped entity no jurisdiction lists':{...rich,unmapped:{...rich.unmapped,entities:[...rich.unmapped.entities,{...e,entity:'Elsewhere'}]}},
+  'a stored ratio the formula does not give':{...rich,totals:{...rich.totals,coverage:rich.totals.coverage===null?.5:rich.totals.coverage/2}}
+ };
+ for(const [what,v] of Object.entries(variants))same(rc.encodeDay(day,[v]),[v],what);
+ assert.ok(!Array.isArray(rc.encodeDay(day,[variants['a stored ratio the formula does not give']]).spans[0]),'a span that does not fit is carried whole, never altered');
+ const wire=json(rc.encodeDay(day,[rich])),t0=wire.spans[0];
+ const refused={
+  'another day-file format':{...wire,format:'bfm-day/0'},
+  'another stored-span format':{...wire,schema:STORED_SCHEMA+1},
+  'no span list':{...wire,spans:null},
+  'a truncated tuple':{...wire,spans:[t0.slice(0,8)]},
+  'a span that is neither':{...wire,spans:['span']},
+  'an unaligned bucket':{...wire,spans:[[t0[0]+1,...t0.slice(1)]]},
+  'a corridor tuple of the wrong shape':{...wire,spans:[[...t0.slice(0,7),[[1]],...t0.slice(8)]]},
+  'not an object':null
+ };
+ for(const [what,x] of Object.entries(refused))assert.equal(rc.decodeDay(x,CHAINS).ok,false,`a day file with ${what} is refused`);
+}
+
 /* ---------- registryVersion: a content hash ---------- */
 {
  const v=ke.registryVersion();
@@ -260,4 +320,4 @@ for(const d of BOTH){
 }
 
 const ms=(()=>{const t=Date.now();seal(ETH,ETH.records);return Date.now()-t;})();
-console.log(`PASS: recorder core on recorded real data (${ETH.records.length.toLocaleString()} Ethereum and ${TRON.records.length.toLocaleString()} Tron transfers, ${globalInferred.size} inferred deposit addresses; seals independent of re-classification, the 90-minute context at both ends, pricing at seal, per-chain inference, row round trip, one span per key, bundle validation, registry content hash; Ethereum seals in ${ms} ms)`);
+console.log(`PASS: recorder core on recorded real data (${ETH.records.length.toLocaleString()} Ethereum and ${TRON.records.length.toLocaleString()} Tron transfers, ${globalInferred.size} inferred deposit addresses; seals independent of re-classification, the 90-minute context at both ends, pricing at seal, per-chain inference, row round trip, one span per key, bundle validation, pricing from a provider list, the lossless day-file encoding, registry content hash; Ethereum seals in ${ms} ms)`);

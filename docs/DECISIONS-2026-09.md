@@ -525,6 +525,27 @@ What it means, point by point:
     What is not yet known is whether every chain's public endpoints serve a week of filtered history, and what a
     week of reads costs them; the recorder's 24-hour test measures both. If both hold, the backfill covers 7D too,
     with Bitstamp added as a disclosed price source. Otherwise 7D is ready after about six days of recording.
+    **Amended 2026-10-26 (Jake): the backfill covers 7D, and Bitstamp prices what the page's sources cannot.** The
+    recorder's test ran on Cloudflare from 2026-10-21 20:00 to 2026-10-25 00:00 UTC. It found the following:
+    - **Reading:** every chain kept a working filter endpoint, and each quarter hour was 99.8 to 100% observed.
+    - **Week-old history:** one week-old hour per chain, read 77 times. It was complete every time on Avalanche, Base
+      and Tron, 71 to 72 times on Ethereum and Polygon, 48 on Optimism and 40 on Arbitrum. Every failed chunk was a
+      rate limit from reading the hour in one burst, so a paced backfill with retries completes.
+    - **Week-old prices:** Bitstamp served week-old 5-minute USDT and USDC candles 77 times of 77. Coinbase served
+      USDT 27 times.
+
+    So, for each transfer the backfill reads:
+    - It is priced from the page's own sources first (CoinGecko, Coinbase, Kraken, in that order): the first of them
+      holding a sample within ten minutes of its block.
+    - Only when none does is it priced from **Bitstamp's public 5-minute OHLC**, under the same ten-minute rule.
+    - Bitstamp prices backfilled transfers only, never one the recorder read live, so a live quarter hour is priced
+      exactly as a browser would price it.
+    - The record names the source that priced it, as every record does.
+    - A transfer that no source can price within ten minutes stays unpriced and is counted as such.
+
+    The backfill reads backwards from the moment the recorder starts, so the most recent day is sealed first and 24H
+    is ready within about an hour. 7D follows within hours, once a week has been read. A quarter hour that could not
+    be read stays a gap, as in point 3.
 11. **A public, read-only API.** The day files and their manifest are served at `/v1/`, GET only and readable from
     any site, because the data is public. Anyone can download the spans the page shows and check them.
 12. **The wording changes with it.** The README's "There is no server, no database and no API key" is rewritten, as

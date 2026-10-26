@@ -3,7 +3,8 @@
  * (live-client.ts) seals through here, and anything else that ever records spans must seal through the same
  * functions, so a span means the same thing whoever recorded it. Accounting stays in rollup.ts and engine.ts; this
  * file only decides WHICH records a span is sealed from and how they are classified at that moment. It adds no
- * arithmetic of its own. Rows, pickSpans and the bundle validator are the pieces such a second recorder needs.
+ * arithmetic of its own. Rows, pricing from a provider list, pickSpans, the day-file encoding and the bundle validator
+ * are the pieces such a second recorder needs; worker/index.ts is that recorder (decision D8).
  *
  * WHY SEALING CLASSIFIES ITS OWN COPY. Records arrive unclassified (decodeTransferLog) and the browser re-classifies
  * the whole buffer in a coalesced pass a moment later. Before 2026-10-21 sealing read the records as the buffer held
@@ -57,13 +58,25 @@ export const inferOptions=(registry:RecorderRegistry):InferOptions=>({
 });
 
 export type PriceSeries=Partial<Record<Asset,readonly Sample[]>>;
-/** A copy of an unpriced record priced from `prices`, or the record itself. Same arithmetic as decoding and re-pricing. */
+/** A copy of `r` priced at sample `p`. Same arithmetic as decoding and re-pricing; classifyRec() rebuilds `tx` from these. */
+const withPrice=(r:Rec,p:Sample):Rec=>({...r,usdValue:Number(r.amount)*p.usd,usdPrice:p.usd,priceTime:p.at,priceSource:p.source});
+/** A copy of an unpriced record priced from `prices`, or the record itself. */
 function priced(r:Rec,prices:PriceSeries):Rec{
  if(r.usdValue!==null)return r;
  const p=priceAt(prices[r.asset]??[],r.blockTime,PRICE_TOLERANCE_MS);
- if(!p)return r;
- const usdValue=Number(r.amount)*p.usd;
- return {...r,usdValue,usdPrice:p.usd,priceTime:p.at,priceSource:p.source}; // classifyRec() rebuilds `tx` from these
+ return p?withPrice(r,p):r;
+}
+/**
+ * A copy of an unpriced record priced from the first of `sources`, in order, that holds a sample within
+ * PRICE_TOLERANCE_MS of its block time, or the record itself. A recorder keeps each provider's samples as its own
+ * series and passes them in the page's order, so a provider whose stored samples have gone stale never stops a later
+ * one from pricing. Choosing one provider's whole series instead left 55% of transfers unpriced in the recorder's test
+ * on Cloudflare, where CoinGecko answered about one call in ten (decision D8, point 10).
+ */
+export function priceFromFirst(r:Rec,sources:readonly (readonly Sample[])[]):Rec{
+ if(r.usdValue!==null)return r;
+ for(const series of sources){const p=priceAt(series,r.blockTime,PRICE_TOLERANCE_MS);if(p)return withPrice(r,p);}
+ return r;
 }
 
 export interface SealInput {
@@ -220,4 +233,81 @@ export function validateBundle(x:unknown,chains:readonly Chain[]):BundleCheck{
   seen.add(key);
  }
  return {ok:true,bundle:x as unknown as SpanBundle};
+}
+
+/* ---------- The day file on the wire: compact, and lossless ---------- */
+
+/**
+ * The format of a published day file. A fully priced week of spans is 3.85 MB gzipped as StoredRollup JSON, over the
+ * 3 MB the page may download after first paint; this encoding brings it to 2.59 MB (measured on the recorder's test
+ * spans, 2026-10-26). It rounds nothing. It drops only what the page recomputes exactly:
+ * - `end`, `value` and the coverage entry's chain;
+ * - both coverage ratios (mergeRollups recomputes them anyway);
+ * - a corridor's `id` and its `chains` map, which in a per-chain span is always this chain at the corridor's value;
+ * - `assets` and `confidence` maps holding one key at the corridor's value;
+ * - the unmapped entities, which were the jurisdictions' entity rows again in every one of 2,117 test spans.
+ * Records become positional tuples. A span that does not fit (none so far) is carried whole, so decodeDay(encodeDay(x))
+ * gives back the same JSON text whatever it holds; verify-recorder.cjs checks it.
+ */
+export const DAY_FORMAT='bfm-day/1';
+export interface WireDay {format:string;schema:number;day:string;spans:unknown[]}
+const TOTAL_KEYS=[...TOTAL_AMOUNTS,'unpricedCount','transactionCount'] as const;
+/** A map whose one value is `whole` is written as its key alone. */
+const packMap=(m:Record<string,number>,whole:number)=>{const k=Object.keys(m);return k.length===1&&m[k[0]]===whole?k[0]:m;};
+const unpackMap=(x:unknown,whole:number):Record<string,number>=>typeof x==='string'?{[x]:whole}:x as Record<string,number>;
+function packSpan(s:StoredRollup):unknown[]{
+ const ents=s.countries.flatMap(c=>c.entities).map(e=>JSON.stringify(e));
+ const um=s.unmapped.entities.map(e=>ents.indexOf(JSON.stringify(e)));
+ return [
+  s.bucket,s.chain,s.sealedAt,s.registry,s.coverage[0]?.observedMs,TOTAL_KEYS.map(k=>s.totals[k]),s.classifications,
+  s.corridors.map(c=>{
+   const own=JSON.stringify(c.chains)===JSON.stringify({[s.chain]:c.usdValue});
+   return [c.origin,c.destination,c.usdValue,c.transactionCount,packMap(c.assets,c.usdValue),packMap(c.confidence,c.usdValue),
+    c.topEntities.map(e=>[e.entity,e.usdValue]),c.lastActivity,...(own?[]:[c.chains])];
+  }),
+  s.countries.map(c=>[c.code,c.inbound,c.outbound,c.knownEndpointAdjusted,c.unplacedIn,c.unplacedOut,
+   c.entities.map(e=>[e.entity,e.jurisdiction,e.unplacedIn,e.unplacedOut,e.transactionCount])]),
+  [s.unmapped.count,s.unmapped.usdValue,s.unmapped.reasons,um.length===ents.length&&um.every((v,i)=>v===i)?1:um.includes(-1)?s.unmapped.entities:um]
+ ];
+}
+/** The span a tuple encodes, keys in toStored()'s order. Throws on a tuple of the wrong shape. */
+function unpackSpan(w:unknown[]):StoredRollup{
+ const [bucket,chain,sealedAt,registry,observedMs,tot,classifications,corridors,countries,unmapped]=w as [number,Chain,number,string,number,number[],Record<string,number>,unknown[][],unknown[][],[number,number,Record<string,number>,unknown]];
+ const totals=Object.fromEntries(TOTAL_KEYS.map((k,i)=>[k,tot[i]])) as unknown as StoredRollup['totals'];
+ totals.coverage=totals.adjusted?totals.attributed/totals.adjusted:null;
+ const cs=countries.map(([code,inbound,outbound,knownEndpointAdjusted,unplacedIn,unplacedOut,es])=>({code,inbound,outbound,knownEndpointAdjusted,
+  coverage:knownEndpointAdjusted?((inbound as number)+(outbound as number))/(knownEndpointAdjusted as number):null,unplacedIn,unplacedOut,
+  entities:(es as unknown[][]).map(([entity,jurisdiction,unplacedIn,unplacedOut,transactionCount])=>({entity,jurisdiction,unplacedIn,unplacedOut,transactionCount}))}));
+ const ents=cs.flatMap(c=>c.entities);
+ const [count,usdValue,reasons,um]=unmapped;
+ return {
+  bucket,end:bucket+BUCKET_MS,chain,sealedAt,registry,coverage:[{chain,observedMs}],totals,classifications,
+  corridors:corridors.map(([origin,destination,value,transactionCount,assets,confidence,tops,lastActivity,chains])=>{
+   const v=value as number;
+   return {id:`${origin}-${destination}`,origin,destination,usdValue:v,transactionCount,assets:unpackMap(assets,v),chains:(chains??{[chain]:v}) as Record<string,number>,
+    confidence:unpackMap(confidence,v),topEntities:(tops as [string,number][]).map(([entity,usdValue])=>({entity,usdValue})),lastActivity};
+  }),
+  countries:cs,value:totals.attributed,
+  unmapped:{count,usdValue,reasons,entities:um===1?ents.map(e=>({...e})):(um as unknown[]).map(e=>typeof e==='number'?{...ents[e]}:e)}
+ } as StoredRollup;
+}
+/** One UTC day of spans as a recorder publishes it. A span whose tuple would not decode to the same JSON is carried whole. */
+export function encodeDay(day:string,spans:readonly StoredRollup[]):WireDay{
+ return {format:DAY_FORMAT,schema:STORED_SCHEMA,day,spans:spans.map(s=>{
+  const w=packSpan(s);
+  return JSON.stringify(unpackSpan(JSON.parse(JSON.stringify(w))))===JSON.stringify(s)?w:s;
+ })};
+}
+/** A published day file, decoded and then checked by validateBundle(): all or nothing, as there. */
+export function decodeDay(x:unknown,chains:readonly Chain[]):BundleCheck{
+ if(!isObj(x))return {ok:false,reason:'not an object'};
+ if(x.format!==DAY_FORMAT)return {ok:false,reason:`day-file format ${String(x.format)}, this page reads ${DAY_FORMAT}`};
+ if(!Array.isArray(x.spans))return {ok:false,reason:'no span list'};
+ const spans:unknown[]=[];
+ for(const [i,w] of x.spans.entries()){
+  if(isObj(w)){spans.push(w);continue;}
+  if(!Array.isArray(w))return {ok:false,reason:`span ${i}: neither a tuple nor a span`};
+  try{spans.push(unpackSpan(w));}catch{return {ok:false,reason:`span ${i}: malformed tuple`};}
+ }
+ return validateBundle({schema:x.schema,day:x.day,spans},chains);
 }

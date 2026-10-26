@@ -38,6 +38,9 @@ yarn-error.log*
 next-env.d.ts
 /dist/
 /.wrangler/
+# The history recorder's local state (wrangler dev and local D1/R2), and any local secrets file.
+/worker/.wrangler/
+/worker/.dev.vars
 # Checkout-local execution profile and tool state; never publish them.
 /.sites-runtime/
 /.agents/

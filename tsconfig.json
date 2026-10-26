@@ -33,6 +33,7 @@
   ],
   "exclude": [
     "node_modules",
-    "dist-live"
+    "dist-live",
+    "worker"
   ]
 }

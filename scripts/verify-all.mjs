@@ -32,6 +32,8 @@ try{
  }
  // The whole project, UI included: a type error in atlas.tsx or live-client.ts must not reach a build either.
  run(process.execPath,['node_modules/typescript/bin/tsc','--noEmit','-p','tsconfig.json']);
+ // The history recorder (worker/, decision D8) runs on Cloudflare's runtime, so it is checked against its types alone.
+ run(process.execPath,['node_modules/typescript/bin/tsc','--noEmit','-p','worker/tsconfig.json']);
  console.log('All integrity checks passed.');
 }finally{
  rmSync(out,{recursive:true,force:true});
