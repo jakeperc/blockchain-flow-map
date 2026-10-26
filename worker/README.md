@@ -12,9 +12,12 @@ endpoints the page reads (`lib/atlas/feeds.ts`) and seals the same 15-minute spa
 2. **Live reading.** It reads each chain's new blocks with the page's filtered `eth_getLogs` query.
 3. **Backfill.** It reads up to four chunks per chain backwards in time, from the moment the recorder first started,
    until a week plus 90 minutes has been read. The most recent day is therefore sealed first: 24H is complete
-   within about an hour, and 7D within hours (Arbitrum is the slowest). A chain's backfill pauses while more than 24
-   of its quarter hours are waiting to be sealed.
+   within about an hour, and 7D within hours (Arbitrum is the slowest). Backfill reads stop 20 seconds into a run,
+   and a chain's backfill pauses while more than 8 of its quarter hours are waiting to be sealed.
 4. **Sealing.** It seals every quarter hour whose 90 minutes of context have been read, newest first.
+   - A chain's quarter hours are sealed up to eight at a time from one load of its rows. Each is still sealed at its
+     own seal point, from its own 90 minutes. Loading each context separately reread the same rows over D1's network
+     and fell behind on Cloudflare.
    - Each transfer is priced from the first of the page's providers holding a sample within ten minutes of its block.
    - A backfilled transfer that none of them can price is priced from Bitstamp.
    - A transfer nothing can price stays unpriced.

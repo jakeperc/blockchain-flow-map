@@ -39,7 +39,9 @@ const LEASE_MS=5*60000;
 const ROWS_PER_CHUNK=3000;                         // about 0.8 MB of JSON, well under D1's 2 MB row limit
 const LIVE_READS=3;                                // live reads per chain per run, when behind
 const BACK_READS=4;                                // backfill chunks per chain per run: paced, because bursts draw 429s
-const BACKLOG_MAX=24;                              // a chain's backfill waits while this many of its quarter hours wait to be sealed
+const BACKLOG_MAX=8;                               // a chain's backfill waits while this many of its quarter hours wait to be sealed
+const SEAL_BATCH=8;                                // quarter hours of one chain sealed from one load of its rows
+const BACK_BUDGET_MS=20000;                        // backfill reads stop this far into a run, leaving the rest for sealing and publishing
 const RESEAL_MS=3600000;                           // a span left with unpriced transfers is retried for an hour
 const DAYS_PER_RUN=3;
 const PRICE_EVERY_MS=5*60000;
@@ -232,24 +234,32 @@ async function seriesFor(env:Env,from:number,to:number):Promise<Record<string,Re
  for(const r of results)((out[r.asset]??={})[r.source]??=[]).push({at:r.at,usd:r.usd,source:r.source});
  return out;
 }
-async function seal(env:Env,c:Cursor,bucket:number,sourceCount:Record<string,number>):Promise<StoredRollup>{
- const point=bucket+BUCKET_MS+SEAL_DELAY_MS,from=point-CONTEXT_MS;
- const {results:chunks}=await env.DB.prepare('SELECT rows FROM chunks WHERE chain=? AND max_time>=? AND min_time<=?').bind(c.chain,from,point).all<{rows:string}>();
- const {results:obs}=await env.DB.prepare('SELECT from_ms,to_ms FROM observed WHERE chain=? AND to_ms>? AND from_ms<?').bind(c.chain,bucket,bucket+BUCKET_MS).all<{from_ms:number;to_ms:number}>();
- const series=await seriesFor(env,from-PRICE_TOLERANCE_MS,point+PRICE_TOLERANCE_MS);
+/**
+ * Seal several quarter hours of one chain from one load of its rows, prices and read ranges. Neighbouring quarter hours
+ * share most of their 90-minute contexts, so loading each context separately read the same rows up to six times over
+ * D1's network round trips. Each span is still sealed by sealChainBucket at its own seal point, which keeps only the
+ * records inside its own context, so the result is what sealing them one by one gives.
+ */
+async function sealBatch(env:Env,c:Cursor,buckets:number[],sourceCount:Record<string,number>):Promise<number>{
+ const points=buckets.map(b=>b+BUCKET_MS+SEAL_DELAY_MS),from=Math.min(...points)-CONTEXT_MS,to=Math.max(...points);
+ const {results:chunks}=await env.DB.prepare('SELECT rows FROM chunks WHERE chain=? AND max_time>=? AND min_time<=?').bind(c.chain,from,to).all<{rows:string}>();
+ const {results:obs}=await env.DB.prepare('SELECT from_ms,to_ms FROM observed WHERE chain=? AND to_ms>? AND from_ms<?').bind(c.chain,Math.min(...buckets),Math.max(...buckets)+BUCKET_MS).all<{from_ms:number;to_ms:number}>();
+ const series=await seriesFor(env,from-PRICE_TOLERANCE_MS,to+PRICE_TOLERANCE_MS);
  const sources=(r:Rec)=>{
   const s=series[r.asset]??{};
   return [...PAGE_PROVIDERS.map(p=>s[p.name]??[]),...(r.blockTime<=c.live_since?[s[BITSTAMP]??[]]:[])];
  };
  const records=chunks.flatMap(ch=>(JSON.parse(ch.rows) as RecordRow[]).map(row=>{const r=fromRow(c.chain,row);return priceFromFirst(r,sources(r));}));
- for(const r of records)if(r.blockTime>bucket&&r.blockTime<=bucket+BUCKET_MS){const k=r.priceSource?.split(' ')[0]??'unpriced';sourceCount[k]=(sourceCount[k]??0)+1;}
- const span=sealChainBucket({chain:c.chain,bucket,records,observed:obs.map(o=>({from:o.from_ms,to:o.to_ms})),prices:{},registry:REGISTRY,contextEnd:point,sealedAt:Date.now()});
- const out=toStored(span);
- await env.DB.batch([
-  env.DB.prepare('INSERT OR REPLACE INTO spans (chain,bucket,sealed_at,unpriced,json) VALUES (?,?,?,?,?)').bind(c.chain,bucket,out.sealedAt,out.totals.unpricedCount,JSON.stringify(out)),
-  env.DB.prepare('INSERT INTO days (day,dirty) VALUES (?,1) ON CONFLICT(day) DO UPDATE SET dirty=1').bind(dayOf(bucket))
- ]);
- return out;
+ const observed=obs.map(o=>({from:o.from_ms,to:o.to_ms})),writes:D1PreparedStatement[]=[],days=new Set<string>();
+ for(const [i,bucket] of buckets.entries()){
+  for(const r of records)if(r.blockTime>bucket&&r.blockTime<=bucket+BUCKET_MS){const k=r.priceSource?.split(' ')[0]??'unpriced';sourceCount[k]=(sourceCount[k]??0)+1;}
+  const out=toStored(sealChainBucket({chain:c.chain,bucket,records,observed,prices:{},registry:REGISTRY,contextEnd:points[i],sealedAt:Date.now()}));
+  writes.push(env.DB.prepare('INSERT OR REPLACE INTO spans (chain,bucket,sealed_at,unpriced,json) VALUES (?,?,?,?,?)').bind(c.chain,bucket,out.sealedAt,out.totals.unpricedCount,JSON.stringify(out)));
+  days.add(dayOf(bucket));
+ }
+ for(const day of days)writes.push(env.DB.prepare('INSERT INTO days (day,dirty) VALUES (?,1) ON CONFLICT(day) DO UPDATE SET dirty=1').bind(day));
+ await env.DB.batch(writes);
+ return buckets.length;
 }
 
 /* ---------- Publishing ---------- */
@@ -334,16 +344,21 @@ async function run(env:Env,now:number,log:Record<string,unknown>){
  const live=await Promise.all([...cursors.values()].map(c=>readLive(env,c).catch(e=>{note(`${c.chain} live`)(e);return 0;})));
  // A chain's backfill pauses while its sealing lags, so raw rows never pile up faster than they are sealed and freed.
  const back=await Promise.all([...cursors.values()].map(async c=>(await dueBuckets(env,c,Date.now())).length>BACKLOG_MAX?0
-  :readBack(env,c,deadline-15000).catch(e=>{note(`${c.chain} backfill`)(e);return 0;})));
+  :readBack(env,c,now+BACK_BUDGET_MS).catch(e=>{note(`${c.chain} backfill`)(e);return 0;})));
  log.read=Object.fromEntries([...cursors.keys()].map((chain,i)=>[chain,{liveBlocks:live[i],backChunks:back[i]}]));
- // Newest first across chains, so a live quarter hour is never kept waiting behind the backfill.
- const due=(await Promise.all([...cursors.values()].map(async c=>(await dueBuckets(env,c,Date.now())).map(b=>({c,b}))))).flat().sort((x,y)=>y.b-x.b);
+ // Each chain's due quarter hours (newest first) in batches; batches are taken newest first across chains, so a live
+ // quarter hour is never kept waiting behind the backfill.
+ const batches=(await Promise.all([...cursors.values()].map(async c=>{
+  const due=await dueBuckets(env,c,Date.now()),out:{c:Cursor;buckets:number[]}[]=[];
+  for(let i=0;i<due.length;i+=SEAL_BATCH)out.push({c,buckets:due.slice(i,i+SEAL_BATCH)});
+  return out;
+ }))).flat().sort((x,y)=>y.buckets[0]-x.buckets[0]);
  let sealed=0;const pricedBy:Record<string,number>={};
- for(const {c,b} of due){
+ for(const {c,buckets} of batches){
   if(Date.now()>deadline-5000)break;
-  try{await seal(env,c,b,pricedBy);sealed++;}catch(e){note(`${c.chain} seal ${new Date(b).toISOString()}`)(e);}
+  try{sealed+=await sealBatch(env,c,buckets,pricedBy);}catch(e){note(`${c.chain} seal ${new Date(buckets[0]).toISOString()}`)(e);}
  }
- log.sealed={spans:sealed,due:due.length,pricedBy};
+ log.sealed={spans:sealed,due:batches.reduce((n,b)=>n+b.buckets.length,0),pricedBy};
  await publish(env,Date.now(),cursors,log).catch(note('publish'));
  await prune(env,Date.now(),cursors).catch(note('prune'));
  if(Object.keys(errors).length)log.errors=errors;
