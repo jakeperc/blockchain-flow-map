@@ -15,8 +15,9 @@ crons = ["* * * * *"]
 [[d1_databases]]
 binding = "DB"
 database_name = "bfm-recorder"
-# Set to the id `wrangler d1 create bfm-recorder` prints. Local runs (`wrangler dev`) do not need the real one.
-database_id = "00000000-0000-0000-0000-000000000000"
+# Created 2026-10-26 by `wrangler d1 create bfm-recorder` (region ENAM). Not a secret: it names the database, and only
+# an account's own credentials can reach it.
+database_id = "b0ac89a8-dadf-4d8b-957c-138b27d3cdfd"
 migrations_dir = "migrations"
 
 [[r2_buckets]]
