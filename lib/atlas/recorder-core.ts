@@ -298,6 +298,44 @@ export function encodeDay(day:string,spans:readonly StoredRollup[]):WireDay{
   return JSON.stringify(unpackSpan(JSON.parse(JSON.stringify(w))))===JSON.stringify(s)?w:s;
  })};
 }
+/* ---------- The recorder's manifest ---------- */
+
+export const MANIFEST_FORMAT='bfm-manifest/1';
+/** What a chain's recording covers: spans ending at or before `liveSince` were backfilled (D8 point 10). */
+export interface RecorderChain {liveSince:number;backfilledTo:number;backfillDone:boolean}
+export interface RecorderManifest {
+ updatedAt:number;registry:string;
+ chains:Partial<Record<Chain,RecorderChain>>;
+ /** One file per UTC day. `file` is a path relative to the recorder's address, checked to be a day file and nothing else. */
+ days:{day:string;file:string;spans:number;bytes:number}[];
+}
+export type ManifestCheck={ok:true;manifest:RecorderManifest}|{ok:false;reason:string};
+const DAY_FILE=/^v1\/day\/\d{4}-\d{2}-\d{2}\.[0-9a-f]{16}\.json$/;
+/**
+ * Check the recorder's manifest before any day file is requested. A format the page does not read is refused, and so
+ * is a file path that is not a day file's own name, so a manifest can never point the page anywhere else. Chains the
+ * page does not read are ignored, not refused, so a recorder recording one more chain does not lock this page out.
+ */
+export function validateManifest(x:unknown,chains:readonly Chain[]):ManifestCheck{
+ if(!isObj(x))return {ok:false,reason:'not an object'};
+ if(x.format!==MANIFEST_FORMAT)return {ok:false,reason:`manifest format ${String(x.format)}, this page reads ${MANIFEST_FORMAT}`};
+ if(x.dayFormat!==DAY_FORMAT||x.schema!==STORED_SCHEMA)return {ok:false,reason:`day files in ${String(x.dayFormat)}/${String(x.schema)}, this page reads ${DAY_FORMAT}/${STORED_SCHEMA}`};
+ if(!isNum(x.updatedAt)||!isStr(x.registry)||!isObj(x.chains)||!Array.isArray(x.days))return {ok:false,reason:'malformed manifest'};
+ const out:RecorderManifest={updatedAt:x.updatedAt,registry:x.registry,chains:{},days:[]};
+ for(const chain of chains){
+  const c=x.chains[chain];
+  if(c===undefined)continue;
+  if(!isObj(c)||!isNum(c.liveSince)||!isNum(c.backfilledTo)||typeof c.backfillDone!=='boolean')return {ok:false,reason:`malformed recording for ${chain}`};
+  out.chains[chain]={liveSince:c.liveSince,backfilledTo:c.backfilledTo,backfillDone:c.backfillDone};
+ }
+ for(const d of x.days){
+  if(!isObj(d)||typeof d.day!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(d.day)||typeof d.file!=='string'||!DAY_FILE.test(d.file)||!d.file.includes(`/${d.day}.`)||!isCount(d.spans)||!isCount(d.bytes))
+   return {ok:false,reason:'malformed day entry'};
+  out.days.push({day:d.day,file:d.file,spans:d.spans as number,bytes:d.bytes as number});
+ }
+ return {ok:true,manifest:out};
+}
+
 /** A published day file, decoded and then checked by validateBundle(): all or nothing, as there. */
 export function decodeDay(x:unknown,chains:readonly Chain[]):BundleCheck{
  if(!isObj(x))return {ok:false,reason:'not an object'};

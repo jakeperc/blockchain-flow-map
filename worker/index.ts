@@ -24,7 +24,7 @@ import {watchedAddresses,knownAttribution,isDerived,ENTITIES,registryVersion} fr
 import {EXPLORERS} from '../lib/atlas/geography';
 import {decodeTransferLog,makeBlockTimeFn,nextPollRange,readInterval,type Rec,type Sample} from '../lib/atlas/live-core';
 import {BUCKET_MS,STORED_SCHEMA,toStored,type StoredRollup} from '../lib/atlas/rollup';
-import {CONTEXT_MS,PRICE_TOLERANCE_MS,DAY_FORMAT,encodeDay,fromRow,priceFromFirst,sealChainBucket,toRow,type Interval,type RecordRow,type RecorderRegistry} from '../lib/atlas/recorder-core';
+import {CONTEXT_MS,PRICE_TOLERANCE_MS,DAY_FORMAT,MANIFEST_FORMAT,encodeDay,fromRow,priceFromFirst,sealChainBucket,toRow,type Interval,type RecordRow,type RecorderRegistry} from '../lib/atlas/recorder-core';
 import type {Asset,Chain} from '../lib/atlas/model';
 import {REPO_URL} from '../lib/site/links';
 
@@ -285,7 +285,7 @@ async function publish(env:Env,now:number,cursors:Map<Chain,Cursor>,log:Record<s
  const {results:days}=await env.DB.prepare('SELECT day,file,spans,bytes FROM days WHERE file IS NOT NULL ORDER BY day').all<{day:string;file:string;spans:number;bytes:number}>();
  if(!dirty.length&&days.length)return;
  const manifest={
-  format:'bfm-manifest/1',dayFormat:DAY_FORMAT,schema:STORED_SCHEMA,registry:REGISTRY.version,updatedAt:now,
+  format:MANIFEST_FORMAT,dayFormat:DAY_FORMAT,schema:STORED_SCHEMA,registry:REGISTRY.version,updatedAt:now,
   // Spans of a quarter hour ending at or before `liveSince` were backfilled (D8 point 10); `backfilledTo` is how far back reading has reached.
   chains:Object.fromEntries([...cursors.values()].map(c=>[c.chain,{liveSince:c.live_since,backfilledTo:c.back_time,backfillDone:c.back_time<=c.back_goal}])),
   days:days.map(d=>({day:d.day,file:`v1/day/${d.file}`,spans:d.spans,bytes:d.bytes}))

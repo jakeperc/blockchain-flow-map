@@ -299,6 +299,29 @@ for(const d of BOTH){
  for(const [what,x] of Object.entries(refused))assert.equal(rc.decodeDay(x,CHAINS).ok,false,`a day file with ${what} is refused`);
 }
 
+/* ---------- The recorder's manifest: read only what the page reads, fetch only day files ---------- */
+{
+ const m={format:rc.MANIFEST_FORMAT,dayFormat:rc.DAY_FORMAT,schema:STORED_SCHEMA,registry:ke.registryVersion(),updatedAt:1793040000000,
+  chains:{Ethereum:{liveSince:1793030000000,backfilledTo:1792430000000,backfillDone:true},Dogecoin:{liveSince:1,backfilledTo:1,backfillDone:false}},
+  days:[{day:'2026-10-26',file:'v1/day/2026-10-26.1eab8b48b9867561.json',spans:16,bytes:5281}]};
+ const ok=rc.validateManifest(json(m),CHAINS);
+ assert.ok(ok.ok,`a recorder's manifest is accepted (${ok.reason??''})`);
+ assert.deepEqual(Object.keys(ok.manifest.chains),['Ethereum'],'a chain this page does not read is ignored, not refused');
+ const day=m.days[0],refused={
+  'another manifest format':{...m,format:'bfm-manifest/0'},
+  'another day-file format':{...m,dayFormat:'bfm-day/0'},
+  'another stored-span format':{...m,schema:STORED_SCHEMA+1},
+  'a path out of the day folder':{...m,days:[{...day,file:'v1/day/../manifest'}]},
+  'an address elsewhere':{...m,days:[{...day,file:'https://example.com/v1/day/2026-10-26.1eab8b48b9867561.json'}]},
+  "another day's file":{...m,days:[{...day,file:'v1/day/2026-10-25.1eab8b48b9867561.json'}]},
+  'a query string':{...m,days:[{...day,file:day.file+'?x=1'}]},
+  'a malformed recording':{...m,chains:{Ethereum:{liveSince:'yesterday',backfilledTo:1,backfillDone:true}}},
+  'no day list':{...m,days:null},
+  'not an object':null
+ };
+ for(const [what,x] of Object.entries(refused))assert.equal(rc.validateManifest(x,CHAINS).ok,false,`a manifest with ${what} is refused`);
+}
+
 /* ---------- registryVersion: a content hash ---------- */
 {
  const v=ke.registryVersion();
@@ -320,4 +343,4 @@ for(const d of BOTH){
 }
 
 const ms=(()=>{const t=Date.now();seal(ETH,ETH.records);return Date.now()-t;})();
-console.log(`PASS: recorder core on recorded real data (${ETH.records.length.toLocaleString()} Ethereum and ${TRON.records.length.toLocaleString()} Tron transfers, ${globalInferred.size} inferred deposit addresses; seals independent of re-classification, the 90-minute context at both ends, pricing at seal, per-chain inference, row round trip, one span per key, bundle validation, pricing from a provider list, the lossless day-file encoding, registry content hash; Ethereum seals in ${ms} ms)`);
+console.log(`PASS: recorder core on recorded real data (${ETH.records.length.toLocaleString()} Ethereum and ${TRON.records.length.toLocaleString()} Tron transfers, ${globalInferred.size} inferred deposit addresses; seals independent of re-classification, the 90-minute context at both ends, pricing at seal, per-chain inference, row round trip, one span per key, bundle validation, pricing from a provider list, the lossless day-file encoding, the manifest check, registry content hash; Ethereum seals in ${ms} ms)`);

@@ -9,3 +9,9 @@ export const HUB_URL='https://jakepercy.com/';
 export const REPO_URL='https://github.com/jakeperc/blockchain-flow-map';
 /** Empty until supplied; the pages render the link only when it is set. */
 export const LINKEDIN_URL='';
+/**
+ * The shared history recorder's address (decision D8, worker/), ending in a slash. While it is empty the page never
+ * contacts it and behaves exactly as before: 24H and 7D come from this browser's own recorded history alone. It is set
+ * only after the recorder's spans have been compared with a browser's own for the same quarter hours.
+ */
+export const RECORDER_URL='';

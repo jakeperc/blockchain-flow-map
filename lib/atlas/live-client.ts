@@ -27,17 +27,19 @@
  * category, source and note, cites the sweep transaction, and is never persisted. Inference is scoped
  * per chain and only a first-party label may anchor it; derived cross-chain evidence never does.
  */
-import {CHAINS,UNKNOWN,type Chain,type Snapshot,type Transfer,type WindowKey,type Attribution,type Asset,type Totals,type UnattributedFilter,type UnattributedSummary} from './model';
+import {CHAINS,UNKNOWN,WINDOWS,type Chain,type Snapshot,type Transfer,type WindowKey,type Attribution,type Asset,type Totals,type UnattributedFilter,type UnattributedSummary} from './model';
 import {aggregate,selectUnattributed,type TotalsInput} from './engine';
 import {CONTRACTS,ERC20_TRANSFER_TOPIC,type EvmLog} from './evm';
 import {EXPLORERS} from './geography';
 import {FEEDS,type FeedConfig} from './feeds';
 import {rpcAddress} from './tron';
-import {knownAttribution,isDerived,watchedAddresses,dormancyInfo,registryHealth,ENTITIES} from './known-entities';
+import {knownAttribution,isDerived,watchedAddresses,dormancyInfo,registryHealth,registryVersion,ENTITIES} from './known-entities';
 import {addressKey,classifyRec,decodeTransferLog,inferDeposits,makeBlockTimeFn,nextPollRange,planChunks,priceAt,pruneRecords,readInterval,replyVerdict,addSample,type Rec,type Sample} from './live-core';
 import {BUCKET_MS,bucketOf,sealSpan,mergeRollups,mergeUnmapped,coverageOf,partsForChains,applyBaselines,registryVersionsOf,toStored,fromStored,type Rollup} from './rollup';
-import {CONTEXT_MS,PRICE_TOLERANCE_MS,inferOptions,observedMsIn,sealChainBuckets,type Interval,type RecorderRegistry} from './recorder-core';
+import {CONTEXT_MS,PRICE_TOLERANCE_MS,inferOptions,observedMsIn,pickSpans,sealChainBuckets,spanObservedMs,type Interval,type PickedSpan,type RecorderRegistry} from './recorder-core';
 import {createHistoryStore,type HistoryStatus} from './history-store';
+import {createRemoteHistory,type RemoteStatus} from './history-remote';
+import {RECORDER_URL} from '../site/links';
 
 export interface LiveSource {
  /**
@@ -63,8 +65,8 @@ export interface LiveSource {
  unattributed(window:WindowKey,chain:string,at:number,filter?:UnattributedFilter):UnattributedSummary;
  /** Retained block-time span, for the playback slider. A long window can scrub across sealed history; 5M and 1H are bounded by the in-memory buffer, because scrubbing those outside it would only show an empty map. */
  range(window?:WindowKey):{start:number;end:number};
- /** What this browser has recorded, for the Data & coverage panel. */
- historyStatus():HistoryStatus&{spanMs:number;registryMixed:boolean};
+ /** What this browser has recorded, and what the shared history recorder supplied, for the Data & coverage panel. */
+ historyStatus():HistoryStatus&{spanMs:number;registryMixed:boolean;recorder:RemoteStatus};
  /** Forget this browser's recorded history. Long windows lock again until it rebuilds. */
  clearHistory():Promise<void>;
  /** Backfill progress in blocks across every chain, or null once complete. */
@@ -160,10 +162,12 @@ const topicsFor=(chain:Chain)=>watchedAddresses(chain).map(a=>'0x'+rpcAddress(ch
  * sealed span stays correct as it ages; what changes across a deploy is which wallets were evidenced at all,
  * and a span sealed under an older registry attributed less than today's would. That is a real property of the
  * observation, so such spans are kept and disclosed rather than discarded. registryVersion() in known-entities.ts is
- * the exact content hash; the page keeps this coarser label until it reads spans recorded elsewhere, because switching
- * on its own would mark every returning visitor's stored history as recorded under a different registry.
+ * the exact content hash, which the history recorder stamps on its spans; the page uses it once it reads that recorder
+ * (RECORDER_URL set), so the two agree exactly on whether a span used today's registry. Until then it keeps the coarser
+ * label, because switching on its own would mark every returning visitor's stored history as recorded under a
+ * different registry for no gain.
  */
-const REGISTRY_VERSION=`${registryHealth().total}@${dormancyInfo().measuredAt}`;
+const REGISTRY_VERSION=RECORDER_URL?registryVersion():`${registryHealth().total}@${dormancyInfo().measuredAt}`;
 /** The registry as inference and sealing read it, the same object for the buffer's pass and for every seal. */
 const REGISTRY:RecorderRegistry={version:REGISTRY_VERSION,known:knownAttribution,firstParty:a=>!isDerived(a),entities:ENTITIES,explorerTx:(c,h)=>EXPLORERS[c].tx(h)};
 
@@ -510,7 +514,9 @@ export function createLiveSource():LiveSource{
  /* ---------- Recorded history: sealed spans, per bucket per chain ---------- */
  const history=createHistoryStore({retentionMs:HISTORY_MS});
  const sealed=new Map<string,Rollup>();
- let historyLoaded=false;
+ let historyLoaded=false,sealedVersion=0;
+ /** The shared history recorder's spans (decision D8). Inert, and never contacted, while RECORDER_URL is empty. */
+ const remote=createRemoteHistory(RECORDER_URL,LIVE_CHAINS,{retentionMs:HISTORY_MS});
  const partKey=(bucket:number,chain:Chain)=>`${bucket}:${chain}`;
  const resolvedChains=(chain:string):Chain[]=>chain==='All chains'?LIVE_CHAINS:LIVE_CHAINS.filter(c=>c===chain);
 
@@ -543,6 +549,19 @@ export function createLiveSource():LiveSource{
   const cutoff=now-HISTORY_MS;
   for(const [key,part] of sealed)if(part.end<=cutoff)sealed.delete(key);
   if(fresh.length)history.save(fresh.map(toStored));
+  sealedVersion++;
+ }
+
+ /**
+  * Exactly one sealed span per chain and quarter hour, from this browser's history and the recorder's (decision D8
+  * point 4): the better-observed one, the recorder's on a tie, never the two added together. With the recorder off
+  * this is this browser's history unchanged. Cached until either side changes, because every snapshot asks for it.
+  */
+ let pickedCache:{key:string;picked:PickedSpan[]}|null=null;
+ function picked():PickedSpan[]{
+  const key=`${sealedVersion}:${remote.version()}`;
+  if(pickedCache?.key!==key)pickedCache={key,picked:pickSpans([...sealed.values()],remote.spans())};
+  return pickedCache.picked;
  }
 
  /** The part of a window newer than the last sealed span, aggregated live so a long window is current to the second. */
@@ -557,8 +576,26 @@ export function createLiveSource():LiveSource{
    })];
   });
  }
- const partsFor=(chains:readonly Chain[],at:number,withTail=true)=>
-  partsForChains(withTail?[...sealed.values(),...liveTails(at,chains)]:[...sealed.values()],chains);
+ const partsFor=(chains:readonly Chain[],at:number,withTail=true)=>{
+  const spans=picked().map(p=>p.span);
+  return partsForChains(withTail?[...spans,...liveTails(at,chains)]:spans,chains);
+ };
+ /**
+  * Where a long window's observed time came from: this browser, the recorder while it was recording live, or the
+  * recorder's backfill (spans ending at or before its `liveSince`). Only spans wholly inside the window count, as in
+  * mergeRollups().
+  */
+ function sourcesIn(window:WindowKey,at:number,chains:readonly Chain[]){
+  const start=at-WINDOWS[window],live=remote.status().chains,out={browser:0,recorder:0,backfilled:0};
+  for(const {span,source} of picked()){
+   if(!chains.includes(span.chain)||span.bucket<start||span.end>at)continue;
+   const ms=spanObservedMs(span);
+   if(source==='browser')out.browser+=ms;
+   else if(span.end<=(live[span.chain]?.liveSince??-Infinity))out.backfilled+=ms;
+   else out.recorder+=ms;
+  }
+  return out;
+ }
 
  /* ---------- Snapshots ---------- */
  function* events(chain:string):Iterable<Transfer|TotalsInput>{
@@ -573,6 +610,7 @@ export function createLiveSource():LiveSource{
   const long=LONG_WINDOWS.includes(window);
   const chains=resolvedChains(chain);
   let recorded:ReturnType<typeof coverageOf>|null=null,mixedRegistry=false,baselineMixed=false;
+  let sources:ReturnType<typeof sourcesIn>|null=null;
   let s:Snapshot;
   if(long){
    const parts=partsFor(chains,at);
@@ -580,6 +618,7 @@ export function createLiveSource():LiveSource{
    applyBaselines(s,parts,chains,UNLOCK_SHARE);
    recorded=coverageOf(parts,window,at,chains);
    mixedRegistry=registryVersionsOf(parts).length>1;
+   sources=sourcesIn(window,at,chains);
   }else{
    s=aggregate(events(chain),window,at);
    // The live hour gets baselines from the sealed spans alone (no tail: the comparison windows must be whole and
@@ -633,10 +672,15 @@ export function createLiveSource():LiveSource{
    dormant?`The filter leaves out ${dormant.toLocaleString()} of ${registered.toLocaleString()} registry addresses on these chains that moved no USDC or USDT in the ${dorm.windowDays} days to ${dorm.measuredAt}. They stay in the registry as evidence and still attribute any transfer that touches them; a wallet that wakes up after that date is picked up at the next measurement.`:'',
    sampledMs?`A separate unfiltered sample covering ${Math.round(sampledMs/1000).toLocaleString()} seconds of chain time is read periodically to show how small the evidenced share is; it is reported as a sample and never scaled up into an estimate.`:'',
    'Block times inside the backfilled hour are interpolated between fetched headers.',
-   long&&recorded
+   long&&recorded&&sources&&sources.recorder+sources.backfilled>0
+    ?`This ${window} window is assembled from ${window==='7D'?'a week':'24 hours'} of sealed quarter-hour history: ${hms(sources.browser)} recorded by THIS BROWSER and ${hms(sources.recorder+sources.backfilled)} by the shared history recorder${sources.backfilled?` (${hms(sources.backfilled)} of it read back from the chains when the recorder started)`:''}, which reads the same public nodes and seals each 15 minutes with the same code. For each chain and quarter hour the better-observed record is used, never both, and nothing is scaled up. It covers ${hms(recorded.observedMs)} of the ${hms(recorded.windowMs)} window${recorded.perChain.length>1?` (least-covered chain: ${recorded.perChain.reduce((a,b)=>a.share<b.share?a:b).chain})`:''}. Transfer-level evidence and the unfiltered sample stay on the 5M and 1H windows, where the raw records are still held.`
+    :long&&recorded
     ?`This ${window} window is assembled from ${window==='7D'?'a week':'24 hours'} of history THIS BROWSER recorded: each completed 15 minutes was reduced to its exact accounting and kept locally, never uploaded and never shared. It covers ${hms(recorded.observedMs)} of the ${hms(recorded.windowMs)} window${recorded.perChain.length>1?` (least-covered chain: ${recorded.perChain.reduce((a,b)=>a.share<b.share?a:b).chain})`:''}. Transfer-level evidence and the unfiltered sample stay on the 5M and 1H windows, where the raw records are still held.`
+    :remote.enabled
+    ?'The 5M and 1H windows read the transfers still held in memory. 24H and 7D are offered once enough of them has been recorded, by this browser or the shared history recorder.'
     :'The 5M and 1H windows read the transfers still held in memory. 24H and 7D are offered once this browser has recorded enough of them itself.',
-   long&&mixedRegistry?'Part of this window was recorded under an earlier version of the evidence registry, which attributed fewer wallets than the current one. The figures are what this browser could attribute at the time.':'',
+   long&&mixedRegistry&&remote.enabled?'Part of this window was recorded under a different version of the evidence registry. The figures are what could be attributed under that version at the time.'
+    :long&&mixedRegistry?'Part of this window was recorded under an earlier version of the evidence registry, which attributed fewer wallets than the current one. The figures are what this browser could attribute at the time.':'',
    long?'Baselines compare this corridor with the four preceding windows of the same length from the same recorded history, and are shown only where each of those windows was observed too.':'Baselines on the 1H window compare this corridor with the four preceding complete hours this browser recorded, aligned to the quarter-hour, and are shown only where each of those hours was observed too; because they enter the ranking, the order of the leading corridors can differ between browsers with different recorded history.',
    !long&&baselineMixed?'Some of that history was recorded under an earlier version of the evidence registry, which attributed fewer wallets than the current one; the baselines are what this browser could attribute at the time.':'',
    'Routes are drawn only between evidenced wallets in different jurisdictions. On Base and Arbitrum most evidence is DERIVED from an Ethereum label on the same plain key-controlled account, is marked as such in the evidence panel, and never exceeds HIGH. Tron evidence is first-party only: a Tronscan public name tag on the address itself, never derived.',
@@ -696,9 +740,11 @@ export function createLiveSource():LiveSource{
     sealed.set(partKey(part.bucket,part.chain),part);
    }
   }catch(err){console.warn('[ledger-atlas live] recorded history could not be read',err);}
-  historyLoaded=true;
+  historyLoaded=true;sealedVersion++;
   void history.refreshUsage();
   emit();
+  // The recorder's spans arrive afterwards and only ever add windows; with RECORDER_URL empty this does nothing.
+  remote.start(emit);
  })();
  void (async()=>{
   void fetchPriceSeries();void fetchPrices(); // run alongside the backfill; transfers are re-priced when prices land
@@ -739,7 +785,7 @@ export function createLiveSource():LiveSource{
    // A long window can be replayed across sealed history; the live windows are bounded by the buffer, because
    // scrubbing them further back would only show an empty map.
    if(window&&LONG_WINDOWS.includes(window)){
-    const buckets=[...sealed.values()].map(p=>p.bucket);
+    const buckets=picked().map(p=>p.span.bucket);
     return {start:buckets.length?Math.max(now-HISTORY_MS,Math.min(...buckets)):now-RETENTION_MS,end:now};
    }
    const starts=[...feeds.values()].map(f=>f.coverage().start).filter((n):n is number=>n!==null);
@@ -753,10 +799,11 @@ export function createLiveSource():LiveSource{
     newest:buckets.length?Math.max(...buckets.map(p=>p.end)):null,
     spanMs:buckets.length?Math.max(...buckets.map(p=>p.end))-Math.min(...buckets.map(p=>p.bucket)):0,
     registries:registryVersionsOf(buckets),
-    registryMixed:registryVersionsOf(buckets).length>1};
+    registryMixed:registryVersionsOf(buckets).length>1,
+    recorder:remote.status()};
   },
   async clearHistory(){
-   sealed.clear();
+   sealed.clear();sealedVersion++;
    await history.clear();
    void history.refreshUsage();
    emit();
@@ -772,6 +819,7 @@ export function createLiveSource():LiveSource{
    if(emitTimer!==null){clearTimeout(emitTimer);emitTimer=null;}
    for(const t of timers)clearInterval(t);
    timers.length=0;
+   remote.dispose();
    abort.abort();
    listeners.clear();
    if(typeof document!=='undefined')document.removeEventListener('visibilitychange',onVisible);
