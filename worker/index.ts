@@ -192,8 +192,9 @@ async function readLive(env:Env,c:Cursor):Promise<number>{
 const tooManyLogs=(e:unknown)=>/-32005|more than \d+ results/.test(String(e));
 /**
  * Backward from the backfill cursor, one chain chunk at a time: block `back_block - 1` ends at `back_time`, already known.
- * A chunk refused for too many logs is halved for the rest of the run: one busy half hour of a Tron exchange wallet
- * (2026-10-23) sent over 10,000 transfers in 600 blocks, and the whole chunk failed every run.
+ * A chunk refused for too many logs is halved for the rest of the run, and the refused attempt does not count as one
+ * of the run's reads: one busy half hour of a Tron exchange wallet (2026-10-23) sent over 10,000 transfers in 600
+ * blocks, and a flood of deposits on 2026-10-20 brought about 330 a block, so only about 40 blocks fit.
  */
 async function readBack(env:Env,c:Cursor,deadline:number):Promise<number>{
  const cfg=FEEDS[c.chain]!;let chunks=0,size=cfg.chunk;
@@ -202,7 +203,7 @@ async function readBack(env:Env,c:Cursor,deadline:number):Promise<number>{
   const timeOf=makeBlockTimeFn([from-1,to],new Map([[from-1,t0],[to,c.back_time]]),to,c.back_time,cfg.slotMs);
   let recs:Rec[];
   try{recs=await readTransfers(c.chain,cfg,from,to,timeOf);}
-  catch(e){if(size>1&&tooManyLogs(e)){size=Math.ceil(size/2);continue;}throw e;}
+  catch(e){if(size>1&&tooManyLogs(e)){size=Math.ceil(size/2);chunks--;continue;}throw e;}
   await env.DB.batch(stored(env,c.chain,recs,{from:t0,to:c.back_time},env.DB.prepare('UPDATE cursor SET back_block=?,back_time=? WHERE chain=?').bind(from,t0,c.chain)));
   c.back_block=from;c.back_time=t0;
   if(cfg.pauseMs)await sleep(cfg.pauseMs);
