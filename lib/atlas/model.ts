@@ -38,7 +38,15 @@ export interface Corridor {
   usdValue:number; transactionCount:number; assets:Record<string,number>; chains:Record<string,number>; confidence:Record<string,number>;
   topEntities:{entity:string;usdValue:number;attribution:Attribution}[]; topTransactions:Transfer[];
   baseline:number|null; baselineSamples:number; anomalyRatio:number|null; anomalyScore:number|null; lastActivity:number; rankScore:number;
+  /** This corridor's attributed USD and transfer count per bin of the snapshot's `history`, index for index. */
+  series?:{value:number[];count:number[]};
 }
+/**
+ * One bar of the window's timeline: attributed USD whose block time falls in `(from, to]`. `at` is the midpoint.
+ * A long window's bins are whole runs of sealed quarter hours, so no span is split between two bars; `observed`
+ * is the share of the bin's chain time that was actually read, and is absent for the live windows.
+ */
+export interface HistoryBin {at:number;from:number;to:number;value:number;observed?:number}
 export interface CountrySummary {
   code:string; inbound:number; outbound:number; knownEndpointAdjusted:number; coverage:number|null;
   /**
@@ -79,7 +87,7 @@ export interface Snapshot {
   window:WindowKey;at:number;
   health:'LIVE'|'LOADING'|'PARTIAL'|'DELAYED'|'RECONNECTING'|'NOT CONNECTED';lastReceived:number|null;message:string;corridors:Corridor[];
   totals:Totals;
-  classifications:Record<string,number>;countries:CountrySummary[];history:{at:number;value:number}[];
+  classifications:Record<string,number>;countries:CountrySummary[];history:HistoryBin[];
   chainHealth:{chain:Chain;status:string;lastReceived:number|null}[];
   /**
    * Optional unfiltered denominator sample. The client build reads only transfers touching an evidenced

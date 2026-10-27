@@ -31,7 +31,7 @@
  * records a span is sealed from; live-client.ts seals and merges them; scripts/verify-rollup.cjs exercises the
  * invariants above.
  */
-import {WINDOWS,CHAINS,UNKNOWN,type Chain,type WindowKey,type Snapshot,type Totals,type Corridor,type CountrySummary,type Transfer,type Attribution,type UnattributedEntity,type UnattributedTransfer} from './model';
+import {WINDOWS,CHAINS,UNKNOWN,type Chain,type WindowKey,type Snapshot,type Totals,type Corridor,type CountrySummary,type HistoryBin,type Transfer,type Attribution,type UnattributedEntity,type UnattributedTransfer} from './model';
 import {aggregateSpan,selectUnattributedSpan,rank,type TotalsInput,type UnattributedInput} from './engine';
 
 /** One sealed span. Fifteen minutes is short enough to bin a sparkline and tile a 24H window closely, and long enough that a week is 672 records rather than tens of thousands. */
@@ -136,26 +136,50 @@ export const partsInWindow=(parts:readonly Rollup[],start:number,end:number)=>
 export const partsForChains=(parts:readonly Rollup[],chains:readonly Chain[])=>
  parts.filter(p=>chains.includes(p.chain));
 
+/** Roughly how many bars a long window's timeline gets; the bin is the next whole number of spans. */
+export const TIMELINE_BINS=60;
+/**
+ * The timeline bins of a window merged from spans: each a whole run of quarter hours on the sealing grid, so every
+ * span lands in exactly one bin and none is split between two bars (24H: 48 half hours, 7D: 56 three-hour bins).
+ * The first bin starts at the window's first whole span, because a
+ * span straddling the start is left out (see the header); the last ends at `at`, where the live tail ends.
+ */
+export function windowBins(window:WindowKey,at:number){
+ const duration=WINDOWS[window],start=at-duration;
+ const binMs=Math.max(1,Math.ceil(duration/TIMELINE_BINS/BUCKET_MS))*BUCKET_MS;
+ const first=Math.ceil(start/BUCKET_MS)*BUCKET_MS,end=bucketOf(at)+BUCKET_MS;
+ const n=Math.max(1,Math.ceil((end-first)/binMs)),grid=end-n*binMs;
+ const bins:HistoryBin[]=Array.from({length:n},(_,i)=>{
+  const to=Math.min(at,grid+(i+1)*binMs),from=Math.min(to,Math.max(first,grid+i*binMs));
+  return {at:(from+to)/2,from,to,value:0};
+ });
+ return {binMs,bins,indexOf:(bucket:number)=>Math.min(n-1,Math.max(0,Math.floor((bucket-grid)/binMs)))};
+}
+
 /**
  * One Snapshot from sealed spans. `health`, `lastReceived` and `message` are left at their defaults for the
- * caller to fill in, exactly as aggregate() leaves them.
+ * caller to fill in, exactly as aggregate() leaves them. With `chains`, each timeline bin also reports the share
+ * of those chains' time in it that was actually observed.
  */
-export function mergeRollups(parts:readonly Rollup[],window:WindowKey,at:number):Snapshot{
+export function mergeRollups(parts:readonly Rollup[],window:WindowKey,at:number,chains?:readonly Chain[]):Snapshot{
  const duration=WINDOWS[window],start=at-duration;
  const inWindow=partsInWindow(parts,start,at);
  const totals=zeroTotals(),classifications:Record<string,number>={};
  const corridors=new Map<string,Corridor>(),countries=new Map<string,CountrySummary>();
- const history=Array.from({length:40},(_,i)=>({at:start+(i+.5)*duration/40,value:0}));
+ const {bins:history,indexOf}=windowBins(window,at),observedMs=history.map(()=>0);
  let sampleTotals:Totals|null=null,sampledMs=0;
  for(const p of inWindow){
+  const bin=indexOf(p.bucket);
   addTotals(totals,p.totals);
   sumInto(classifications,p.classifications);
   for(const rc of p.corridors){
    let c=corridors.get(rc.id);
    if(!c){
-    c={id:rc.id,origin:rc.origin,destination:rc.destination,window,windowStart:start,windowEnd:at,usdValue:0,transactionCount:0,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:0,rankScore:0};
+    c={id:rc.id,origin:rc.origin,destination:rc.destination,window,windowStart:start,windowEnd:at,usdValue:0,transactionCount:0,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:0,rankScore:0,
+     series:{value:history.map(()=>0),count:history.map(()=>0)}};
     corridors.set(rc.id,c);
    }
+   c.series!.value[bin]+=rc.usdValue;c.series!.count[bin]+=rc.transactionCount;
    c.usdValue+=rc.usdValue;c.transactionCount+=rc.transactionCount;
    sumInto(c.assets,rc.assets);sumInto(c.chains,rc.chains);sumInto(c.confidence,rc.confidence);
    c.lastActivity=Math.max(c.lastActivity,rc.lastActivity);
@@ -176,16 +200,9 @@ export function mergeRollups(parts:readonly Rollup[],window:WindowKey,at:number)
     else c.entities.push({...e});
    }
   }
-  // A span's attributed value is spread across the bins it overlaps, in proportion to the overlap, so a
-  // 15-minute span straddling two bins is not attributed wholly to one of them.
-  if(p.value){
-   const binMs=duration/40;
-   for(let i=0;i<40;i++){
-    const lo=start+i*binMs,hi=lo+binMs;
-    const overlap=Math.min(p.end,hi)-Math.max(p.bucket,lo);
-    if(overlap>0)history[i].value+=p.value*overlap/Math.max(1,p.end-p.bucket);
-   }
-  }
+  // The bins are whole runs of spans, so a span's value belongs to one bar and nothing is apportioned.
+  history[bin].value+=p.value;
+  observedMs[bin]+=p.coverage.reduce((n,c)=>c.chain===p.chain?n+c.observedMs:n,0);
   if(p.sample){
    if(!sampleTotals)sampleTotals=zeroTotals();
    addTotals(sampleTotals,p.sample.totals);
@@ -194,6 +211,7 @@ export function mergeRollups(parts:readonly Rollup[],window:WindowKey,at:number)
   }
  }
  totals.coverage=totals.adjusted?totals.attributed/totals.adjusted:null;
+ if(chains?.length)history.forEach((h,i)=>{h.observed=h.to>h.from?Math.min(1,observedMs[i]/(chains.length*(h.to-h.from))):0;});
  for(const c of corridors.values()){
   c.topTransactions.sort((x,y)=>(y.usdValue??0)-(x.usdValue??0));
   if(c.topTransactions.length>TOP_TRANSACTIONS)c.topTransactions.length=TOP_TRANSACTIONS;

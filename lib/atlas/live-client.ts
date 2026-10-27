@@ -65,7 +65,7 @@ export interface LiveSource {
  /** Adjusted, non-domestic transfers in this window that no route can show, because at least one endpoint has no admissible jurisdiction, plus the entities and unplaced counterparties behind them. `filter` narrows what is listed, never the headline `count`/`usdValue`/`reasons`. */
  unattributed(window:WindowKey,chain:string,at:number,filter?:UnattributedFilter):UnattributedSummary;
  /** Retained block-time span, for the playback slider. A long window can scrub across sealed history; 5M and 1H are bounded by the in-memory buffer, because scrubbing those outside it would only show an empty map. */
- range(window?:WindowKey):{start:number;end:number};
+ range(window?:WindowKey,chain?:string):{start:number;end:number};
  /** What this browser has recorded, and what the shared history recorder supplied, for the Data & coverage panel. */
  historyStatus():HistoryStatus&{spanMs:number;registryMixed:boolean;recorder:RemoteStatus};
  /** Forget this browser's recorded history. Long windows lock again until it rebuilds. */
@@ -572,9 +572,12 @@ export function createLiveSource():LiveSource{
  /** The part of a window newer than the last sealed span, aggregated live so a long window is current to the second. */
  function liveTails(at:number,chains:readonly Chain[]):Rollup[]{
   const from=bucketOf(at);
+  // At a quarter-hour boundary the "tail" is a whole span. Playback lands on boundaries (a timeline bar ends on one),
+  // and that span is usually sealed already; adding a tail for it as well would count it twice.
+  const whole=at===from+BUCKET_MS?new Set(picked().filter(p=>p.span.bucket===from).map(p=>p.span.chain)):null;
   return chains.flatMap(chain=>{
    const feed=feeds.get(chain);
-   if(!feed)return [];
+   if(!feed||whole?.has(chain))return [];
    return [sealSpan(feed.buffer.filter(r=>r.blockTime>from&&r.blockTime<=at),from,at,{
     chain,coverage:[{chain,observedMs:observedMsIn(feed.observed,from,at)}],
     registry:REGISTRY_VERSION,sealedAt:at,forTotals:r=>r.tx??r
@@ -619,7 +622,7 @@ export function createLiveSource():LiveSource{
   let s:Snapshot;
   if(long){
    const parts=partsFor(chains,at);
-   s=mergeRollups(parts,window,at);
+   s=mergeRollups(parts,window,at,chains);
    applyBaselines(s,parts,chains,UNLOCK_SHARE);
    recorded=coverageOf(parts,window,at,chains);
    mixedRegistry=registryVersionsOf(parts).length>1;
@@ -785,13 +788,19 @@ export function createLiveSource():LiveSource{
   subscribe(window,chain,cb){const l={window,chain,cb};listeners.add(l);cb(build(window,chain,Date.now()));return()=>{listeners.delete(l);};},
   snapshotAt(window,chain,at){return build(window,chain,at);},
   unattributed,
-  range(window){
+  range(window,chain='All chains'){
    const now=Date.now();
    // A long window can be replayed across sealed history; the live windows are bounded by the buffer, because
-   // scrubbing them further back would only show an empty map.
+   // scrubbing them further back would only show an empty map. A long window replays only as far back as it stays
+   // as well observed as it must be to be offered at all, walking back a quarter hour at a time from now, so the
+   // slider never reaches a "24H" that is mostly unrecorded.
    if(window&&LONG_WINDOWS.includes(window)){
-    const buckets=picked().map(p=>p.span.bucket);
-    return {start:buckets.length?Math.max(now-HISTORY_MS,Math.min(...buckets)):now-RETENTION_MS,end:now};
+    const chains=resolvedChains(chain),parts=partsFor(chains,now,false);
+    const covered=(at:number)=>chains.length>0&&coverageOf(parts,window,at,chains).share>=UNLOCK_SHARE;
+    let start=bucketOf(now)+BUCKET_MS;
+    if(!covered(now))return {start:now,end:now};
+    while(start-BUCKET_MS>now-HISTORY_MS&&covered(start-BUCKET_MS))start-=BUCKET_MS;
+    return {start:Math.min(start,now),end:now};
    }
    const starts=[...feeds.values()].map(f=>f.coverage().start).filter((n):n is number=>n!==null);
    return {start:Math.max(now-RETENTION_MS,starts.length?Math.min(...starts):now),end:now};

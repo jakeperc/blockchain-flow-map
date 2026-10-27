@@ -9,9 +9,9 @@
  */
 const assert=require('node:assert/strict');
 const root=process.argv[2]||'/tmp/ledger-atlas-check';
-const {aggregate,selectUnattributed}=require(root+'/engine.js');
+const {aggregate,aggregateSpan,selectUnattributed}=require(root+'/engine.js');
 const {WINDOWS}=require(root+'/model.js');
-const {BUCKET_MS,bucketOf,sealBucket,sealSpan,mergeRollups,mergeUnmapped,partsInWindow,coverageOf,baselineFor,applyBaselines,registryVersionsOf,partsForChains,toStored,fromStored,TOP_TRANSACTIONS,BASELINE_SAMPLES}=require(root+'/rollup.js');
+const {BUCKET_MS,bucketOf,sealBucket,sealSpan,mergeRollups,windowBins,mergeUnmapped,partsInWindow,coverageOf,baselineFor,applyBaselines,registryVersionsOf,partsForChains,toStored,fromStored,TOP_TRANSACTIONS,BASELINE_SAMPLES}=require(root+'/rollup.js');
 
 const close=(a,b,what)=>assert.ok(Math.abs(a-b)<.01,`${what??''}: ${a} != ${b}`);
 // A bucket boundary, so spans tile the window exactly and the arithmetic is comparable without slack.
@@ -107,6 +107,45 @@ const fullDay=chains=>chains.map(chain=>({chain,observedMs:BUCKET_MS}));
  }
  for(const k of Object.keys(direct.classifications))close(merged.classifications[k],direct.classifications[k],`classification ${k}`);
  close(merged.history.reduce((n,h)=>n+h.value,0),direct.history.reduce((n,h)=>n+h.value,0),'the sparkline holds the same total');
+
+ /* ---------- Timeline bins: whole runs of spans, and each corridor's series sums to the corridor ---------- */
+ assert.equal(merged.history.length,48,'24H on a quarter hour is 48 half-hour bins');
+ merged.history.forEach((h,i)=>{
+  assert.equal(h.from,start+i*2*BUCKET_MS,`bin ${i} starts on the grid`);
+  assert.equal(h.to-h.from,2*BUCKET_MS,`bin ${i} is two spans long`);
+ });
+ assert.equal(merged.history.at(-1).to,at,'the last bin ends at the window end');
+ merged.history.forEach((h,i)=>{
+  // Each bar must be exactly the raw aggregation over its own span: nothing apportioned between bars.
+  const raw=aggregateSpan(records,h.from,h.to,'1H');
+  close(h.value,raw.totals.attributed,`bin ${i} value equals the raw aggregation over it`);
+  for(const c of raw.corridors){
+   const m=merged.corridors.find(x=>x.id===c.id);
+   close(m.series.value[i],c.usdValue,`corridor ${c.id} bin ${i} value`);
+   assert.equal(m.series.count[i],c.transactionCount,`corridor ${c.id} bin ${i} count`);
+  }
+ });
+ for(const [snap,name] of [[merged,'sealed'],[direct,'raw']])for(const c of snap.corridors){
+  assert.equal(c.series.value.length,snap.history.length,`${name} corridor ${c.id}: one series entry per bar`);
+  close(c.series.value.reduce((n,v)=>n+v,0),c.usdValue,`${name} corridor ${c.id} series sums to its value`);
+  assert.equal(c.series.count.reduce((n,v)=>n+v,0),c.transactionCount,`${name} corridor ${c.id} series sums to its count`);
+ }
+ // The raw path bins by block time, half-open like spans: a transfer on a bin's closing boundary is in that bin.
+ const edge=aggregate([transfer({blockTime:start+WINDOWS[window]/40,usdValue:900})],window,at);
+ assert.equal(edge.corridors[0].series.count[0],1,'a boundary transfer belongs to the bin it closes');
+ assert.equal(merged.history[0].observed,undefined,'no observed share without the chain list');
+ const withChains=mergeRollups(parts,window,at,['Ethereum']);
+ assert.ok(withChains.history.every(h=>h.observed===1),'a fully read day is observed in every bin');
+ const gappy=mergeRollups(parts.filter((_,i)=>i!==10),window,at,['Ethereum']);
+ close(gappy.history[5].observed,.5,'a missing span halves its bin\'s observed share');
+ close(mergeRollups(parts,window,at,['Ethereum','Base']).history[0].observed,.5,'a chain with no spans counts as unobserved');
+ // A live tail ending mid-span, and a 7D window: the bin grid stays on quarter hours and covers the window.
+ const off=at+7*60_000,offBins=windowBins(window,off).bins;
+ assert.equal(offBins.length,48,'off the grid, the partial first span drops out and the last bin holds the live tail');
+ assert.equal(offBins[0].from,start+BUCKET_MS,'the first bin starts at the first whole span');
+ assert.equal(offBins.at(-1).to,off,'the last bin ends at the live moment');
+ assert.ok(offBins.every(b=>(b.from%BUCKET_MS===0)),'every bin starts on a quarter hour');
+ assert.equal(windowBins('7D',at).bins.length,56,'7D is 56 three-hour bins');
 
  // The unmapped headline is exact; only the listed items are a largest-few sample.
  const du=selectUnattributed(records,window,at,{minUsd:0,sort:'value'});
@@ -303,4 +342,4 @@ const fullDay=chains=>chains.map(chain=>({chain,observedMs:BUCKET_MS}));
  assert.deepEqual(registryVersionsOf([a1,a2]).sort(),['registry-a','registry-b'],'a span sealed under another registry stays visible as such');
 }
 
-console.log('PASS: sealed history (span tiling, exact totals and corridors, true top lists, idempotent sealing, measured coverage, gated baselines, registry versions)');
+console.log('PASS: sealed history (span tiling, exact totals and corridors, true top lists, timeline bins and corridor series, idempotent sealing, measured coverage, gated baselines, registry versions)');

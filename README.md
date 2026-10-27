@@ -42,7 +42,9 @@ small fraction of on-chain volume and says exactly how small.
 - **Windows.** 5M and 1H come from transfers held in memory. 24H and 7D are assembled from completed quarter-hours,
   each sealed into exact accounting: those the visitor's own browser watched, kept in that browser, and those the shared
   history recorder published; for each chain and quarter hour the better-observed one is used, never both. They unlock
-  once 80% of the window has been observed. The browser uploads nothing, and nothing is scaled up.
+  once 80% of the window has been observed. The browser uploads nothing, and nothing is scaled up. The bars under the
+  map can be read and clicked to replay from that moment; a corridor's panel shows its own bars, so a total made of one
+  burst and one made of steady flow no longer look alike.
 - **Why is this mapped here?** Every corridor opens into evidence cards: the entity, the explorer tag, the
   jurisdiction document, the date each was last verified, and whether the endpoint is a first-party label, a
   DERIVED cross-chain reuse of an Ethereum label, or an INFERRED deposit address seen sweeping into a labelled wallet.
@@ -192,7 +194,9 @@ uploaded by hand to a folder on jakepercy.com. On 2026-10-26 the history recorde
 day's spans in a compact, lossless format, about 2.6 MB a week gzipped. On 2026-10-27 the page began reading it, after a
 comparison with a browser's own spans (`docs/measurements/2026-10-27/`) found the two read the same transfers and that the
 browser had sealed each quarter hour before reading a sweep made just after its close; both now seal once reading has
-passed two minutes beyond the end. The project was formerly Ledger Atlas;
+passed two minutes beyond the end. Later on 2026-10-27 playback began to scrub the recorded week on 24H and 7D (it
+had been held to the last hour), the timeline's bars became readable and clickable, and the corridor panel gained the
+corridor's own bars. The project was formerly Ledger Atlas;
 some file names and the browser's history store still carry that name.
 
 ## Repository map

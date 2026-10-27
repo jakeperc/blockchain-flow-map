@@ -31,7 +31,7 @@ export function aggregateSpan(events:Iterable<Transfer|TotalsInput>,start:number
  const window=label,at=end,duration=end-start;
  const totals={observed:0,adjusted:0,attributed:0,domestic:0,unattributed:0,excluded:0,unresolved:0,unpricedCount:0,transactionCount:0,coverage:null as number|null};
  const corridors=new Map<string,Corridor>(), countries=new Map<string,CountrySummary>(),seen=new Set<string>(),classes:Record<string,number>={};
- const history=Array.from({length:40},(_,i)=>({at:start+(i+.5)*duration/40,value:0}));
+ const history=Array.from({length:40},(_,i)=>({at:start+(i+.5)*duration/40,from:start+i*duration/40,to:start+(i+1)*duration/40,value:0}));
  const country=(code:string)=>{if(!countries.has(code))countries.set(code,{code,inbound:0,outbound:0,knownEndpointAdjusted:0,coverage:null,unplacedIn:0,unplacedOut:0,entities:[]});return countries.get(code)!;};
  const entityRow=(c:CountrySummary,entity:string,jurisdiction:string)=>{let e=c.entities.find(e=>e.entity===entity);if(!e){e={entity,jurisdiction,unplacedIn:0,unplacedOut:0,transactionCount:0};c.entities.push(e);}return e;};
  for(const t of events){
@@ -50,10 +50,13 @@ export function aggregateSpan(events:Iterable<Transfer|TotalsInput>,start:number
   if(!a||!b||t.adjustment!=='included'){totals.unattributed+=value;continue;}
   const f=t as Transfer; // only doubly-admissible included transfers reach here; producers must store those in full
   totals.attributed+=value;country(a).outbound+=value;country(b).inbound+=value;
-  history[Math.min(39,Math.floor((t.blockTime-start)/duration*40))].value+=value;
+  // Bins are half-open at the start like the span itself, so a transfer on a bin boundary belongs to the earlier bin.
+  const bin=Math.min(39,Math.max(0,Math.ceil((t.blockTime-start)/duration*40)-1));
+  history[bin].value+=value;
   const id=`${a}-${b}`;
   let c=corridors.get(id);
-  if(!c){c={id,origin:a,destination:b,window,windowStart:start,windowEnd:end,usdValue:0,transactionCount:0,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:0,rankScore:0};corridors.set(id,c);}
+  if(!c){c={id,origin:a,destination:b,window,windowStart:start,windowEnd:end,usdValue:0,transactionCount:0,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:0,rankScore:0,series:{value:Array(40).fill(0),count:Array(40).fill(0)}};corridors.set(id,c);}
+  c.series!.value[bin]+=value;c.series!.count[bin]++;
   c.usdValue+=value;c.transactionCount++;c.lastActivity=Math.max(c.lastActivity,t.blockTime);
   c.assets[f.asset]=(c.assets[f.asset]??0)+value;c.chains[f.chain]=(c.chains[f.chain]??0)+value;
   const conf=f.senderEntity.confidence==='VERIFIED'&&f.receiverEntity.confidence==='VERIFIED'?'VERIFIED':'HIGH';c.confidence[conf]=(c.confidence[conf]??0)+value;
