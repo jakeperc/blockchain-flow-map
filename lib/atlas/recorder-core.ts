@@ -25,6 +25,13 @@ import {addressKey,classifyRec,inferDeposits,priceAt,type InferOptions,type Rec,
 
 /** The context a seal infers from, and how long the browser keeps raw transfers: the same 90 minutes by design. */
 export const CONTEXT_MS=90*60000;
+/**
+ * A quarter hour is sealed once reading has passed this far beyond its end, and its context ends there, by the browser
+ * and the recorder alike. A deposit made late in a quarter hour is often swept a minute or two after it closes, and
+ * inference needs that sweep in the context: a browser that sealed by the clock, before its reads had caught up,
+ * placed 45% less Tron value than the recorder (docs/measurements/2026-10-27/).
+ */
+export const SEAL_DELAY_MS=2*60000;
 /** A deposit address forwards (nearly) everything it received. Approved 2026-09-18 with deposit inference itself. */
 export const FORWARD_SHARE=.8;
 /** A price sample further than this from a block's time does not price it. There is never a $1 fallback. */

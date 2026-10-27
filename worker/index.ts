@@ -24,14 +24,13 @@ import {watchedAddresses,knownAttribution,isDerived,ENTITIES,registryVersion} fr
 import {EXPLORERS} from '../lib/atlas/geography';
 import {decodeTransferLog,makeBlockTimeFn,nextPollRange,readInterval,type Rec,type Sample} from '../lib/atlas/live-core';
 import {BUCKET_MS,STORED_SCHEMA,toStored,type StoredRollup} from '../lib/atlas/rollup';
-import {CONTEXT_MS,PRICE_TOLERANCE_MS,DAY_FORMAT,MANIFEST_FORMAT,encodeDay,fromRow,priceFromFirst,sealChainBucket,toRow,type Interval,type RecordRow,type RecorderRegistry} from '../lib/atlas/recorder-core';
+import {CONTEXT_MS,PRICE_TOLERANCE_MS,SEAL_DELAY_MS,DAY_FORMAT,MANIFEST_FORMAT,encodeDay,fromRow,priceFromFirst,sealChainBucket,toRow,type Interval,type RecordRow,type RecorderRegistry} from '../lib/atlas/recorder-core';
 import type {Asset,Chain} from '../lib/atlas/model';
 import {REPO_URL} from '../lib/site/links';
 
 interface Env {DB:D1Database;HISTORY:R2Bucket}
 
 const TIP_LAG=1;                                   // as the page (live-client.ts)
-const SEAL_DELAY_MS=2*60000;                       // a quarter hour is sealed once reading is this far past its end
 const BACKFILL_MS=7*86400000+CONTEXT_MS+BUCKET_MS; // a week of spans, the oldest with its whole context
 const KEEP_MS=8*86400000;                          // spans are kept a week plus a margin (D8 point 9)
 const RUN_BUDGET_MS=45000;                         // a run starts no new read or seal after this; the next run is a minute away

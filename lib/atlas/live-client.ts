@@ -1,6 +1,7 @@
 /**
  * Browser-side live data source. Runs entirely in the visitor's browser against free public endpoints,
- * with no server and no database: the same architecture as a single-file market widget. It reuses the
+ * with no server between them: the same architecture as a single-file market widget (the history recorder
+ * of decision D8 only supplies sealed spans for 24H and 7D, see history-remote.ts). It reuses the
  * project's real classification and aggregation code (engine.ts), so totals, corridor ranking and the
  * accounting panel are computed exactly as the production backend would compute them; the only
  * difference is memory. Nothing survives a page reload, so only the 5M and 1H windows are offered and
@@ -36,7 +37,7 @@ import {rpcAddress} from './tron';
 import {knownAttribution,isDerived,watchedAddresses,dormancyInfo,registryHealth,registryVersion,ENTITIES} from './known-entities';
 import {addressKey,classifyRec,decodeTransferLog,inferDeposits,makeBlockTimeFn,nextPollRange,planChunks,priceAt,pruneRecords,readInterval,replyVerdict,addSample,type Rec,type Sample} from './live-core';
 import {BUCKET_MS,bucketOf,sealSpan,mergeRollups,mergeUnmapped,coverageOf,partsForChains,applyBaselines,registryVersionsOf,toStored,fromStored,type Rollup} from './rollup';
-import {CONTEXT_MS,PRICE_TOLERANCE_MS,inferOptions,observedMsIn,pickSpans,sealChainBuckets,spanObservedMs,type Interval,type PickedSpan,type RecorderRegistry} from './recorder-core';
+import {CONTEXT_MS,PRICE_TOLERANCE_MS,SEAL_DELAY_MS,inferOptions,observedMsIn,pickSpans,sealChainBuckets,spanObservedMs,type Interval,type PickedSpan,type RecorderRegistry} from './recorder-core';
 import {createHistoryStore,type HistoryStatus} from './history-store';
 import {createRemoteHistory,type RemoteStatus} from './history-remote';
 import {RECORDER_URL} from '../site/links';
@@ -528,6 +529,11 @@ export function createLiveSource():LiveSource{
   * it to tell a quiet window from an unwatched one. Each seal prices, infers and classifies its own copy of the
   * chain's records (sealChainBuckets in recorder-core.ts), so a seal that lands before the buffer's coalesced
   * re-classification has run no longer stores a poll's transfers as unattributed.
+  *
+  * The recorder's rule, so both seal the same thing: a span is sealed once this feed has READ to its seal point
+  * (end + SEAL_DELAY_MS), and its inference context ends at that point. Sealing when the clock passed the end
+  * missed sweeps made just after the close: a poll trails the clock by up to 20 s, and the 2026-10-27 comparison
+  * found a $20M Tron deposit swept 102 s after its quarter hour left unplaced (docs/measurements/2026-10-27/).
   */
  function sealDue(){
   const now=Date.now();
@@ -536,13 +542,12 @@ export function createLiveSource():LiveSource{
   for(const [chain,feed] of feeds){
    // Spans that left the buffer can no longer be sealed (a rejoin after a long pause can mark some), so stop tracking them.
    for(const b of feed.dirty)if(b<first)feed.dirty.delete(b);
-   const due:number[]=[];
-   for(let b=first;b+BUCKET_MS<=now;b+=BUCKET_MS)if(!sealed.has(partKey(b,chain))||feed.dirty.has(b))due.push(b);
-   if(!due.length)continue;
-   const parts=sealChainBuckets({chain,buckets:due,records:feed.buffer,observed:feed.observed,prices:series,registry:REGISTRY,contextEnd:now});
-   for(const part of parts){
-    sealed.set(partKey(part.bucket,chain),part);fresh.push(part);
-    feed.dirty.delete(part.bucket);
+   const readTo=Math.min(now,feed.observed.reduce((m,x)=>Math.max(m,x.to),0));
+   for(let b=first;b+BUCKET_MS+SEAL_DELAY_MS<=readTo;b+=BUCKET_MS){
+    if(sealed.has(partKey(b,chain))&&!feed.dirty.has(b))continue;
+    const [part]=sealChainBuckets({chain,buckets:[b],records:feed.buffer,observed:feed.observed,prices:series,registry:REGISTRY,contextEnd:b+BUCKET_MS+SEAL_DELAY_MS,sealedAt:now});
+    sealed.set(partKey(b,chain),part);fresh.push(part);
+    feed.dirty.delete(b);
    }
   }
   // Drop spans past the retention horizon from memory; the store prunes its own copy when it next loads.
@@ -663,7 +668,7 @@ export function createLiveSource():LiveSource{
   const chainList=active.map(f=>f.chain).join(', ').replace(/, ([^,]*)$/,' and $1');
   const tips=active.map(f=>`${f.chain} ${f.coverage().tip.toLocaleString()}`).filter(t=>!/ 0$/.test(t));
   s.message=[
-   `Live from public ${chainList} nodes, read directly by your browser (no server, no database).`,
+   `Live from public ${chainList} nodes, read directly by your browser, not through a server.`,
    tips.length?`At block${tips.length>1?'s':''} ${tips.join(', ')}.`:'',
    loading.length?`Loading the preceding hour: ${loading.reduce((n,p)=>n+p.done,0).toLocaleString()} of ${loading.reduce((n,p)=>n+p.total,0).toLocaleString()} blocks.`:'',
    gaps.length?gaps.map(g=>`${g.missingBlocks.toLocaleString()} of ${g.plannedBlocks.toLocaleString()} ${g.chain} blocks could not be loaded from the public endpoints, so that window is incomplete and is reported as partial rather than live.`).join(' '):'',

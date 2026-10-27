@@ -11,7 +11,8 @@ export const REPO_URL='https://github.com/jakeperc/blockchain-flow-map';
 export const LINKEDIN_URL='';
 /**
  * The shared history recorder's address (decision D8, worker/), ending in a slash. While it is empty the page never
- * contacts it and behaves exactly as before: 24H and 7D come from this browser's own recorded history alone. It is set
- * only after the recorder's spans have been compared with a browser's own for the same quarter hours.
+ * contacts it and behaves exactly as before: 24H and 7D come from this browser's own recorded history alone. Set on
+ * 2026-10-27, after the recorder's spans were compared with a browser's own for the same quarter hours
+ * (docs/measurements/2026-10-27/).
  */
-export const RECORDER_URL='';
+export const RECORDER_URL='https://bfm-recorder.jakepercy.workers.dev/';

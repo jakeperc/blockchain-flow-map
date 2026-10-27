@@ -204,7 +204,7 @@ function currentState(f) {
     `The registry bundled into this build holds ${number(r.addresses)} addresses with a public name tag read on that chain's own block explorer and ${number(r.derived)} derived addresses, covering ${number(r.entities)} operating entities in ${number(r.jurisdictions)} jurisdictions; these count addresses with evidence, not wallets watched, value moved or any share of the market.`,
     `Evidence older than ${f.horizonDays} days stops counting toward routes, and the earliest evidence in this build reaches that age on ${f.expiry}.`,
     `The list sent to the nodes leaves out addresses that moved no USDC or USDT in the ${f.dormancy.windowDays} days to ${f.dormancy.measuredAt}: such an address is still attributed when the other end of a transfer is on the list, a transfer between two off-list addresses is not requested, and a wallet that wakes up is added at the next measurement.`,
-    f.unlockShare ? `24H and 7D appear only once a browser has recorded at least ${Math.round(f.unlockShare * 100)}% of the window.` : '',
+    f.unlockShare ? `24H and 7D appear only once at least ${Math.round(f.unlockShare * 100)}% of the window has been recorded, by this browser or the shared recorder.` : '',
     f.pollMs && f.priceMs && f.sampleMs ? `A browser polls each chain about every ${duration(f.pollMs)}, refreshes prices about every ${duration(f.priceMs)} and reads a small unfiltered sample of chain time about every ${duration(f.sampleMs)}.` : '',
   ];
   return `**Current state (data as of ${f.asOf}; treat as stale after ${STALE_AFTER_DAYS} days).** ${parts.filter(Boolean).join(' ')}`;

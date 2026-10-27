@@ -24,8 +24,10 @@ A live, evidence-only map of cross-border stablecoin settlement. The visitor's b
 Optimism, Tron), attributes each transfer against a registry of exchange and custodian wallets whose evidence is a
 public name tag on the address's own explorer page plus a regulator or company document for the operator's
 jurisdiction, and draws a route only when both ends of a transfer are evidenced wallets in different jurisdictions.
-There is no server, no database and no API key: a static folder that CI builds through the gate and GitHub Pages
-publishes. The map deliberately shows only a
+The page needs no server and no API key: your browser reads the chains itself. A small recorder on Cloudflare reads
+the same public endpoints around the clock and publishes sealed quarter-hour summaries as public, read-only files, so
+the 24H and 7D windows are ready when the page opens. The page is a static folder that CI builds through the gate and
+GitHub Pages publishes. The map deliberately shows only a
 small fraction of on-chain volume and says exactly how small.
 
 ## What you are looking at
@@ -37,9 +39,10 @@ small fraction of on-chain volume and says exactly how small.
 - **The drawing rule.** "A route is drawn only when both ends of a transfer are publicly evidenced wallets in
   different jurisdictions. Most transfers are not, by design." A glow at a jurisdiction is one-sided evidenced
   activity, never a route.
-- **Windows.** 5M and 1H come from transfers held in memory. 24H and 7D are assembled from every completed
-  quarter-hour the visitor's own browser has watched, sealed into exact accounting and kept in that browser alone;
-  they unlock once 80% of the window has been observed. Nothing is uploaded, shared or scaled up.
+- **Windows.** 5M and 1H come from transfers held in memory. 24H and 7D are assembled from completed quarter-hours,
+  each sealed into exact accounting: those the visitor's own browser watched, kept in that browser, and those the shared
+  history recorder published; for each chain and quarter hour the better-observed one is used, never both. They unlock
+  once 80% of the window has been observed. The browser uploads nothing, and nothing is scaled up.
 - **Why is this mapped here?** Every corridor opens into evidence cards: the entity, the explorer tag, the
   jurisdiction document, the date each was last verified, and whether the endpoint is a first-party label, a
   DERIVED cross-chain reuse of an Ethereum label, or an INFERRED deposit address seen sweeping into a labelled wallet.
@@ -80,13 +83,14 @@ Each one is written up with the measured evidence and the condition under which 
 | D5 | 2026-09-25 | A 24H or 7D figure is what this browser recorded, in sealed quarter-hours, offered at 80% coverage. | Recorded history, measured coverage, real baselines; no per-transfer detail stored. |
 | D6 | 2026-09-29 | Tronscan's own public name tags are admissible for Tron, like Etherscan's. | Tron live with 27 tagged wallets; nothing derives onto Tron. |
 | D7 | 2026-10-02 | Who the Landmarks page may name: an explorer tag crediting no outside source, or a primary document identifying the transaction. | News and analytics firms never name anyone there; a person only on their own statement or a court record. |
-| D8 | 2026-10-21 | A shared recorder may seal the same quarter-hours as each browser, with the same code; one span per chain and quarter hour, the better-observed one, never summed. | Built in [`worker/`](worker/README.md), not yet deployed or read by the page: first measured, then compared with browser-recorded spans. It backfills a week; transfers older than the page's price sources reach are priced from Bitstamp (amended 2026-10-26). |
+| D8 | 2026-10-21 | A shared recorder may seal the same quarter-hours as each browser, with the same code; one span per chain and quarter hour, the better-observed one, never summed. | Built in [`worker/`](worker/README.md), live on Cloudflare since 2026-10-26 and read by the page since 2026-10-27, after its spans were [compared with a browser's](docs/measurements/2026-10-27/recorder-vs-browser.md). It backfills a week; transfers older than the page's price sources reach are priced from Bitstamp (amended 2026-10-26). |
 
 ## How it works
 
 ```mermaid
 flowchart LR
-  subgraph browser ["Visitor's browser, no server"]
+  REC["worker/ history recorder<br/>sealed quarter hours, public files"] --> LC
+  subgraph browser ["Visitor's browser"]
     RPC["Keyless public RPC<br/>eth_getLogs, two topic positions"] --> LC["live-client.ts<br/>feeds, backfill, poll, sample, health"]
     LC --> CORE["live-core.ts<br/>decode, price, classify, inferDeposits"]
     CORE --> ENG["engine.ts<br/>aggregateSpan: corridors, countries, totals"]
@@ -184,8 +188,11 @@ the gate type-checks the whole project, the page's first minute reads honestly, 
 author and the source, the 1H window has corridor baselines, and the bulk explorer-scan outputs are kept offline. On 2026-10-19 a pinch on the flat map could fling it off a phone's screen; that is fixed, and the flat map opens on the whole world. Since 2026-10-19 every push to `main` also publishes the map to GitHub Pages through the same gated build. The screenshots above are dated captures of the live page, and the projection caption no longer sits under the map legend on desktop. On 2026-10-20 the health badge, which a 375 px phone clipped at the right edge of the top bar, leaves the top bar on phones (the time strip and status strip still show it), and the headline figures were re-measured at 375 px: three columns, nothing overlapping. On 2026-10-21 sealing moved into `lib/atlas/recorder-core.ts`, checked on recorded real Ethereum and Tron logs; what the page shows is unchanged, except that a quarter hour sealed in the moment between a poll and the page's re-classification of it is no longer stored with that poll's transfers unattributed. Later that day Avalanche, which had read PARTIAL since `api.avax.network` cut its filtered reads from 5,000 blocks to 100, reads LIVE again: Tenderly's Avalanche gateway joined publicnode on the filtered feed (re-measured in `docs/LIVE-FEED.md`), and the page now moves to the next endpoint when one refuses a request with a JSON-RPC error, so the next such cut costs one endpoint rather than a chain. Base was re-measured the same day: `mainnet.base.org` had cut its filtered reads from 2,000 blocks to 200 and then refused them, which had left publicnode as the only endpoint serving Base's filter. Tenderly's and Sentio's Base endpoints now serve it too, with Base's chunk lowered from 1,500 blocks to the 1,000 they take.
 Since 2026-10-21 the map lives at flows.jakepercy.com, published by GitHub Pages from `main`; it is no longer
 uploaded by hand to a folder on jakepercy.com. On 2026-10-26 the history recorder of decision D8 was built in
-`worker/`, after a test run on Cloudflare. It is not deployed yet, and the page does not read it. It backfills a week
-on its first start and publishes each day's spans in a compact, lossless format, about 2.6 MB a week gzipped. The project was formerly Ledger Atlas;
+`worker/`, after a test run on Cloudflare, and deployed. It backfilled a week on its first start and publishes each
+day's spans in a compact, lossless format, about 2.6 MB a week gzipped. On 2026-10-27 the page began reading it, after a
+comparison with a browser's own spans (`docs/measurements/2026-10-27/`) found the two read the same transfers and that the
+browser had sealed each quarter hour before reading a sweep made just after its close; both now seal once reading has
+passed two minutes beyond the end. The project was formerly Ledger Atlas;
 some file names and the browser's history store still carry that name.
 
 ## Repository map
