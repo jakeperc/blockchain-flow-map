@@ -176,7 +176,7 @@ dated measurement reports.
 ## Maintenance
 
 - The dormancy measurement is redone monthly (`scripts/registry/measure-dormancy.mjs`, about 100 minutes on free
-  endpoints); the build fails once it is older than 45 days. Last measured 2026-10-07.
+  endpoints); the build fails once it is older than 45 days. Last measured 2026-11-09.
 - The Landmarks "recent" window moves monthly (`scripts/landmarks/README.md`).
 - Evidence is re-verified before it ages out: the earliest current expiry is 2027-03-17 and the gate starts failing
   60 days before it.
