@@ -11,7 +11,9 @@
  * logs are fetched once for the union of their filters, then each registry sees only the logs its own filter returns.
  *
  *   node scripts/measure-corridors.mjs --window w.json [--end-hours-ago N] [--refs cc97055,worktree]
- *        [--chains Ethereum,Base,Arbitrum] [--out result.json] [--explain]
+ *        [--chains Ethereum,Tron] [--out result.json] [--explain]
+ *
+ * --chains defaults to every chain in lib/atlas/feeds.ts (FEEDS), whose hour, chunk and slot time the window uses.
  *
  * --explain lists deposit-address inferences the first registry drew and the last one no longer draws, with the
  * reason under the last registry. More evidence can remove an inference: once a newly evidenced wallet shows an
@@ -34,12 +36,17 @@ const opt=(n,d)=>{const i=args.indexOf(n);return i>-1?args[i+1]:d;};
 const windowFile=opt('--window');
 const endAgo=Number(opt('--end-hours-ago',0));
 const refs=opt('--refs','worktree').split(',');
-const chains=opt('--chains','Ethereum,Base,Arbitrum').split(',');
 const outFile=opt('--out');
 const explain=args.includes('--explain');
 if(!windowFile){console.error('usage: node scripts/measure-corridors.mjs --window w.json [--end-hours-ago N] [--refs a,b] [--chains ...] [--out r.json]');process.exit(1);}
-// Mirrors CHAIN_CONFIG in lib/atlas/live-client.ts: blocks in the backfilled hour, and the header spacing it uses.
-const LIVE={Ethereum:{blocks:300,chunk:50,slotMs:12000},Base:{blocks:1800,chunk:1500,slotMs:2000},Arbitrum:{blocks:14400,chunk:1200,slotMs:250}};
+// The working tree's pipeline supplies the live feed's own config (lib/atlas/feeds.ts: blocks in the backfilled hour,
+// chunk and slot time) and each chain's RPC address form (tron.ts: Tron's base58 rows are queried as 20-byte hex), so
+// this replica cannot drift from the browser's. The default is every chain the live feed reads.
+const WORKTREE=loadAtlas();
+const LIVE=WORKTREE.feeds.FEEDS;
+const rpcAddress=WORKTREE.tron.rpcAddress;
+const chains=opt('--chains',Object.keys(LIVE).join(',')).split(',');
+for(const c of chains)if(!LIVE[c]||!POOLS[c]){console.error(`${c}: not a live chain (known: ${Object.keys(LIVE).join(', ')})`);process.exit(1);}
 const TIP_LAG=1,PRICE_TOLERANCE_MS=600000,FORWARD_SHARE=.8;
 const TRANSFER='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const COINGECKO_IDS={USDT:'tether',USDC:'usd-coin'};
@@ -79,12 +86,14 @@ if(!win){
 }
 
 /* ---------- Registries ---------- */
-const atlases=Object.fromEntries(refs.map(ref=>[ref,loadAtlas(ref==='worktree'?undefined:ref)]));
+const atlases=Object.fromEntries(refs.map(ref=>[ref,ref==='worktree'?WORKTREE:loadAtlas(ref)]));
 // The addresses a browser built from this registry would filter on: the live filter (evidenced minus the dormant tier,
 // decision D2) where the registry has one, the whole evidenced list for older refs that predate the tier.
 // --full-filter ignores the dormant tier (the whole registry is the filter), to separate its effect from other registry changes.
 const FULL_FILTER=args.includes('--full-filter');
-const evidenced=(atlas,chain)=>{const ke=atlas['known-entities'];return new Set((FULL_FILTER?ke.evidencedAddresses:(ke.watchedAddresses??ke.evidencedAddresses))(chain).map(a=>a.toLowerCase()));};
+// Addresses are kept in RPC form (lowercase 0x hex), which is what log topics carry on every chain, Tron included.
+const evidenced=(atlas,chain)=>{const ke=atlas['known-entities'];return new Set((FULL_FILTER?ke.evidencedAddresses:(ke.watchedAddresses??ke.evidencedAddresses))(chain).map(a=>rpcAddress(chain,a)));};
+const tokensOf=(atlas,chain)=>Object.fromEntries(Object.entries(atlas.evm.CONTRACTS[chain]??{}).map(([a,t])=>[rpcAddress(chain,a),t]));
 
 /* ---------- Logs: one fetch per chain for the union of every registry's filter ---------- */
 const logsByChain={},missing={};
@@ -93,7 +102,7 @@ for(const chain of chains){
  const pool=POOLS[chain];
  const union=new Set();for(const a of Object.values(atlases))for(const x of evidenced(a,chain))union.add(x);
  const topics=[...union].map(pad);
- const tokens=Object.keys(Object.values(atlases)[0].evm.CONTRACTS[chain]);
+ const tokens=Object.keys(tokensOf(WORKTREE,chain));
  async function logsFor(a,b,t){
   try{return await rpcPool(pool.urls,'eth_getLogs',[{fromBlock:hex(a),toBlock:hex(b),address:tokens,topics:t}]);}
   catch(e){if(b-a<25)throw e;const m=Math.floor((a+b)/2);return [...await logsFor(a,m,t),...await logsFor(m+1,b,t)];}
@@ -115,14 +124,14 @@ for(const chain of chains){
 const at=Math.max(...chains.map(c=>win.chains[c].times[win.chains[c].end]));
 const results={},detail={};
 for(const [ref,A] of Object.entries(atlases)){
- const core=A['live-core'],ke=A['known-entities'],geo=A.geography,eng=A.engine,model=A.model,evm=A.evm;
+ const core=A['live-core'],ke=A['known-entities'],geo=A.geography,eng=A.engine,model=A.model;
  const series={USDT:win.prices.USDT,USDC:win.prices.USDC};
  const recs=[],slots={};
  for(const chain of chains){
   const w=win.chains[chain],ev=evidenced(A,chain);slots[chain]=ev.size;
   const times=new Map(Object.entries(w.times).map(([k,v])=>[Number(k),v]));
   const timeOf=core.makeBlockTimeFn(w.bounds,times,w.end,w.times[w.end],LIVE[chain].slotMs);
-  const tokens=Object.fromEntries(Object.entries(evm.CONTRACTS[chain]).map(([k,v])=>[k.toLowerCase(),v]));
+  const tokens=tokensOf(A,chain);
   const ids=new Set();
   for(const log of logsByChain[chain]){
    // The filter this registry would have sent: sender or receiver evidenced on this chain.
