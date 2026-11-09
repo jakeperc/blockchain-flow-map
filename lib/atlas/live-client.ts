@@ -325,14 +325,16 @@ export function createLiveSource():LiveSource{
      const text=await res.text();
      let json:unknown=null;try{json=JSON.parse(text);}catch{json=null;}
      const verdict=replyVerdict(res.status,json);
+     // An endpoint's 400/404/429 or a JSON-RPC cap is routine on free endpoints and handled by rotating, so it logs at
+     // debug (visible under the console's Verbose level). Real loss still warns: blocks not loaded, a failed backfill.
      if(verdict==='rotate'){
-      console.warn(`[ledger-atlas live] ${chain} ${url} HTTP ${res.status} → ${text.slice(0,160)}`);
+      console.debug(`[ledger-atlas live] ${chain} ${url} HTTP ${res.status} → ${text.slice(0,160)}`);
       lastErr=Error(`HTTP ${res.status}`);rpcIndex++;endpointStrikes=0;await sleep(200);continue;
      }
      if(verdict==='retry'){lastErr=Error(`transient ${res.status}`);endpointStrikes++;if(endpointStrikes>=RPC_STRIKES){rpcIndex++;endpointStrikes=0;}await sleep(400*(attempt+1));continue;}
      failures=0;endpointStrikes=0;
      if(verdict==='refused'){
-      console.warn(`[ledger-atlas live] ${chain} ${url} refused → ${text.slice(0,160)}`);
+      console.debug(`[ledger-atlas live] ${chain} ${url} refused → ${text.slice(0,160)}`);
       refusal=json;refusedBy.add(url);rpcIndex++;
       if(refusedBy.size>=pool.length)break; // every endpoint refused: a retry would only repeat them
       continue;
