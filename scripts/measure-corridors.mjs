@@ -102,7 +102,8 @@ for(const chain of chains){
  const pool=POOLS[chain];
  const union=new Set();for(const a of Object.values(atlases))for(const x of evidenced(a,chain))union.add(x);
  const topics=[...union].map(pad);
- const tokens=Object.keys(tokensOf(WORKTREE,chain));
+ // Every compared registry's token contracts, so an older ref whose contract list differs still sees its own logs.
+ const tokens=[...new Set(Object.values(atlases).flatMap(a=>Object.keys(tokensOf(a,chain))))];
  async function logsFor(a,b,t){
   try{return await rpcPool(pool.urls,'eth_getLogs',[{fromBlock:hex(a),toBlock:hex(b),address:tokens,topics:t}]);}
   catch(e){if(b-a<25)throw e;const m=Math.floor((a+b)/2);return [...await logsFor(a,m,t),...await logsFor(m+1,b,t)];}

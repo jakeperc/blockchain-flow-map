@@ -325,8 +325,9 @@ export function createLiveSource():LiveSource{
      const text=await res.text();
      let json:unknown=null;try{json=JSON.parse(text);}catch{json=null;}
      const verdict=replyVerdict(res.status,json);
-     // An endpoint's 400/404/429 or a JSON-RPC cap is routine on free endpoints and handled by rotating, so it logs at
-     // debug (visible under the console's Verbose level). Real loss still warns: blocks not loaded, a failed backfill.
+     // A rotation (an HTTP error without a retryable JSON body, such as 400, 403, 404 or a bare 429, or a reply that is not
+     // JSON) and a JSON-RPC refusal (an endpoint's own cap) are routine on free endpoints and handled by moving on, so
+     // they log at debug (the console's Verbose level). Real loss still warns: blocks not loaded, a failed backfill.
      if(verdict==='rotate'){
       console.debug(`[ledger-atlas live] ${chain} ${url} HTTP ${res.status} → ${text.slice(0,160)}`);
       lastErr=Error(`HTTP ${res.status}`);rpcIndex++;endpointStrikes=0;await sleep(200);continue;
