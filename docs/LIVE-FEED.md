@@ -17,7 +17,15 @@ file whenever a cap or chunk size is re-measured.
 - **Per-chain config** in `FEEDS` (`lib/atlas/feeds.ts`, pure, imported by `live-client.ts`,
   the registry verifier and the diagnostic scripts): chain id, slot time, blocks per hour,
   chunk size, pause, and each endpoint's measured caps. Ethereum 50-block chunks, Base 1000 (1500 until 2026-10-21),
-  Arbitrum 1200 with a 350 ms pause, Avalanche 1500, Polygon 1200, Optimism 1500. Change them only after re-measuring.
+  Arbitrum 1200 with a 350 ms pause, Avalanche 1800 (1500 until 2026-11-11), Polygon 1200, Optimism 1500. Change them
+  only after re-measuring.
+- **Slot times** size the backfilled hour in blocks, so a chain that speeds up silently shortens it. Measured on
+  2026-11-11 over 24 hours: Ethereum 12.05 s, Polygon 1.50 s, Optimism 2.00 s and Tron 3.00 s match `FEEDS`; Arbitrum
+  0.29 s against 0.25 (the hour reads ~68 minutes, kept); **Base 0.20 s since about 2026-11-06, against 2 s** (432,000
+  blocks a day on Etherscan and over RPC; the 1,800-block hour had shrunk to ~6 minutes), now 18,000 blocks in 18
+  chunks, which all three Base filter endpoints served back to back without a refusal; **Avalanche 0.99 s against
+  1.2** (the 3,000-block hour read ~48 minutes), now 3,600 blocks. Re-check with block counts per day when a chain
+  upgrades.
 - **Endpoint caps** (measured 2026-09-21 with `scripts/probe-endpoint-caps.mjs` in the live
   request shape, three tries per size; "topics" = addresses in one indexed position, ~68
   bytes each; 4,800 addresses and 5,000 blocks were the largest sizes tried, so those are
@@ -70,7 +78,8 @@ file whenever a cap or chunk size is re-measured.
   LIVE only because it rotated to publicnode, which left one endpoint serving Base's filter. Tenderly's and Sentio's
   Base endpoints take 4,800+ addresses but 1,000 blocks, and over one 1,000-block chunk all three returned the same
   logs (371 with the live filter, 372 with the whole registry), so Base's chunk dropped from 1,500 to 1,000 blocks
-  and the filtered feed has three endpoints. The 1,800-block hour is two chunks either way. thirdweb's endpoint
+  and the filtered feed has three endpoints. The 1,800-block hour was two chunks either way (18,000 blocks, 18 chunks,
+  since Base's 200 ms blocks; see slot times above). thirdweb's endpoint
   measured like Sentio and is not listed. The other keyless Base endpoints tried that day did not qualify:
   base.drpc.org serves 100 blocks (200 gets HTTP 400 "ranges over 10000 blocks are not supported on free plan");
   base-pokt.nodies.app and base-public.nodies.app cap at 50 blocks and base-mainnet.public.blastapi.io at 10;

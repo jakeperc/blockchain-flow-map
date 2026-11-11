@@ -56,10 +56,15 @@ export const FEEDS:Partial<Record<Chain,FeedConfig>>={
   // eth_getLogs from the measuring machine with HTTP 429 -32011 "request limit reached" while still answering other
   // calls, so it serves only the small calls. base.gateway.tenderly.co and rpc.sentio.xyz/base take 4,800 addresses
   // but only 1,000 blocks, and returned the same logs as publicnode, so the chunk is 1,000 rather than 1,500: the
-  // 1,800-block hour is two chunks either way, and the filtered feed has three endpoints instead of one. Sentio
-  // refuses a wider read with HTTP 429, which the client takes as a rate limit, so catchupRange stays at the chunk.
+  // filtered feed has three endpoints instead of one. Sentio refuses a wider read with HTTP 429, which the client takes
+  // as a rate limit, so catchupRange stays at the chunk.
+  // Base went from 2 s to 200 ms blocks around 2026-11-06 (measured 2026-11-11: 432,000 blocks in the last 24 hours on
+  // Etherscan and over RPC, against 43,200 a day ten days earlier). Until then the 1,800-block "hour" read about six
+  // minutes, and a six-minute stall forced a full re-read. One hour is now 18,000 blocks, 18 chunks of 1,000: each of
+  // the three filter endpoints served those 36 requests back to back with no refusal and the same 377 logs. liveRange
+  // (about a minute) and sampleBlocks (4 s of chain, as before) are rescaled with the slot.
   endpoints:[{url:'https://base-rpc.publicnode.com',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://base.gateway.tenderly.co',largeBody:true,maxTopics:4800,maxRange:1000},{url:'https://rpc.sentio.xyz/base',largeBody:true,maxTopics:4800,maxRange:1000},{url:'https://mainnet.base.org',largeBody:false},{url:'https://1rpc.io/base',largeBody:false}],
-  chainId:8453,slotMs:2000,blocks:1800,chunk:1000,liveRange:30,catchupRange:1000,pauseMs:0,sampleBlocks:2
+  chainId:8453,slotMs:200,blocks:18000,chunk:1000,liveRange:300,catchupRange:1000,pauseMs:0,sampleBlocks:20
  },
  Arbitrum:{
   endpoints:[{url:'https://arbitrum.gateway.tenderly.co',largeBody:true,maxTopics:1000,maxRange:5000},{url:'https://arb1.arbitrum.io/rpc',largeBody:true,maxTopics:997,maxRange:5000},{url:'https://arbitrum.drpc.org',largeBody:false},{url:'https://1rpc.io/arb',largeBody:false}],
@@ -79,10 +84,13 @@ export const FEEDS:Partial<Record<Chain,FeedConfig>>={
   // sending '*', which is fine for a real page load. avalanche.gateway.tenderly.co, found the same day, takes 5,000
   // blocks and 4,800 addresses like publicnode and returned the same logs, so the filtered feed keeps two endpoints.
   // avalanche.drpc.org caps the filter at 100 blocks, so it too serves only the small calls (headers and the
-  // unfiltered sample) and does not drag the chunk down. 3,000 blocks is one hour at the measured 1.14 s block
-  // time, rounded to a nominal 1.2 s; real header times are interpolated anyway.
+  // unfiltered sample) and does not drag the chunk down. Blocks were 1.14 s on 2026-09-25 (3,000 blocks, nominal
+  // 1.2 s); on 2026-11-11 they were 0.98 s over a week and 1.00 s over a day (median 3,635 blocks an hour), so 3,000
+  // blocks read about 48 minutes. One hour is now 3,600 blocks at a nominal 1.0 s, two chunks of 1,800 (within both
+  // filter endpoints' 5,000). Real header times are interpolated anyway; the slot only sizes the hour, extrapolates a
+  // missing header and times the unfiltered sample.
   endpoints:[{url:'https://avalanche-c-chain-rpc.publicnode.com',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://avalanche.gateway.tenderly.co',largeBody:true,maxTopics:4800,maxRange:5000},{url:'https://api.avax.network/ext/bc/C/rpc',largeBody:false},{url:'https://avalanche.drpc.org',largeBody:false}],
-  chainId:43114,slotMs:1200,blocks:3000,chunk:1500,liveRange:40,catchupRange:1500,pauseMs:0,sampleBlocks:60
+  chainId:43114,slotMs:1000,blocks:3600,chunk:1800,liveRange:40,catchupRange:1800,pauseMs:0,sampleBlocks:60
  },
  /**
   * Switched on 2026-10-01 (docs/measurements/2026-10-01/). Polygon cleared the activity gate

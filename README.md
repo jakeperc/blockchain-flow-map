@@ -196,7 +196,10 @@ comparison with a browser's own spans (`docs/measurements/2026-10-27/`) found th
 browser had sealed each quarter hour before reading a sweep made just after its close; both now seal once reading has
 passed two minutes beyond the end. Later on 2026-10-27 playback began to scrub the recorded week on 24H and 7D (it
 had been held to the last hour), the timeline's bars became readable and clickable, and the corridor panel gained the
-corridor's own bars. The project was formerly Ledger Atlas;
+corridor's own bars. On 2026-11-11 the live hour was re-sized to two chains' real block times: Base moved from 2 s
+to 200 ms blocks around 2026-11-06, so its 1,800-block "hour" had been reading about six minutes (it now reads 18,000
+blocks), and Avalanche's blocks run near 1.0 s rather than 1.2 s (3,600 blocks instead of 3,000; slot times in
+`docs/LIVE-FEED.md`). The project was formerly Ledger Atlas;
 some file names and the browser's history store still carry that name.
 
 ## Repository map
