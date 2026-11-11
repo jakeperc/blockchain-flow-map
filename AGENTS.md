@@ -26,6 +26,11 @@ Hard rules, in short:
 - The page is static and keyless: no runtime env vars and no API keys, and it must behave exactly as before when the
   history recorder is unreachable or its address in the page is empty. The only server is that recorder (decision D8,
   in `worker/`): it reads only the public endpoints the page reads and publishes only sealed spans. Add no other.
+  The Worker bundles `lib/atlas/feeds.ts` and the registry (including the dormancy filter) when it is deployed, and
+  deploys are manual until CI deploys it, so a change to either reaches the recorder only after `wrangler deploy` from
+  `worker/`, which needs Jake's OK. Until then its spans carry the old registry version, which the page discloses.
+- Slot times in `feeds.ts` size the backfilled hour in blocks. A chain that speeds up silently shortens it (Base went
+  from 2 s to 200 ms blocks around 2026-11-06), so re-measure block times by blocks per day when a chain upgrades.
 - The observed-onchain figure is a declared sample. Never scale it up.
 - Lint has 33 pre-existing errors and 6 warnings (`pnpm lint`, recounted 2026-10-27 under the typescript-eslint and
   react-hooks presets). Do not add to that count.
