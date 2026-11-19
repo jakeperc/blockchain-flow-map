@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import {COUNTRIES} from '@/lib/atlas/geography';
 import {money} from '@/lib/atlas/model';
+import {leadPair} from '@/lib/atlas/encoding';
 import type {Ctx} from './frame';
 import {projection} from './frame';
 import type {Rig} from './camera';
@@ -57,10 +58,16 @@ export function buildInteraction(ctx:Ctx,deps:InteractionDeps):Interaction{
   }
   return best;
  }
+ /** A strand names its sender and receiver; the country pair, which is where those two are established, comes second. */
+ function strandHover(r:Route):Hover{
+  const c=r.data,where=`${COUNTRIES[c.origin].name} → ${COUNTRIES[c.destination].name}`,lead=leadPair(c);
+  const who=r.pair?`${r.pair.from} → ${r.pair.to}`:r.lanes>1?'Other counterparties':lead?`${lead.from} → ${lead.to}${lead.more?` +${lead.more}`:''}`:'';
+  return who?{text:who,sub:`${where} · ${money(r.value)} · Click to investigate`}:{text:where,sub:`${money(r.value)} attributed · Click to investigate`};
+ }
  function anchorAt(px:number,py:number){let best:AnchorScreen|null=null,bd=Infinity;for(const a of deps.anchors){if(a.vis<.5)continue;const d=Math.hypot(a.x-px,a.y-py);if(d<10&&d<bd){bd=d;best=a;}}return best;}
  function resolve(px:number,py:number,click:boolean){
   const route=corridorAt(px,py);
-  if(route){if(click){deps.onCorridor(route.data.id);deps.flyToCorridor(route);}else setHoverState(`c:${route.data.id}`,{text:`${COUNTRIES[route.data.origin].name} → ${COUNTRIES[route.data.destination].name}`,sub:`${money(route.data.usdValue)} attributed · Click to investigate`},route.data.id);return;}
+  if(route){if(click){deps.onCorridor(route.data.id);deps.flyToCorridor(route);}else setHoverState(`c:${route.id}`,strandHover(route),route.data.id);return;}
   const anchor=anchorAt(px,py);
   if(anchor){const name=COUNTRIES[anchor.code].name;if(click){deps.onCountry(anchor.code,name);const a=COUNTRIES[anchor.code].anchor;deps.flyTo(a[0],a[1]);}else setHoverState(`a:${anchor.code}`,{text:name,sub:'Explore attributed activity'},null);return;}
   const land=deps.land(),ll=deps.rig.lonLatAt(px,py,flatInvert),country=land&&ll?land.countryAt(ll[0],ll[1]):null;

@@ -219,6 +219,14 @@ export function knownAttribution(chain:Chain|string,address:string):Attribution|
  return INDEX.get(keyOf(chain,address))??null;
 }
 /** True when the attribution rests on a cross-chain derivation rather than a label read on that chain's explorer. */
+const CATEGORY_BY_NAME=new Map(Object.values(ENTITIES).map(ent=>[ent.name,ent.category]));
+/**
+ * An entity's kind in today's registry, by the name a corridor pair carries. A pair keeps names and values only, so the
+ * kind is always read from the current registry, never from what was stored. Undefined for a name the registry no
+ * longer holds. Entity names are unique and each has one jurisdiction; scripts/verify-registry.cjs asserts it, because
+ * deducePairs() in rollup.ts depends on it.
+ */
+export const entityCategory=(name:string):EntityCategory|undefined=>CATEGORY_BY_NAME.get(name);
 export const isDerived=(a:Attribution)=>a.category.includes(DERIVED_MARK);
 /** Every address with evidence on a chain, first-party or derived: the whole registry, dormant wallets included. */
 export function evidencedAddresses(chain:Chain|string):string[]{

@@ -257,6 +257,7 @@ for(const d of BOTH){
 {
  const spans=[...seal(ETH,ETH.records),...seal(TRON,TRON.records)].map(toStored);
  const dayOf=s=>new Date(s.bucket).toISOString().slice(0,10);
+ const pairBytes={with:0,without:0};
  const same=(wire,expect,what)=>{
   const back=rc.decodeDay(json(wire),CHAINS);
   assert.ok(back.ok,`${what}: the encoded day decodes (${back.reason??''})`);
@@ -267,7 +268,16 @@ for(const d of BOTH){
   assert.ok(wire.spans.every(Array.isArray),'every recorded span packs as a tuple');
   assert.ok(JSON.stringify(wire).length<JSON.stringify({schema:STORED_SCHEMA,day,spans:own}).length,'the encoding is smaller');
   same(wire,own,`recorded spans of ${day}`);
+  // Pairs must stay cheap: a priced week is 2.59 MB gzipped against a 3 MB bar (decision D8), so they may not add much.
+  const bare=own.map(s=>({...s,corridors:s.corridors.map(c=>{const b={...c};delete b.pairs;return b;})}));
+  const withPairs=JSON.stringify(wire).length,without=JSON.stringify(rc.encodeDay(day,bare)).length;
+  pairBytes.with+=withPairs;pairBytes.without+=without;
+  assert.ok(own.some(s=>s.corridors.some(c=>c.pairs?.length)),'the recorded spans carry counterparty pairs');
+  // What a page from before pairs existed reads: the same tuples, ignoring the element it does not know.
+  const old={...json(wire),spans:json(wire).spans.map(t=>[...t.slice(0,7),t[7].map(c=>c.slice(0,9)),...t.slice(8)])};
+  same(old,bare,`recorded spans of ${day} without their pairs element`);
  }
+ assert.ok(pairBytes.with<pairBytes.without*1.05,`pairs add under 5% to a day file (${pairBytes.without} -> ${pairBytes.with} bytes before gzip)`);
  // A span holding what the fixture may not: a corridor, a jurisdiction and its entity. Each fallback is exercised.
  const s0=spans.find(s=>s.totals.adjusted>0)??spans[0],day=dayOf(s0),e={entity:'Example',jurisdiction:'US',unplacedIn:2.5,unplacedOut:0,transactionCount:1};
  const rich={...s0,
@@ -275,14 +285,36 @@ for(const d of BOTH){
   countries:[...s0.countries,{code:'ZZ',inbound:1,outbound:2,knownEndpointAdjusted:6,coverage:.5,unplacedIn:2.5,unplacedOut:0,entities:[e]}],
   unmapped:{...s0.unmapped,entities:[...s0.unmapped.entities,e]}};
  assert.ok(Array.isArray(rc.encodeDay(day,[rich]).spans[0]),'a span with corridors and jurisdictions packs as a tuple');
+ const extra=rich.corridors[rich.corridors.length-1];
  const variants={
   'with corridors and jurisdictions':rich,
   'a corridor on two chains':{...rich,corridors:rich.corridors.map(c=>({...c,chains:{[s0.chain]:c.usdValue-1,Tron:1}}))},
   'a corridor in two assets':{...rich,corridors:rich.corridors.map(c=>({...c,assets:{USDC:1,USDT:c.usdValue-1},confidence:{HIGH:1,VERIFIED:c.usdValue-1}}))},
   'unmapped entities in another order':{...rich,unmapped:{...rich.unmapped,entities:[...rich.unmapped.entities].reverse()}},
   'an unmapped entity no jurisdiction lists':{...rich,unmapped:{...rich.unmapped,entities:[...rich.unmapped.entities,{...e,entity:'Elsewhere'}]}},
-  'a stored ratio the formula does not give':{...rich,totals:{...rich.totals,coverage:rich.totals.coverage===null?.5:rich.totals.coverage/2}}
+  'a stored ratio the formula does not give':{...rich,totals:{...rich.totals,coverage:rich.totals.coverage===null?.5:rich.totals.coverage/2}},
+  'a corridor with one pair':{...rich,corridors:[{...extra,topEntities:[{entity:'Example',usdValue:5.25},{entity:'Sample',usdValue:5.25}],pairs:[{from:'Example',to:'Sample',usdValue:5.25,transactionCount:2}]}]},
+  'a corridor with several pairs':{...rich,corridors:[{...extra,topEntities:[{entity:'Example',usdValue:4},{entity:'Sample',usdValue:4},{entity:'Third',usdValue:1.25},{entity:'Fourth',usdValue:1.25}],pairs:[{from:'Example',to:'Sample',usdValue:4,transactionCount:1},{from:'Third',to:'Fourth',usdValue:1.25,transactionCount:1}]}]},
+  'a corridor on two chains, with pairs':{...rich,corridors:[{...extra,chains:{[s0.chain]:4.25,Tron:1},topEntities:[{entity:'Example',usdValue:5.25},{entity:'Sample',usdValue:5.25}],pairs:[{from:'Example',to:'Sample',usdValue:5.25,transactionCount:2}]}]},
+  'a pair the two entities do not settle (a count that differs)':{...rich,corridors:[{...extra,topEntities:[{entity:'Example',usdValue:5.25},{entity:'Sample',usdValue:5.25}],pairs:[{from:'Example',to:'Sample',usdValue:5.25,transactionCount:1}]}]}
  };
+ {
+  const one=rc.encodeDay(day,[variants['a corridor with one pair']]).spans[0],many=rc.encodeDay(day,[variants['a corridor with several pairs']]).spans[0];
+  assert.ok(Array.isArray(one)&&Array.isArray(many),'spans with pairs pack as tuples');
+  assert.deepEqual(one[7][0].slice(8),[null,1],'a single pair its two entities settle costs one character, after a place-holder for the chains map');
+  assert.deepEqual(many[7][0][9],[[0,1,4,1],[2,3,1.25,1]],'other pairs name their entities by position');
+  const bundleOf=c=>({schema:STORED_SCHEMA,day,spans:[{...rich,corridors:[c]}]}),good=variants['a corridor with one pair'].corridors[0];
+  assert.ok(rc.validateBundle(bundleOf(good),CHAINS).ok,'a corridor with a pair is accepted');
+  for(const [what,pairs] of Object.entries({
+   'a pair from an entity to itself':[{from:'Example',to:'Example',usdValue:5.25,transactionCount:2}],
+   'a pair with no count':[{from:'Example',to:'Sample',usdValue:5.25,transactionCount:null}],
+   'a pair with a negative value':[{from:'Example',to:'Sample',usdValue:-1,transactionCount:2}],
+   'a pair with no receiver':[{from:'Example',usdValue:5.25,transactionCount:2}],
+   'pairs that are not a list':{from:'Example',to:'Sample'}
+  }))assert.equal(rc.validateBundle(bundleOf({...good,pairs}),CHAINS).ok,false,`a bundle with ${what} is refused`);
+  const bad=json({format:rc.DAY_FORMAT,schema:STORED_SCHEMA,day,spans:[[...one.slice(0,7),[[...one[7][0].slice(0,9),[[0,7,5.25,2]]]],...one.slice(8)]]});
+  assert.equal(rc.decodeDay(bad,CHAINS).ok,false,'a pair naming an entity the corridor does not list is refused');
+ }
  for(const [what,v] of Object.entries(variants))same(rc.encodeDay(day,[v]),[v],what);
  assert.ok(!Array.isArray(rc.encodeDay(day,[variants['a stored ratio the formula does not give']]).spans[0]),'a span that does not fit is carried whole, never altered');
  const wire=json(rc.encodeDay(day,[rich])),t0=wire.spans[0];

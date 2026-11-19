@@ -33,10 +33,20 @@ export interface Transfer {
   classificationRationale:string; classificationVersion:string;
   flags:{bridge:boolean;mintBurn:boolean;internalTransfer:boolean;crossBorderCandidate:boolean;bot:boolean};
 }
+/**
+ * What one evidenced entity sent to another inside a corridor: who is behind a route, in the direction the value moved.
+ * A corridor's country pair is where its operators are established; its pairs are the counterparties themselves.
+ * `transactionCount` is null where the pair was deduced from a span sealed before pairs were recorded (rollup.ts,
+ * deducePairs): the value is exact there, the count is not known.
+ */
+export interface CorridorPair {from:string; to:string; usdValue:number; transactionCount:number|null}
 export interface Corridor {
   id:string; origin:string; destination:string; window:WindowKey; windowStart:number; windowEnd:number;
   usdValue:number; transactionCount:number; assets:Record<string,number>; chains:Record<string,number>; confidence:Record<string,number>;
   topEntities:{entity:string;usdValue:number;attribution:Attribution}[]; topTransactions:Transfer[];
+  /** Entity-to-entity value, largest first. Complete on a live window. On a window merged from sealed spans it covers
+   *  `pairedUsd` of `usdValue`: a span sealed before pairs were recorded contributes only where they can be deduced exactly. */
+  pairs:CorridorPair[]; pairedUsd:number;
   baseline:number|null; baselineSamples:number; anomalyRatio:number|null; anomalyScore:number|null; lastActivity:number; rankScore:number;
   /** This corridor's attributed USD and transfer count per bin of the snapshot's `history`, index for index. */
   series?:{value:number[];count:number[]};

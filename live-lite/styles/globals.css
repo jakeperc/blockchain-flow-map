@@ -156,3 +156,16 @@ a.method-button{text-decoration:none}
 .timeline-graph[data-dense]{gap:1px}.timeline-graph>span>i{position:absolute;left:0;right:0;bottom:0;background:#7797858c;border-radius:1px 1px 0 0}.timeline-graph>span>i.overlay{opacity:.95}.timeline-graph>span[data-hover]{background:#ffffff0f}.timeline-graph>span[data-hover]>i:first-child{background:#a6c2afcc}.timeline-graph>span.thin,.pulse-bars>span.thin{background:repeating-linear-gradient(135deg,#7797852e 0 2px,transparent 2px 5px)}
 .timeline-tip{position:absolute;bottom:calc(100% + 6px);transform:translateX(-50%);background:#142024;border:1px solid #53715c90;border-radius:3px;padding:6px 9px;font-family:var(--font-mono);font-size:10px;color:#cddfd3;white-space:nowrap;pointer-events:none;z-index:6}.timeline-tip small{display:block;margin-top:3px;color:#7f9a88;font-size:10px}
 .corridor-pulse{margin:20px 0 6px}.pulse-bars{height:48px;display:flex;gap:1px;border-bottom:1px solid #53715c70}.pulse-bars>span{flex:1;min-width:1px;position:relative}.pulse-bars>span>i{position:absolute;left:0;right:0;bottom:0;border-radius:1px 1px 0 0;opacity:.8}.pulse-bars>span[data-hover]{background:#ffffff0f}.pulse-bars>span[data-hover]>i{opacity:1}.pulse-axis{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:10px;color:#698274;margin-top:5px}.corridor-pulse p{font-size:12px;line-height:1.5;color:#9aaa92;margin:8px 0 0;min-height:36px;font-variant-numeric:tabular-nums}
+/* Counterparties: a route is named by who sent to whom; the jurisdictions, where those entities are established, come second. */
+.route-who{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;text-align:left}
+.route-pair.who{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.2px;color:#dbe6dc}
+.route-pair.who>i{font-style:normal;color:#7f978a;margin-left:5px}
+.route-sub{min-width:0;letter-spacing:.4px}
+.route-sub>small{flex:1;min-width:0;font-size:.8em;color:#7f978a;overflow:hidden;text-overflow:ellipsis}
+.summary-route .route-sub>strong{margin-left:auto}
+.country-corridor b .more{font-style:normal;color:#7f978a}
+.pair-row>span{position:relative;flex:1;min-width:0;padding-bottom:8px}
+.pair-row>span>svg{vertical-align:-1px;color:#677d73}
+.pair-row>span>i{position:absolute;left:0;bottom:0;height:2px;background:#7797858c;border-radius:1px}
+.pair-row>b{text-align:right;white-space:nowrap}
+.pair-row>b>small{display:block;font-size:10px;color:#78957e;margin-top:4px}

@@ -31,7 +31,7 @@
  * records a span is sealed from; live-client.ts seals and merges them; scripts/verify-rollup.cjs exercises the
  * invariants above.
  */
-import {WINDOWS,CHAINS,UNKNOWN,type Chain,type WindowKey,type Snapshot,type Totals,type Corridor,type CountrySummary,type HistoryBin,type Transfer,type Attribution,type UnattributedEntity,type UnattributedTransfer} from './model';
+import {WINDOWS,CHAINS,UNKNOWN,type Chain,type WindowKey,type Snapshot,type Totals,type Corridor,type CorridorPair,type CountrySummary,type HistoryBin,type Transfer,type Attribution,type UnattributedEntity,type UnattributedTransfer} from './model';
 import {aggregateSpan,selectUnattributedSpan,rank,type TotalsInput,type UnattributedInput} from './engine';
 
 /** One sealed span. Fifteen minutes is short enough to bin a sparkline and tile a 24H window closely, and long enough that a week is 672 records rather than tens of thousands. */
@@ -60,6 +60,8 @@ export interface RollupCorridor {
  assets:Record<string,number>;chains:Record<string,number>;confidence:Record<string,number>;
  topEntities:{entity:string;usdValue:number;attribution:Attribution}[];
  topTransactions:Transfer[];lastActivity:number;
+ /** Entity-to-entity value in this span. Null only for a span stored before pairs were recorded whose pairs cannot be deduced (deducePairs). */
+ pairs:CorridorPair[]|null;
 }
 /** The unmapped view's sealed aggregate. `items` are the largest few only; see TOP_UNMAPPED. */
 export interface RollupUnmapped {count:number;usdValue:number;reasons:Record<string,number>;entities:UnattributedEntity[];items:UnattributedTransfer[]}
@@ -118,13 +120,37 @@ export function sealSpan<R extends UnattributedInput>(records:Iterable<R>,start:
    id:c.id,origin:c.origin,destination:c.destination,usdValue:c.usdValue,transactionCount:c.transactionCount,
    assets:{...c.assets},chains:{...c.chains},confidence:{...c.confidence},
    topEntities:c.topEntities.map(e=>({...e})),
-   topTransactions:c.topTransactions.slice(0,TOP_TRANSACTIONS),lastActivity:c.lastActivity
+   topTransactions:c.topTransactions.slice(0,TOP_TRANSACTIONS),lastActivity:c.lastActivity,
+   pairs:c.pairs.map(p=>({...p}))
   })),
   countries:snap.countries.map(c=>({...c,entities:c.entities.map(e=>({...e}))})),
   value:snap.totals.attributed,
   ...(opts.sample?{sample:{totals:opts.sample.totals,sampledMs:opts.sample.sampledMs}}:{}),
   unmapped:{count:un.count,usdValue:un.usdValue,reasons:{...un.reasons},entities:un.entities.map(e=>({...e})),items:un.items.slice(0,TOP_UNMAPPED)}
  };
+}
+/**
+ * The pairs of a corridor in one sealed span, where its entity list alone settles them. Spans sealed before pairs were
+ * recorded (and every span the recorder published before then) carry only `topEntities`: each entity's share of the
+ * corridor's value, in the order the span's transfers first showed them, so the first transfer's sender is entry 0 and
+ * its receiver entry 1. An entity has one jurisdiction, so inside a corridor it is always the sender or always the
+ * receiver. Two cases follow exactly, with nothing estimated:
+ *  - two entities: every transfer ran from entry 0 to entry 1, for the corridor's whole value and count;
+ *  - one entity whose value IS the corridor's value: it took part in every transfer, so each other entity traded with
+ *    it alone, for that other entity's own value. It is the sender if it is entry 0, the receiver if entry 1. The
+ *    per-pair transfer counts are not recoverable and are left null.
+ * Anything else (several entities at both ends) returns null: the span's pairs are unknown and the page says so.
+ * scripts/verify-rollup.cjs checks every deduction against the pairs the same span recorded.
+ */
+export function deducePairs(c:{usdValue:number;transactionCount:number;topEntities:readonly {entity:string;usdValue:number}[]}):CorridorPair[]|null{
+ const t=c.topEntities;
+ if(t.length<2||!(c.usdValue>0)||t.some(e=>!(e.usdValue>0)))return null;
+ if(t.length===2)return t[0].usdValue===c.usdValue&&t[1].usdValue===c.usdValue?[{from:t[0].entity,to:t[1].entity,usdValue:c.usdValue,transactionCount:c.transactionCount}]:null;
+ const hub=t[0].usdValue===c.usdValue?0:t[1].usdValue===c.usdValue?1:-1;
+ if(hub<0||t[1-hub].usdValue===c.usdValue)return null;
+ const others=t.filter((_,i)=>i!==hub),sum=others.reduce((n,e)=>n+e.usdValue,0);
+ if(Math.abs(sum-c.usdValue)>1e-9*c.usdValue)return null;
+ return others.map(e=>hub===0?{from:t[0].entity,to:e.entity,usdValue:e.usdValue,transactionCount:null}:{from:e.entity,to:t[1].entity,usdValue:e.usdValue,transactionCount:null});
 }
 export const sealBucket=<R extends UnattributedInput>(records:Iterable<R>,bucket:number,opts:SealOptions<R>)=>
  sealSpan(records,bucket,bucket+BUCKET_MS,opts);
@@ -175,7 +201,7 @@ export function mergeRollups(parts:readonly Rollup[],window:WindowKey,at:number,
   for(const rc of p.corridors){
    let c=corridors.get(rc.id);
    if(!c){
-    c={id:rc.id,origin:rc.origin,destination:rc.destination,window,windowStart:start,windowEnd:at,usdValue:0,transactionCount:0,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:0,rankScore:0,
+    c={id:rc.id,origin:rc.origin,destination:rc.destination,window,windowStart:start,windowEnd:at,usdValue:0,transactionCount:0,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],pairs:[],pairedUsd:0,baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:0,rankScore:0,
      series:{value:history.map(()=>0),count:history.map(()=>0)}};
     corridors.set(rc.id,c);
    }
@@ -188,6 +214,17 @@ export function mergeRollups(parts:readonly Rollup[],window:WindowKey,at:number,
     if(row)row.usdValue+=e.usdValue;else c.topEntities.push({...e});
    }
    c.topTransactions.push(...rc.topTransactions);
+   // A span without pairs adds nothing here and nothing to pairedUsd, which is how the page knows what share of the
+   // corridor its counterparties account for. pairedUsd adds the same numbers in the same order as usdValue, so a
+   // corridor whose every span carried pairs has pairedUsd === usdValue exactly.
+   if(rc.pairs){
+    c.pairedUsd+=rc.usdValue;
+    for(const p of rc.pairs){
+     const row=c.pairs.find(x=>x.from===p.from&&x.to===p.to);
+     if(row){row.usdValue+=p.usdValue;row.transactionCount=row.transactionCount===null||p.transactionCount===null?null:row.transactionCount+p.transactionCount;}
+     else c.pairs.push({...p});
+    }
+   }
   }
   for(const rc of p.countries){
    let c=countries.get(rc.code);
@@ -216,6 +253,7 @@ export function mergeRollups(parts:readonly Rollup[],window:WindowKey,at:number,
   c.topTransactions.sort((x,y)=>(y.usdValue??0)-(x.usdValue??0));
   if(c.topTransactions.length>TOP_TRANSACTIONS)c.topTransactions.length=TOP_TRANSACTIONS;
   c.topEntities.sort((x,y)=>y.usdValue-x.usdValue);
+  c.pairs.sort((x,y)=>y.usdValue-x.usdValue);
  }
  for(const c of countries.values()){
   c.coverage=c.knownEndpointAdjusted?(c.inbound+c.outbound)/c.knownEndpointAdjusted:null;
@@ -344,6 +382,12 @@ export const registryVersionsOf=(parts:readonly Rollup[])=>[...new Set(parts.map
  * Version of the stored shape below. Bump it when that shape changes: a browser's store then DROPS its spans
  * (history-store.ts) and a published bundle in another format is refused (recorder-core.ts), rather than a summary
  * computed under one set of rules being reinterpreted under another.
+ *
+ * A corridor's `pairs` (2026-11-19) did not bump it. The field is optional and additive: no number a version-1 span
+ * holds is read differently, a span without it is still a whole version-1 span, and a page from before the field
+ * ignores it. A bump would instead have thrown away every browser's recorded week and cut the page off from the
+ * recorder's published history until both were redeployed and re-read. A span without the field reports its pairs only
+ * where deducePairs() settles them exactly; elsewhere the page states what share of a corridor has none.
  */
 export const STORED_SCHEMA=1;
 
@@ -365,6 +409,8 @@ export interface StoredCorridor {
  id:string;origin:string;destination:string;usdValue:number;transactionCount:number;
  assets:Record<string,number>;chains:Record<string,number>;confidence:Record<string,number>;
  topEntities:{entity:string;usdValue:number}[];lastActivity:number;
+ /** Absent in spans stored before 2026-11-19. Names and values, like topEntities: a ranking, not a citation. */
+ pairs?:{from:string;to:string;usdValue:number;transactionCount:number}[];
 }
 export interface StoredRollup {
  bucket:number;end:number;chain:Chain;sealedAt:number;registry:string;
@@ -379,7 +425,9 @@ export const toStored=(r:Rollup):StoredRollup=>({
  corridors:r.corridors.map(c=>({
   id:c.id,origin:c.origin,destination:c.destination,usdValue:c.usdValue,transactionCount:c.transactionCount,
   assets:{...c.assets},chains:{...c.chains},confidence:{...c.confidence},
-  topEntities:c.topEntities.map(e=>({entity:e.entity,usdValue:e.usdValue})),lastActivity:c.lastActivity
+  topEntities:c.topEntities.map(e=>({entity:e.entity,usdValue:e.usdValue})),lastActivity:c.lastActivity,
+  // Pairs are stored only with their counts. A deduced pair whose count is unknown is worked out again on reading, never written down as if recorded.
+  ...(c.pairs&&c.pairs.every(p=>p.transactionCount!==null)?{pairs:c.pairs.map(p=>({from:p.from,to:p.to,usdValue:p.usdValue,transactionCount:p.transactionCount as number}))}:{})
  })),
  countries:r.countries.map(c=>({...c,entities:c.entities.map(e=>({...e}))})),
  value:r.value,
@@ -398,7 +446,8 @@ export const fromStored=(s:StoredRollup):Rollup=>({
   id:c.id,origin:c.origin,destination:c.destination,usdValue:c.usdValue,transactionCount:c.transactionCount,
   assets:{...c.assets},chains:{...c.chains},confidence:{...c.confidence},
   topEntities:c.topEntities.map(e=>({entity:e.entity,usdValue:e.usdValue,attribution:UNKNOWN})),
-  topTransactions:[],lastActivity:c.lastActivity
+  topTransactions:[],lastActivity:c.lastActivity,
+  pairs:c.pairs?c.pairs.map(p=>({...p})):deducePairs(c)
  })),
  countries:s.countries.map(c=>({...c,entities:c.entities.map(e=>({...e}))})),
  value:s.value,

@@ -20,7 +20,7 @@
  * Pure: no fetch, no DOM, no timers, no module state.
  */
 import {UNKNOWN,type Asset,type Attribution,type Chain} from './model';
-import {BUCKET_MS,STORED_SCHEMA,sealSpan,type Rollup,type StoredRollup} from './rollup';
+import {BUCKET_MS,STORED_SCHEMA,deducePairs,sealSpan,type Rollup,type StoredRollup} from './rollup';
 import {addressKey,classifyRec,inferDeposits,priceAt,type InferOptions,type Rec,type Sample} from './live-core';
 
 /** The context a seal infers from, and how long the browser keeps raw transfers: the same 90 minutes by design. */
@@ -193,7 +193,9 @@ const isTotals=(x:unknown)=>isObj(x)&&TOTAL_AMOUNTS.every(k=>isAmount(x[k]))&&is
 const isEntityRow=(x:unknown)=>isObj(x)&&isStr(x.entity)&&isAmount(x.unplacedIn)&&isAmount(x.unplacedOut)&&isCount(x.transactionCount)&&(x.jurisdiction===null||isStr(x.jurisdiction));
 const isCorridor=(x:unknown)=>isObj(x)&&isStr(x.id)&&isStr(x.origin)&&isStr(x.destination)&&x.id===`${x.origin}-${x.destination}`&&isAmount(x.usdValue)&&isCount(x.transactionCount)
  &&isAmounts(x.assets)&&isAmounts(x.chains)&&isAmounts(x.confidence)&&isNum(x.lastActivity)
- &&Array.isArray(x.topEntities)&&x.topEntities.every(e=>isObj(e)&&isStr(e.entity)&&isAmount(e.usdValue));
+ &&Array.isArray(x.topEntities)&&x.topEntities.every(e=>isObj(e)&&isStr(e.entity)&&isAmount(e.usdValue))
+ // Optional: spans sealed before 2026-11-19 have none. Where present, every pair is a recorded one, with its count.
+ &&(x.pairs===undefined||(Array.isArray(x.pairs)&&x.pairs.every(p=>isObj(p)&&isStr(p.from)&&isStr(p.to)&&p.from!==p.to&&isAmount(p.usdValue)&&isCount(p.transactionCount))));
 const isCountry=(x:unknown)=>isObj(x)&&isStr(x.code)&&['inbound','outbound','knownEndpointAdjusted','unplacedIn','unplacedOut'].every(k=>isAmount(x[k]))
  &&(x.coverage===null||isAmount(x.coverage))&&Array.isArray(x.entities)&&x.entities.every(isEntityRow);
 
@@ -253,6 +255,9 @@ export function validateBundle(x:unknown,chains:readonly Chain[]):BundleCheck{
  * - a corridor's `id` and its `chains` map, which in a per-chain span is always this chain at the corridor's value;
  * - `assets` and `confidence` maps holding one key at the corridor's value;
  * - the unmapped entities, which were the jurisdictions' entity rows again in every one of 2,117 test spans.
+ * A corridor's pairs, where a span has them, follow as one more element: `1` when they are the single pair its two
+ * entities settle (deducePairs), otherwise `[from, to, value, count]` with the entities given by their position in the
+ * corridor's entity list. A page from before pairs existed reads the elements it knows and ignores that one.
  * Records become positional tuples. A span that does not fit (none so far) is carried whole, so decodeDay(encodeDay(x))
  * gives back the same JSON text whatever it holds; verify-recorder.cjs checks it.
  */
@@ -269,8 +274,11 @@ function packSpan(s:StoredRollup):unknown[]{
   s.bucket,s.chain,s.sealedAt,s.registry,s.coverage[0]?.observedMs,TOTAL_KEYS.map(k=>s.totals[k]),s.classifications,
   s.corridors.map(c=>{
    const own=JSON.stringify(c.chains)===JSON.stringify({[s.chain]:c.usdValue});
+   const names=c.topEntities.map(e=>e.entity);
+   const pairs=c.pairs===undefined?[]:[JSON.stringify(deducePairs(c))===JSON.stringify(c.pairs)?1:c.pairs.map(p=>[names.indexOf(p.from),names.indexOf(p.to),p.usdValue,p.transactionCount])];
+   // The chains map keeps its place when pairs follow it: null stands for "this chain, at the corridor's value".
    return [c.origin,c.destination,c.usdValue,c.transactionCount,packMap(c.assets,c.usdValue),packMap(c.confidence,c.usdValue),
-    c.topEntities.map(e=>[e.entity,e.usdValue]),c.lastActivity,...(own?[]:[c.chains])];
+    c.topEntities.map(e=>[e.entity,e.usdValue]),c.lastActivity,...(own?(pairs.length?[null]:[]):[c.chains]),...pairs];
   }),
   s.countries.map(c=>[c.code,c.inbound,c.outbound,c.knownEndpointAdjusted,c.unplacedIn,c.unplacedOut,
    c.entities.map(e=>[e.entity,e.jurisdiction,e.unplacedIn,e.unplacedOut,e.transactionCount])]),
@@ -289,10 +297,13 @@ function unpackSpan(w:unknown[]):StoredRollup{
  const [count,usdValue,reasons,um]=unmapped;
  return {
   bucket,end:bucket+BUCKET_MS,chain,sealedAt,registry,coverage:[{chain,observedMs}],totals,classifications,
-  corridors:corridors.map(([origin,destination,value,transactionCount,assets,confidence,tops,lastActivity,chains])=>{
-   const v=value as number;
-   return {id:`${origin}-${destination}`,origin,destination,usdValue:v,transactionCount,assets:unpackMap(assets,v),chains:(chains??{[chain]:v}) as Record<string,number>,
-    confidence:unpackMap(confidence,v),topEntities:(tops as [string,number][]).map(([entity,usdValue])=>({entity,usdValue})),lastActivity};
+  corridors:corridors.map(([origin,destination,value,transactionCount,assets,confidence,tops,lastActivity,chains,pairs])=>{
+   const v=value as number,topEntities=(tops as [string,number][]).map(([entity,usdValue])=>({entity,usdValue}));
+   const c={id:`${origin}-${destination}`,origin,destination,usdValue:v,transactionCount,assets:unpackMap(assets,v),chains:(chains??{[chain]:v}) as Record<string,number>,
+    confidence:unpackMap(confidence,v),topEntities,lastActivity};
+   if(pairs===undefined)return c;
+   // A position outside the entity list leaves `from` or `to` undefined, which the bundle validator then refuses.
+   return {...c,pairs:pairs===1?deducePairs({usdValue:v,transactionCount:transactionCount as number,topEntities}):(pairs as [number,number,number,number][]).map(([f,t,usdValue,n])=>({from:topEntities[f]?.entity,to:topEntities[t]?.entity,usdValue,transactionCount:n}))};
   }),
   countries:cs,value:totals.attributed,
   unmapped:{count,usdValue,reasons,entities:um===1?ents.map(e=>({...e})):(um as unknown[]).map(e=>typeof e==='number'?{...ents[e]}:e)}

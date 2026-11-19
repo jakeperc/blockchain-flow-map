@@ -101,23 +101,31 @@ void main(){
 }`
 };
 
-/** Fetch an arc sample from the two textures (rows = slots, columns = samples) and blend by morph. */
+/**
+ * Fetch an arc sample from the two path textures (rows = slots, columns = samples) and blend by morph, and a slot's
+ * state from the third (columns = slots; row 0 colour, row 1 width / drawn fraction / weight / fade, row 2 particle
+ * count / halo / phase). State lives in a texture rather than uniform arrays so the slot count is not tied to a GPU's
+ * uniform limit.
+ */
 const ARC_FETCH=`
-uniform highp sampler2D uArcSphere,uArcFlat;uniform float uSamples;
-vec3 fetchArc(float slot,float s,float morph){vec2 uv=vec2((s+0.5)/uSamples,(slot+0.5)/64.0);return mix(texture2D(uArcSphere,uv).xyz,texture2D(uArcFlat,uv).xyz,morph);}`;
+uniform highp sampler2D uArcSphere,uArcFlat,uArcState;uniform float uSamples,uSlots;
+vec3 fetchArc(float slot,float s,float morph){vec2 uv=vec2((s+0.5)/uSamples,(slot+0.5)/uSlots);return mix(texture2D(uArcSphere,uv).xyz,texture2D(uArcFlat,uv).xyz,morph);}
+vec4 arcState(float slot,float row){return texture2D(uArcState,vec2((slot+0.5)/uSlots,(row+0.5)/3.0));}`;
 
 export const RIBBON={
  vertex:`
 ${ARC_FETCH}
 uniform float uMorph,uPixelRatio,uHalo,uR;uniform vec2 uResolution;
-uniform vec4 uArcColor[64];uniform vec4 uArcParam[64];
-varying float vT;varying float vEdge;varying float vProgress;varying float vFade;varying float vPhase;varying vec4 vColor;
+varying float vT;varying float vEdge;varying float vProgress;varying float vFade;varying float vPhase;varying float vCount;varying vec4 vColor;
 ${FACING}
 vec2 toScreen(vec4 clip){return clip.xy/max(clip.w,1e-4)*uResolution*0.5;}
 void main(){
  float slot=position.x,s=position.y,side=position.z;
- int i=int(slot+0.5);
- vec4 col=uArcColor[i];vec4 par=uArcParam[i];
+ vec4 col=arcState(slot,0.0);vec4 par=arcState(slot,1.0);vec4 ext=arcState(slot,2.0);
+ float w=par.x*uPixelRatio*par.z*(uHalo>0.5?2.8*ext.y:1.0);
+ vT=s/(uSamples-1.0);vEdge=side;vProgress=par.y;vColor=col;vPhase=ext.z;vCount=max(ext.x,1.0);vFade=0.0;
+ // An empty slot, a faded strand, or a strand with no halo in the halo pass leaves the clip volume: no rasterisation, no blending.
+ if(w<=0.0||col.a<0.003){gl_Position=vec4(2.0,2.0,2.0,1.0);return;}
  vec3 p=fetchArc(slot,s,uMorph);
  vec3 pa=fetchArc(slot,max(s-1.0,0.0),uMorph);vec3 pb=fetchArc(slot,min(s+1.0,uSamples-1.0),uMorph);
  mat4 mvp=projectionMatrix*modelViewMatrix;
@@ -125,15 +133,13 @@ void main(){
  vec2 dir=toScreen(mvp*vec4(pb,1.0))-toScreen(mvp*vec4(pa,1.0));
  dir=normalize(dir+vec2(1e-5,0.0));
  vec2 nrm=vec2(-dir.y,dir.x);
- float w=par.x*uPixelRatio*par.z*(uHalo>0.5?2.8:1.0);
  clip.xy+=nrm*side*w/uResolution*2.0*clip.w;
  gl_Position=clip;
- vT=s/(uSamples-1.0);vEdge=side;vProgress=par.y;vColor=col;vPhase=mod(slot*7.0,11.0)/11.0;
  vFade=par.w*facing(normalize(p),p,uMorph);
 }`,
  fragment:`
-uniform float uHalo,uTime,uSpeed,uCount,uTrail;
-varying float vT;varying float vEdge;varying float vProgress;varying float vFade;varying float vPhase;varying vec4 vColor;
+uniform float uHalo,uTime,uSpeed,uTrail;
+varying float vT;varying float vEdge;varying float vProgress;varying float vFade;varying float vPhase;varying float vCount;varying vec4 vColor;
 void main(){
  float drawn=1.0-smoothstep(vProgress-0.05,vProgress,vT);
  float edge=1.0-abs(vEdge);
@@ -141,8 +147,8 @@ void main(){
  // Comet trails: each particle (same phase formula as the particle system) leaves a tail behind it along the arc.
  float trail=0.0;
  for(int k=0;k<7;k++){
-  if(float(k)>=uCount)break;
-  float head=fract(uTime*uSpeed+float(k)/uCount+vPhase);
+  if(float(k)>=vCount)break;
+  float head=fract(uTime*uSpeed+float(k)/vCount+vPhase);
   float d=head-vT;d+=step(d,0.0);
   trail=max(trail,pow(1.0-clamp(d/uTrail,0.0,1.0),2.2)*step(head,vProgress));
  }
@@ -155,22 +161,22 @@ void main(){
 export const PARTICLES={
  vertex:`
 ${ARC_FETCH}
-uniform float uMorph,uTime,uSpeed,uCount,uSize,uPixelRatio,uMaxPoint,uHeadSlot,uHeadT,uHeadSize,uR;
-uniform vec4 uArcColor[64];uniform vec4 uArcParam[64];
-attribute float aPhase;
+uniform float uMorph,uTime,uSpeed,uSize,uPixelRatio,uMaxPoint,uHeadSlot,uHeadT,uHeadSize,uR;
 varying vec4 vColor;
 ${FACING}
 void main(){
  float slot=position.x,k=position.y,head=position.z;
  float t;float size;vec4 col;vec4 par;
- if(head>0.5){slot=max(uHeadSlot,0.0);int h=int(slot+0.5);par=uArcParam[h];t=uHeadT;size=uHeadSize;col=vec4(0.85,0.95,0.83,uHeadSlot<0.0?0.0:1.0);}
- else{int i=int(slot+0.5);col=uArcColor[i];par=uArcParam[i];t=fract(uTime*uSpeed+k/uCount+aPhase);size=uSize;if(k>=uCount)col.a=0.0;}
+ if(head>0.5){slot=max(uHeadSlot,0.0);par=arcState(slot,1.0);t=uHeadT;size=uHeadSize;col=vec4(0.85,0.95,0.83,uHeadSlot<0.0?0.0:1.0);}
+ else{col=arcState(slot,0.0);par=arcState(slot,1.0);vec4 ext=arcState(slot,2.0);float n=max(ext.x,1.0);t=fract(uTime*uSpeed+k/n+ext.z);size=uSize;if(k>=ext.x)col.a=0.0;}
+ vColor=vec4(0.0);
+ // A particle that draws nothing (an empty slot, a strand with fewer particles, one not yet drawn this far) is not rasterised.
+ if(col.a<0.003||t>par.y){gl_Position=vec4(2.0,2.0,2.0,1.0);gl_PointSize=0.0;return;}
  float si=t*(uSamples-1.0);float s0=floor(si);float f=si-s0;
  vec3 p=mix(fetchArc(slot,s0,uMorph),fetchArc(slot,min(s0+1.0,uSamples-1.0),uMorph),f);
- float drawn=step(t,par.y);
  gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);
  gl_PointSize=min(size*uPixelRatio,uMaxPoint);
- float a=col.a*par.w*drawn*facing(normalize(p),p,uMorph);
+ float a=col.a*par.w*facing(normalize(p),p,uMorph);
  vColor=vec4(col.rgb*a,a);
 }`,
  fragment:`

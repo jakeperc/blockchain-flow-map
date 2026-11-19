@@ -32,6 +32,23 @@ export function greatCircle(a:Vec3,b:Vec3,n:number,R:number,lift:number):Float32
  for(let i=0;i<n;i++){const t=n>1?i/(n-1):0,p=slerp(ua,ub,t),r=R+lift*Math.sin(Math.PI*t);out[i*3]=p[0]*r;out[i*3+1]=p[1]*r;out[i*3+2]=p[2]*r;}
  return out;
 }
+/**
+ * A great circle from `a` to `b` bowed sideways: at fraction t the point is turned `side·sin(πt)` radians out of the
+ * great circle's plane, toward a×b, so it leaves and arrives at the two anchors exactly and is furthest out mid-route.
+ * A strand's lane. b to a bows the other way, which is what keeps the two directions of a route apart. Visual
+ * separation only, like the lift. With `side` 0, or anchors that are the same or opposite points, it is greatCircle().
+ */
+export function laneArc(a:Vec3,b:Vec3,n:number,R:number,lift:number,side:number):Float32Array{
+ const ua=normalize(a),ub=normalize(b);
+ const cx=ua[1]*ub[2]-ua[2]*ub[1],cy=ua[2]*ub[0]-ua[0]*ub[2],cz=ua[0]*ub[1]-ua[1]*ub[0],len=Math.hypot(cx,cy,cz);
+ if(!side||len<1e-6)return greatCircle(a,b,n,R,lift);
+ const nx=cx/len,ny=cy/len,nz=cz/len,out=new Float32Array(n*3);
+ for(let i=0;i<n;i++){
+  const t=n>1?i/(n-1):0,p=slerp(ua,ub,t),bow=Math.sin(Math.PI*t),phi=side*bow,c=Math.cos(phi),s=Math.sin(phi),r=R+lift*bow;
+  out[i*3]=(p[0]*c+nx*s)*r;out[i*3+1]=(p[1]*c+ny*s)*r;out[i*3+2]=(p[2]*c+nz*s)*r;
+ }
+ return out;
+}
 /** `n` near-uniform unit vectors. Any prefix of the sequence is itself near-uniform, so a draw range can thin the set evenly. */
 export function fibonacciSphere(n:number):Float32Array{
  const out=new Float32Array(n*3),golden=Math.PI*(3-Math.sqrt(5));

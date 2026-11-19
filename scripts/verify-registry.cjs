@@ -170,6 +170,8 @@ for(const [chain,cfg] of Object.entries(FEEDS)){
 }
 
 /* ---------- Entities ---------- */
+// A corridor pair carries entity names, and deducePairs() (rollup.ts) rests on a name being one entity in one jurisdiction.
+{const seen=new Map();for(const [id,ent] of Object.entries(ENTITIES)){if(seen.has(ent.name))errors.push(`entity ${id}: name '${ent.name}' is already used by entity ${seen.get(ent.name)}; names must be unique`);else seen.set(ent.name,id);}}
 for(const [id,ent] of Object.entries(ENTITIES)){
  if(ent.id!==id)errors.push(`entity ${id}: id mismatch (${ent.id})`);
  if(!COUNTRIES[ent.jurisdiction])errors.push(`entity ${id}: jurisdiction '${ent.jurisdiction}' is not in geography.ts COUNTRIES`);
