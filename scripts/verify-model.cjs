@@ -94,7 +94,45 @@ assert.equal(enc.colorOf({chains:{},assets:{},confidence:{}},'CONFIDENCE'),enc.F
  assert.equal(ranked[1],all[0],'rankRoutes must return the input objects');
  assert.deepEqual(enc.rankRoutes(all,null,()=>false,2).map(r=>r.id),['c','b'],'cap');
  assert.deepEqual(enc.rankRoutes(all,'GB',()=>false,10).map(r=>r.id),['a','d'],'country filter keeps both directions');}
-assert.equal(enc.routeCap(375),24);assert.equal(enc.routeCap(980),24);assert.equal(enc.routeCap(981),32);assert.equal(enc.routeCap(1440),32);
+assert.equal(enc.routeCap(375),32);assert.equal(enc.routeCap(980),32);assert.equal(enc.routeCap(981),72);assert.equal(enc.routeCap(1440),72);
+assert.equal(enc.strandCap(980),56);assert.equal(enc.strandCap(981),160);
+// Strands: a route drawn as its counterparties, within a line budget, always adding up to the route.
+{const pair=(from,to,usdValue)=>({from,to,usdValue,transactionCount:1});
+ const many={id:'US-GB',usdValue:100,pairs:[pair('A','X',70),pair('A','Y',20),pair('B','X',10)]};
+ const one={id:'GB-SG',usdValue:50,pairs:[pair('P','Q',50)]};
+ const none={id:'SG-US',usdValue:30,pairs:[]};
+ const part={id:'US-SG',usdValue:40,pairs:[pair('A','Q',25)]}; // 15 of it has no recorded pair
+ const all=[many,one,none,part];
+ const ids=cap=>enc.planStrands(all,cap).map(s=>s.id);
+ assert.deepEqual(ids(4),['US-GB|','GB-SG|P>Q','SG-US|','US-SG|'],'one line per route first: a single pair is named, a route with more to it is not yet split');
+ assert.deepEqual(ids(5),['US-GB|A>X','US-GB|','GB-SG|P>Q','SG-US|','US-SG|'],'the next line goes to the largest value it can split off (30 of US-GB)');
+ assert.deepEqual(ids(6),['US-GB|A>X','US-GB|','GB-SG|P>Q','SG-US|','US-SG|A>Q','US-SG|'],'then the next largest (the 15 of US-SG with no recorded pair, shown as the rest)');
+ assert.deepEqual(ids(7),['US-GB|A>X','US-GB|A>Y','US-GB|B>X','GB-SG|P>Q','SG-US|','US-SG|A>Q','US-SG|'],'a route with a line for every pair names them all');
+ assert.deepEqual(ids(99),ids(7),'nothing is drawn that the routes do not hold');
+ assert.deepEqual(ids(2),['US-GB|','GB-SG|P>Q'],'a budget below the routes draws the leading ones');
+ assert.deepEqual(ids(0),[]);
+ for(const cap of [1,2,3,4,5,6,7,99]){
+  const strands=enc.planStrands(all,cap);
+  assert.ok(strands.length<=cap,'never more lines than the budget');
+  for(const c of all.slice(0,cap)){
+   const own=strands.filter(s=>s.corridor===c);
+   close(own.reduce((n,s)=>n+s.usdValue,0),c.usdValue);
+   assert.deepEqual(own.map(s=>s.lane),own.map((_,i)=>i),'lanes count outward from the centreline');
+   assert.ok(own.every(s=>s.lanes===own.length&&s.extent===own[0].extent));
+   close(own[0].offset,enc.LANE_INSET+enc.routeWidth(own[0].usdValue));
+   for(let i=1;i<own.length;i++)close(own[i].offset-own[i-1].offset,enc.routeWidth(own[i-1].usdValue)+enc.LANE_GAP+enc.routeWidth(own[i].usdValue));
+   assert.ok(own.every((s,i)=>i===own.length-1||s.pair),'only a route\'s last line can be its rest');
+  }
+ }
+ const wide={id:'US-JP',usdValue:55,pairs:Array.from({length:10},(_,i)=>pair('A','R'+i,10-i))};
+ const w=enc.planStrands([wide],99);
+ assert.equal(w.length,enc.STRANDS_PER_ROUTE,'a route splits into a bounded number of strands');
+ assert.equal(w[w.length-1].pair,null);close(w[w.length-1].usdValue,5+4+3+2+1);
+ assert.deepEqual(enc.leadPair(many),{from:'A',to:'X',more:2,whole:false});
+ assert.deepEqual(enc.leadPair({...many,pairedUsd:100}),{from:'A',to:'X',more:2,whole:true});
+ assert.equal(enc.leadPair(none),null);assert.equal(enc.leadPair({usdValue:1}),null);
+ const lane0=enc.flatControls([0,0],[100,0],'A','B',true),lane1=enc.flatControls([0,0],[100,0],'A','B',true,10);
+ close(Math.abs(lane1.c1[1])-Math.abs(lane0.c1[1]),10);assert.equal(Math.sign(lane1.c1[1]),Math.sign(lane0.c1[1]),'a strand bows further out on its route\'s own side');}
 assert.equal(enc.routeOpacityTarget('x','y'),.18);assert.equal(enc.routeOpacityTarget('x','x'),1);assert.equal(enc.routeOpacityTarget(null,'y'),1);
 assert.equal(enc.glowOpacityTarget('US','GB'),.22);assert.equal(enc.glowOpacityTarget('US','US'),.5);assert.equal(enc.glowOpacityTarget(null,'GB'),.5);
 assert.equal(enc.labelVisible({},false,1200),true,'a listed label without auto is always shown');
@@ -102,4 +140,4 @@ assert.equal(enc.labelVisible({auto:true},false,1200),false);assert.equal(enc.la
 assert.equal(enc.labelVisible(undefined,true,1200),true);assert.equal(enc.labelVisible(undefined,false,1200),false);
 assert.equal(enc.labelVisible({},false,640),false,'below 650 px only mobile labels survive');assert.equal(enc.labelVisible({mobile:true},false,640),true);assert.equal(enc.labelVisible({},false,650),true);
 
-console.log('PASS: conservation, deduplication, evidence eligibility, exclusions, unpriced events, unplaced flow, unmapped selection and visual encodings');
+console.log('PASS: conservation, deduplication, evidence eligibility, exclusions, unpriced events, unplaced flow, unmapped selection, visual encodings and strand planning');

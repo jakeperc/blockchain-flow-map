@@ -45,6 +45,12 @@ small fraction of on-chain volume and says exactly how small.
   once 80% of the window has been observed. The browser uploads nothing, and nothing is scaled up. The bars under the
   map can be read and clicked to replay from that moment; a corridor's panel shows its own bars, so a total made of one
   burst and one made of steady flow no longer look alike.
+- **Who sent to whom.** A corridor is two jurisdictions; the page leads with the counterparties behind it. A corridor
+  such as "British Virgin Islands to United States" can be, almost entirely, one exchange sending to another, and
+  the page says so: every corridor row, tooltip and panel names its sender-and-receiver pairs of evidenced entities,
+  with each pair's value and its kind (exchange to exchange, market maker to exchange). On the globe a corridor with
+  several pairs is drawn as strands, one per pair, that add up to the corridor; the two directions keep to opposite
+  sides, and selecting a corridor fans its strands out.
 - **Why is this mapped here?** Every corridor opens into evidence cards: the entity, the explorer tag, the
   jurisdiction document, the date each was last verified, and whether the endpoint is a first-party label, a
   DERIVED cross-chain reuse of an Ethereum label, or an INFERRED deposit address seen sweeping into a labelled wallet.
@@ -199,7 +205,13 @@ had been held to the last hour), the timeline's bars became readable and clickab
 corridor's own bars. On 2026-11-11 the live hour was re-sized to two chains' real block times: Base moved from 2 s
 to 200 ms blocks around 2026-11-06, so its 1,800-block "hour" had been reading about six minutes (it now reads 18,000
 blocks), and Avalanche's blocks run near 1.0 s rather than 1.2 s (3,600 blocks instead of 3,000; slot times in
-`docs/LIVE-FEED.md`). The project was formerly Ledger Atlas;
+`docs/LIVE-FEED.md`). On 2026-11-19 corridors began to be named by their counterparties: each sealed quarter hour now
+keeps who sent to whom (entity names and values), the corridor rows, tooltips and panel lead with those pairs, and the
+globe draws a corridor as one strand per pair, up to 72 corridors and 160 lines on desktop (it drew 32 lines), for
+about 1.9 ms of GPU time per frame against 1.3 to 1.6 ms before, in the same 11 draw calls, on the one desktop it was
+measured on (`docs/measurements/2026-11-19/strands-renderer.md`). History recorded before
+that day states its pairs only where the recorded entity list settles them exactly (`docs/METHODOLOGY.md`); the
+recorder writes pairs from its next deploy. The project was formerly Ledger Atlas;
 some file names and the browser's history store still carry that name.
 
 ## Repository map

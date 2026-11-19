@@ -4,7 +4,7 @@
  */
 import * as THREE from 'three';
 import {COUNTRIES,type ColorMode} from '@/lib/atlas/geography';
-import {rankRoutes,routeCap} from '@/lib/atlas/encoding';
+import {planStrands,rankRoutes,routeCap,strandCap} from '@/lib/atlas/encoding';
 import {sunDirection,toSphere,type Vec3} from '@/lib/atlas/geo3d';
 import type {Corridor,CountrySummary,Transfer} from '@/lib/atlas/model';
 import {makeShared,R,type Ctx} from './frame';
@@ -83,9 +83,10 @@ export function createEngine(host:HTMLElement,io:EngineHost):Engine{
  }
  function update(){
   const p=io.props();
-  chosen=rankRoutes(p.corridors,p.country,id=>arcs.routes.has(id),routeCap(ctx.width));
+  chosen=rankRoutes(p.corridors,p.country,id=>arcs.hasCorridor(id),routeCap(ctx.width));
   const now=performance.now();
-  arcs.update(chosen,p.selected,p.colorMode,ready&&shared.uReveal.value>.6,ctx.reduced,now/1000);
+  // Each route is drawn as its counterparties: one strand per sender-and-receiver pair, as far as the line budget goes.
+  arcs.update(planStrands(chosen,strandCap(ctx.width)),p.selected,p.colorMode,ready&&shared.uReveal.value>.6,ctx.reduced,now/1000);
   // Routes created before the land reveal draw themselves on once it is far enough along.
   anchors.update(p.countries,chosen,p.country);
   invalid=true;
@@ -160,7 +161,7 @@ export function createEngine(host:HTMLElement,io:EngineHost):Engine{
   if(vignette!==lastVignette){lastVignette=vignette;host.style.setProperty('--vignette',vignette);}
   if(justFinished)arcs.relace(now,ctx.reduced);
   const arcsBusy=arcs.frame(dt,now,Date.now(),p.rawEvent,interaction.hovered,morphing,rig.morph,ctx.reduced);
-  const anchorsBusy=anchors.frame(dt,Date.now(),p.rawEvent,id=>arcs.routes.get(id)?.data.destination??null,ctx.reduced);
+  const anchorsBusy=anchors.frame(dt,Date.now(),p.rawEvent,arcs.destinationOf,ctx.reduced);
   const render=force||motion||invalid||flying||arcsBusy||anchorsBusy||revealing;
   world.updateMatrixWorld(true);camera.updateMatrixWorld();
   if(render)labels.frame(rig.morph,rig.zoom,p.country,code=>!!anchors.state.get(code)?.active);

@@ -55,15 +55,19 @@ export function aggregateSpan(events:Iterable<Transfer|TotalsInput>,start:number
   history[bin].value+=value;
   const id=`${a}-${b}`;
   let c=corridors.get(id);
-  if(!c){c={id,origin:a,destination:b,window,windowStart:start,windowEnd:end,usdValue:0,transactionCount:0,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:0,rankScore:0,series:{value:Array(40).fill(0),count:Array(40).fill(0)}};corridors.set(id,c);}
+  if(!c){c={id,origin:a,destination:b,window,windowStart:start,windowEnd:end,usdValue:0,transactionCount:0,assets:{},chains:{},confidence:{},topEntities:[],topTransactions:[],pairs:[],pairedUsd:0,baseline:null,baselineSamples:0,anomalyRatio:null,anomalyScore:null,lastActivity:0,rankScore:0,series:{value:Array(40).fill(0),count:Array(40).fill(0)}};corridors.set(id,c);}
   c.series!.value[bin]+=value;c.series!.count[bin]++;
-  c.usdValue+=value;c.transactionCount++;c.lastActivity=Math.max(c.lastActivity,t.blockTime);
+  // `pairedUsd` takes the same additions in the same order as `usdValue`, so the two are the same number, bit for bit.
+  c.usdValue+=value;c.pairedUsd+=value;c.transactionCount++;c.lastActivity=Math.max(c.lastActivity,t.blockTime);
   c.assets[f.asset]=(c.assets[f.asset]??0)+value;c.chains[f.chain]=(c.chains[f.chain]??0)+value;
   const conf=f.senderEntity.confidence==='VERIFIED'&&f.receiverEntity.confidence==='VERIFIED'?'VERIFIED':'HIGH';c.confidence[conf]=(c.confidence[conf]??0)+value;
   for(const attr of [f.senderEntity,f.receiverEntity]){const e=c.topEntities.find(e=>e.entity===attr.entity);if(e)e.usdValue+=value;else c.topEntities.push({entity:attr.entity,usdValue:value,attribution:attr});}
+  // Who sent to whom. The sender is always the origin's entity and the receiver the destination's, so a pair has one direction.
+  {const from=f.senderEntity.entity,to=f.receiverEntity.entity,p=c.pairs.find(p=>p.from===from&&p.to===to);if(p){p.usdValue+=value;p.transactionCount!++;}else c.pairs.push({from,to,usdValue:value,transactionCount:1});}
   c.topTransactions.push(f);c.topTransactions.sort((x,y)=>(y.usdValue??0)-(x.usdValue??0));if(c.topTransactions.length>6)c.topTransactions.length=6;
  }
  totals.coverage=totals.adjusted?totals.attributed/totals.adjusted:null;
+ for(const c of corridors.values())c.pairs.sort((x,y)=>y.usdValue-x.usdValue);
  for(const c of countries.values()){c.coverage=c.knownEndpointAdjusted?(c.inbound+c.outbound)/c.knownEndpointAdjusted:null;c.entities.sort((x,y)=>(y.unplacedIn+y.unplacedOut)-(x.unplacedIn+x.unplacedOut));}
  const result={window,at,health:'NOT CONNECTED',lastReceived:null,message:'No live provider data is available for this selection.',corridors:[...corridors.values()],totals,classifications:classes,countries:[...countries.values()],history,chainHealth:CHAINS.map(chain=>({chain,status:'Not connected',lastReceived:null}))} as Snapshot;
  rank(result);return result;

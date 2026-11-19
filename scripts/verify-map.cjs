@@ -30,7 +30,18 @@ for(let lon=-170;lon<=170;lon+=10)for(let lat=-80;lat<=80;lat+=10){const [lo,la]
  close(arc[0],R,1e-4);close(arc[1],0,1e-4);close(arc[2],0,1e-4);close(arc[48*3+2],R,1e-4,'last point is the lifted-free endpoint');
  close(Math.hypot(arc[24*3],arc[24*3+1],arc[24*3+2]),R+40,1e-4,'apex at t=.5 is R + lift');
  const back=g.greatCircle(b,a,49,R,40);
- for(let i=0;i<49;i++)for(let k=0;k<3;k++)close(arc[i*3+k],back[(48-i)*3+k],1e-4,'reversal symmetry');}
+ for(let i=0;i<49;i++)for(let k=0;k<3;k++)close(arc[i*3+k],back[(48-i)*3+k],1e-4,'reversal symmetry');
+ // A strand's lane: the same route bowed sideways, leaving and arriving at the anchors exactly.
+ const side=.02,lane=g.laneArc(a,b,49,R,40,side),at=(p,i)=>[p[i*3],p[i*3+1],p[i*3+2]];
+ for(const i of [0,48])for(let k=0;k<3;k++)close(lane[i*3+k],arc[i*3+k],1e-4,'a lane starts and ends on its route');
+ close(Math.hypot(...at(lane,24)),R+40,1e-4,'a lane keeps the route\'s lift');
+ close(g.angle(at(lane,24),at(arc,24)),side,1e-6,'mid-route it is the lane offset away from the centreline');
+ close(g.angle(at(lane,12),at(arc,12)),side*Math.sin(Math.PI/4),1e-6,'and less toward either end');
+ close(g.dot(g.normalize(at(lane,24)),[0,-1,0]),Math.sin(side),1e-6,'toward a x b, out of the route\'s plane');
+ const other=g.laneArc(b,a,49,R,40,side);
+ close(g.angle(at(other,24),at(lane,24)),2*side,1e-6,'the opposite direction bows to the other side, so the two never overlap');
+ assert.deepEqual([...g.laneArc(a,b,49,R,40,0)],[...arc],'no offset is the great circle itself');
+ assert.deepEqual([...g.laneArc(a,[-1,0,0],9,R,40,side)],[...g.greatCircle(a,[-1,0,0],9,R,40)],'opposite points have no plane to bow out of');}
 
 // Antimeridian splitting.
 {const pieces=g.splitAntimeridian([[170,60],[-170,60],[-170,50],[170,50]]);
@@ -142,4 +153,4 @@ close(tw.damp(3,0),0);assert.ok(tw.damp(3,1)>.9);close(tw.damp(3,.5)+(1-tw.damp(
  c=av.clampToMap(100,-40,ext);assert.deepEqual(c,{x:100,y:-40,hitX:false,hitY:false},'a centre inside the map is left alone');
  c=av.clampToMap(-600,0,ext);close(c.x,-ext.halfW,1e-9);assert.ok(c.hitX&&!c.hitY);}
 
-console.log('PASS: sphere maths, Fibonacci prefixes, great circles, antimeridian splitting, sun position, visibility, quality selection, governor hysteresis, recovery probes, tweens, gestures (the pinch-release fling) and the atlas framing');
+console.log('PASS: sphere maths, Fibonacci prefixes, great circles, strand lanes, antimeridian splitting, sun position, visibility, quality selection, governor hysteresis, recovery probes, tweens, gestures (the pinch-release fling) and the atlas framing');

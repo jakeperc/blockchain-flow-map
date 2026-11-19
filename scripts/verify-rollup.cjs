@@ -11,7 +11,7 @@ const assert=require('node:assert/strict');
 const root=process.argv[2]||'/tmp/ledger-atlas-check';
 const {aggregate,aggregateSpan,selectUnattributed}=require(root+'/engine.js');
 const {WINDOWS}=require(root+'/model.js');
-const {BUCKET_MS,bucketOf,sealBucket,sealSpan,mergeRollups,windowBins,mergeUnmapped,partsInWindow,coverageOf,baselineFor,applyBaselines,registryVersionsOf,partsForChains,toStored,fromStored,TOP_TRANSACTIONS,BASELINE_SAMPLES}=require(root+'/rollup.js');
+const {BUCKET_MS,bucketOf,sealBucket,sealSpan,mergeRollups,windowBins,mergeUnmapped,partsInWindow,coverageOf,baselineFor,applyBaselines,registryVersionsOf,partsForChains,toStored,fromStored,deducePairs,TOP_TRANSACTIONS,BASELINE_SAMPLES}=require(root+'/rollup.js');
 
 const close=(a,b,what)=>assert.ok(Math.abs(a-b)<.01,`${what??''}: ${a} != ${b}`);
 // A bucket boundary, so spans tile the window exactly and the arithmetic is comparable without slack.
@@ -92,6 +92,18 @@ const fullDay=chains=>chains.map(chain=>({chain,observedMs:BUCKET_MS}));
   const de=[...c.topEntities].sort((x,y)=>y.usdValue-x.usdValue);
   assert.deepEqual(m.topEntities.map(e=>e.entity),de.map(e=>e.entity),`corridor ${c.id} entity ranking`);
   for(const e of de)close(m.topEntities.find(x=>x.entity===e.entity).usdValue,e.usdValue,`corridor ${c.id} entity ${e.entity}`);
+  // Who sent to whom: the same pairs, values and counts as the raw transfers give, and they account for the whole corridor.
+  assert.ok(c.pairs.length>=1,`corridor ${c.id} has pairs to compare`);
+  assert.deepEqual(m.pairs.map(p=>`${p.from}>${p.to}`).sort(),c.pairs.map(p=>`${p.from}>${p.to}`).sort(),`corridor ${c.id} pairs`);
+  for(const p of c.pairs){
+   const q=m.pairs.find(x=>x.from===p.from&&x.to===p.to);
+   close(q.usdValue,p.usdValue,`corridor ${c.id} pair ${p.from} to ${p.to}`);
+   assert.equal(q.transactionCount,p.transactionCount,`corridor ${c.id} pair ${p.from} to ${p.to} count`);
+  }
+  close(c.pairs.reduce((n,p)=>n+p.usdValue,0),c.usdValue,`corridor ${c.id}: the pairs sum to the corridor`);
+  assert.equal(c.pairs.reduce((n,p)=>n+p.transactionCount,0),c.transactionCount,`corridor ${c.id}: the pair counts sum to the corridor's`);
+  assert.equal(c.pairedUsd,c.usdValue,`corridor ${c.id}: a live window is fully paired, to the bit`);
+  assert.equal(m.pairedUsd,m.usdValue,`corridor ${c.id}: so is a window merged from spans that all recorded pairs`);
  }
  assert.equal(merged.countries.length,direct.countries.length,'same jurisdictions');
  for(const c of direct.countries){
@@ -315,6 +327,8 @@ const fullDay=chains=>chains.map(chain=>({chain,observedMs:BUCKET_MS}));
   for(const k of Object.keys(c.assets))close(a.assets[k],c.assets[k]);
   for(const k of Object.keys(c.confidence))close(a.confidence[k],c.confidence[k]);
   assert.deepEqual(a.topEntities.map(e=>e.entity),c.topEntities.map(e=>e.entity),'the entity ranking survives');
+  assert.deepEqual(a.pairs,c.pairs,'the pairs survive storage, values and counts');
+  assert.equal(a.pairedUsd,a.usdValue,'and still account for the whole corridor');
   // Deliberate: transaction-level evidence is not stored, so it cannot come back stale or invented.
   assert.deepEqual(a.topTransactions,[],'stored history keeps no per-transfer detail');
  }
@@ -334,6 +348,62 @@ const fullDay=chains=>chains.map(chain=>({chain,observedMs:BUCKET_MS}));
  assert.ok(!json.includes('lastVerified'),'a stored span must carry no attribution timestamps');
 }
 
+/* ---------- Counterparty pairs: recorded, stored, and deduced only where the entity list settles them ---------- */
+{
+ const A=evidence('US','Alpha Exchange'),B=evidence('US','Beta Exchange'),X=evidence('GB','Xray Exchange'),Y=evidence('GB','Yankee Exchange');
+ const b=at-BUCKET_MS;let n=0;
+ const sealOf=legs=>sealBucket(legs.map(([senderEntity,receiverEntity,usdValue])=>transfer({blockTime:b+1000+(n++),senderEntity,receiverEntity,usdValue})),b,opts(fullDay(['Ethereum'])));
+ // A span as every span was stored before pairs were recorded: the same JSON without the field.
+ const asOld=span=>{const s=JSON.parse(JSON.stringify(toStored(span)));for(const c of s.corridors)delete c.pairs;return s;};
+ const cases={
+  'one pair':{legs:[[A,X,100],[A,X,50.5]],deduced:true,counts:true},
+  'one sender to two receivers':{legs:[[A,X,100],[A,Y,40.25],[A,X,7]],deduced:true,counts:false},
+  'two senders to one receiver':{legs:[[A,X,100],[B,X,40.25]],deduced:true,counts:false},
+  'two senders to one receiver, the receiver busiest last':{legs:[[B,X,.1],[A,X,1e9],[B,X,.2]],deduced:true,counts:false},
+  'two senders and two receivers':{legs:[[A,X,100],[B,Y,40]],deduced:false},
+  'every sender to every receiver':{legs:[[A,X,1],[A,Y,2],[B,X,3],[B,Y,4]],deduced:false},
+  'a zero-value transfer beside a pair':{legs:[[A,X,100],[B,X,0]],deduced:false},
+ };
+ for(const [what,k] of Object.entries(cases)){
+  const span=sealOf(k.legs),c=span.corridors[0];
+  assert.equal(span.corridors.length,1,`${what}: one corridor`);
+  const truth=new Map();
+  for(const [s,r,v] of k.legs){const key=`${s.entity}>${r.entity}`,row=truth.get(key)??{usdValue:0,transactionCount:0};row.usdValue+=v;row.transactionCount++;truth.set(key,row);}
+  assert.deepEqual(new Map(c.pairs.map(p=>[`${p.from}>${p.to}`,{usdValue:p.usdValue,transactionCount:p.transactionCount}])),truth,`${what}: the sealed pairs are what was sent`);
+  const stored=toStored(span);
+  assert.deepEqual(stored.corridors[0].pairs,c.pairs,`${what}: recorded pairs are stored`);
+  assert.deepEqual(fromStored(JSON.parse(JSON.stringify(stored))).corridors[0].pairs,c.pairs,`${what}: and read back`);
+  // The deduction, checked against what the same span recorded: right wherever it answers, silent wherever it cannot know.
+  const old=fromStored(asOld(span)).corridors[0].pairs;
+  if(!k.deduced){assert.equal(old,null,`${what}: pairs that the entity list does not settle are not guessed`);continue;}
+  assert.ok(old,`${what}: the entity list settles the pairs`);
+  assert.equal(old.length,truth.size,`${what}: every pair, and no other`);
+  for(const p of old){
+   const t=truth.get(`${p.from}>${p.to}`);
+   assert.ok(t,`${what}: deduced pair ${p.from} to ${p.to} was really sent, in that direction`);
+   close(p.usdValue,t.usdValue,`${what}: deduced value`);
+   assert.equal(p.transactionCount,k.counts?t.transactionCount:null,`${what}: a count is given only where it is known`);
+  }
+  // A single pair is settled in full, count included, so storing it again loses nothing; a pair without its count is not stored.
+  assert.deepEqual(toStored(fromStored(asOld(span))).corridors[0].pairs,k.counts?c.pairs:undefined,`${what}: a pair whose count is unknown is never written back as if it had been recorded`);
+ }
+ assert.equal(deducePairs({usdValue:100,transactionCount:1,topEntities:[{entity:'Alpha Exchange',usdValue:100}]}),null,'one entity is not a pair');
+ assert.equal(deducePairs({usdValue:100,transactionCount:2,topEntities:[{entity:'Alpha Exchange',usdValue:100},{entity:'Xray Exchange',usdValue:60}]}),null,'two entities that do not both carry the whole value are not settled');
+ // A window part of whose history has no pairs says how much of each corridor its pairs cover.
+ const withPairs=sealOf([[A,X,100],[B,Y,40]]),without=fromStored({...asOld(sealOf([[A,X,10],[B,Y,5]])),bucket:b-BUCKET_MS,end:b});
+ const mixed=mergeRollups([without,withPairs],'1H',at).corridors[0];
+ close(mixed.usdValue,155,'both spans count toward the corridor');
+ close(mixed.pairedUsd,140,'only the span that recorded pairs counts toward its paired value');
+ close(mixed.pairs.reduce((s,p)=>s+p.usdValue,0),140,'and its pairs sum to exactly that');
+ // One span deduced (no counts) and one recorded: the value adds, the count is unknown for the pair they share.
+ const deducedSpan=fromStored({...asOld(sealOf([[A,X,10],[A,Y,5]])),bucket:b-BUCKET_MS,end:b}),recordedSpan=sealOf([[A,X,100]]);
+ const both=mergeRollups([deducedSpan,recordedSpan],'1H',at).corridors[0];
+ assert.equal(both.pairedUsd,both.usdValue,'a deduced span is fully paired');
+ const ax=both.pairs.find(p=>p.to==='Xray Exchange');
+ close(ax.usdValue,110,'a deduced and a recorded value add');
+ assert.equal(ax.transactionCount,null,'a count that is unknown for part of a window is unknown for the window');
+}
+
 /* ---------- Registry versions are reported, not silently mixed ---------- */
 {
  const a1=sealBucket([],at-BUCKET_MS,opts(fullDay(['Ethereum']),'registry-a'));
@@ -342,4 +412,4 @@ const fullDay=chains=>chains.map(chain=>({chain,observedMs:BUCKET_MS}));
  assert.deepEqual(registryVersionsOf([a1,a2]).sort(),['registry-a','registry-b'],'a span sealed under another registry stays visible as such');
 }
 
-console.log('PASS: sealed history (span tiling, exact totals and corridors, true top lists, timeline bins and corridor series, idempotent sealing, measured coverage, gated baselines, registry versions)');
+console.log('PASS: sealed history (span tiling, exact totals and corridors, counterparty pairs recorded and deduced, true top lists, timeline bins and corridor series, idempotent sealing, measured coverage, gated baselines, registry versions)');
